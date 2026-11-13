@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b0a">
+  <title>OLD BOYS | Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #080b0a;
+      color: #f5f7f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .crest {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 18px;
+      border: 2px solid #b7ff36;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      color: #b7ff36;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      transform: rotate(-3deg);
+      box-shadow: 0 0 28px #b7ff3620;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 29px;
+      letter-spacing: 5px;
+      font-weight: 900;
+    }
+
+    .subtitle {
+      color: #9ca69e;
+      font-size: 11px;
+      letter-spacing: 3px;
+      margin-top: 9px;
+    }
+
+    .panel {
+      background: #111714;
+      border: 1px solid #28322b;
+      border-radius: 20px;
+      padding: 25px 21px;
+    }
+
+    .panel h2 {
+      font-size: 20px;
+      margin: 0 0 7px;
+    }
+
+    .description {
+      color: #9ca69e;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      color: #d4ddd5;
+      font-size: 12px;
+      margin: 17px 0 8px;
+    }
+
+    input {
+      width: 100%;
+      height: 49px;
+      border-radius: 10px;
+      border: 1px solid #344039;
+      background: #090e0b;
+      color: white;
+      padding: 0 14px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #b7ff36;
+    }
+
+    button {
+      width: 100%;
+      height: 51px;
+      margin-top: 23px;
+      border: none;
+      border-radius: 10px;
+      background: #b7ff36;
+      color: #10150b;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+    }
+
+    .message {
+      min-height: 20px;
+      margin-top: 15px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #ffb4a9;
+    }
+
+    .hidden { display: none; }
+
+    .welcome {
+      text-align: center;
+      padding: 12px 0;
+    }
+
+    .welcome h2 {
+      color: #b7ff36;
+    }
+
+    .footer {
+      text-align: center;
+      color: #68736b;
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="brand">
+      <div class="crest">OB</div>
+      <h1>OLD BOYS</h1>
+      <div class="subtitle">FOOTBALL CLUB MANAGEMENT</div>
+    </header>
+
+    <section class="panel" id="loginPanel">
+      <h2>Admin Login</h2>
+      <div class="description">Đăng nhập để quản lý đội bóng</div>
+
+      <form id="loginForm">
+        <label for="email">EMAIL</label>
+        <input id="email" type="email"
+          placeholder="admin@example.com"
+          autocomplete="username" required>
+
+        <label for="password">MẬT KHẨU</label>
+        <input id="password" type="password"
+          placeholder="Nhập mật khẩu"
+          autocomplete="current-password" required>
+
+        <button id="loginButton" type="submit">
+          ĐĂNG NHẬP
+        </button>
+      </form>
+
+      <div class="message" id="message" role="status"></div>
+    </section>
+
+    <section class="panel hidden" id="dashboard">
+      <div class="welcome">
+        <h2>WELCOME, ADMIN</h2>
+        <p id="adminEmail"></p>
+        <p>Hệ thống OLD BOYS đã xác thực tài khoản.</p>
+        <button id="logoutButton">ĐĂNG XUẤT</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      OLD BOYS • EST. FOOTBALL COMMUNITY
+    </footer>
+  </main>
+
+  <script>
+    // THAY 2 GIA TRI BEN DUOI BANG THONG TIN SUPABASE
+    const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+    const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const loginPanel = document.getElementById("loginPanel");
+    const dashboard = document.getElementById("dashboard");
+    const message = document.getElementById("message");
+    const loginButton = document.getElementById("loginButton");
+
+    function showLogin(text = "") {
+      dashboard.classList.add("hidden");
+      loginPanel.classList.remove("hidden");
+      message.textContent = text;
+    }
+
+    function showDashboard(email) {
+      loginPanel.classList.add("hidden");
+      dashboard.classList.remove("hidden");
+      document.getElementById("adminEmail").textContent = email;
+    }
+
+    async function checkAdmin(user) {
+      const { data, error } = await client
+        .from("profiles")
+        .select("role, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error || !data || data.role !== "admin") {
+        await client.auth.signOut();
+        showLogin("Tài khoản này không có quyền Admin.");
+        return false;
+      }
+
+      showDashboard(user.email);
+      return true;
+    }
+
+    document.getElementById("loginForm")
+      .addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        loginButton.disabled = true;
+        loginButton.textContent = "ĐANG KIỂM TRA...";
+        message.textContent = "";
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        const { data, error } = await client.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          message.textContent = "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.";
+        } else {
+          await checkAdmin(data.user);
+        }
+
+        loginButton.disabled = false;
+        loginButton.textContent = "ĐĂNG NHẬP";
+      });
+
+    document.getElementById("logoutButton")
+      .addEventListener("click", async () => {
+        await client.auth.signOut();
+        showLogin("Bạn đã đăng xuất.");
+      });
+
+    async function restoreSession() {
+      const { data, error } = await client.auth.getSession();
+
+      if (error) {
+        showLogin("Không thể kiểm tra phiên đăng nhập.");
+        return;
+      }
+
+      if (data.session) {
+        await checkAdmin(data.session.user);
+      }
+    }
+
+    restoreSession();
+
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        showLogin("Bạn đã đăng xuất.");
+      }
+    });
+  </script>
+</body>
+</html>
