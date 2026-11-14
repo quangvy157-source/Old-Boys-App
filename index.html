@@ -1878,23 +1878,26 @@ async function openMatchEditor(match, card) {
   };
 
   startTimer.onclick = () => {
-    if (startedAt !== null) return;
+  if (startedAt !== null) return;
 
-    startedAt = Date.now();
-    startTimer.disabled = true;
-    pauseTimer.disabled = false;
+  startedAt = Date.now();
+  startTimer.disabled = true;
+  pauseTimer.disabled = false;
 
-    timerInterval = setInterval(() => {
-      if (modal.classList.contains("hidden")) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        startedAt = null;
-        return;
-      }
-
-      updateTimer();
-    }, 250);
+  activeMatchSession = {
+    matchId: String(match.id)
   };
+
+  $("activeMatchInfo").textContent =
+    match.title ||
+    (match.team_a_name + " vs " + match.team_b_name);
+
+  $("activeMatchBar").classList.remove("hidden");
+
+  timerInterval = setInterval(() => {
+    updateTimer();
+  }, 250);
+};
 
   pauseTimer.onclick = () => {
     if (startedAt === null) return;
