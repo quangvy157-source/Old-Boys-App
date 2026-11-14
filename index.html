@@ -370,7 +370,6 @@ async function showApp(user){
   $("app").classList.remove("hidden");
   $("account").textContent=user.email || "";
   await loadPlayers();
-  await loadSessions();
  await loadMatchHistory();
 }
 
@@ -402,7 +401,7 @@ async function loadPlayers(){
 
   $("elo").textContent=avg;
 
-  if($("sessionSelect").value) await loadAttendance();
+  if($("sessionSelect")?.value) await loadAttendance();
 }
 
 function renderPlayers(){
