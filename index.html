@@ -404,6 +404,7 @@ async function loadPlayers(){
   if($("sessionSelect")?.value) await loadAttendance();
 }
 
+
 function renderPlayers(){
   const q=$("search").value.trim().toLowerCase();
   const list=playerData.filter(p=>(p.full_name||"").toLowerCase().includes(q));
@@ -428,6 +429,9 @@ function renderPlayers(){
 
     const name=document.createElement("strong");
     name.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+    name.style.cursor="pointer";
+    name.title="Bấm để xem hồ sơ cầu thủ";
+    name.addEventListener("click",()=>openPlayerDetail(p));
 
     const detail=document.createElement("small");
     detail.textContent=(p.position||"Chưa có vị trí")+" · ELO "+(p.elo||0)+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
@@ -436,6 +440,12 @@ function renderPlayers(){
 
     const actions=document.createElement("div");
     actions.className="actions";
+
+    const view=document.createElement("button");
+    view.type="button";
+    view.className="secondary";
+    view.textContent="Chi tiết";
+    view.onclick=()=>openPlayerDetail(p);
 
     const edit=document.createElement("button");
     edit.className="secondary";
@@ -447,9 +457,140 @@ function renderPlayers(){
     del.textContent="Xóa";
     del.onclick=()=>deletePlayer(p);
 
-    actions.append(edit,del);
+    actions.append(view,edit,del);
     item.append(img,info,actions);
     $("players").append(item);
+  });
+}
+
+async function openPlayerDetail(p){
+  const modal=$("matchDetailModal");
+  const content=$("matchDetailContent");
+  const subtitle=modal.querySelector(".sub");
+
+  subtitle.textContent="PLAYER PROFILE · OLD BOYS";
+  content.innerHTML="<p>Đang tải hồ sơ cầu thủ...</p>";
+  modal.classList.remove("hidden");
+
+  const {data:appearances,error:appearanceError}=await db
+    .from("match_players")
+    .select("match_id,team")
+    .eq("player_id",p.id);
+
+  if(appearanceError){
+    content.textContent="Không tải được lịch sử thi đấu: "+appearanceError.message;
+    return;
+  }
+
+  const {data:goalRows,error:goalError}=await db
+    .from("match_scorers")
+    .select("match_id,goals,team")
+    .eq("player_id",p.id);
+
+  if(goalError){
+    content.textContent="Không tải được thống kê bàn thắng: "+goalError.message;
+    return;
+  }
+
+  const played=appearances||[];
+  const goals=(goalRows||[]).reduce((sum,x)=>sum+(Number(x.goals)||0),0);
+  const matchIds=[...new Set(played.map(x=>x.match_id))];
+  let matches=[];
+
+  if(matchIds.length){
+    const {data:matchData,error:matchError}=await db
+      .from("matches")
+      .select("id,title,match_date,start_time,format,match_format,team_a_name,team_b_name,score_a,score_b")
+      .in("id",matchIds)
+      .order("match_date",{ascending:false});
+
+    if(matchError){
+      content.textContent="Không tải được danh sách trận đấu: "+matchError.message;
+      return;
+    }
+    matches=matchData||[];
+  }
+
+  content.innerHTML="";
+
+  const profile=document.createElement("div");
+  profile.style.cssText="display:flex;align-items:center;gap:14px;margin:18px 0;padding:14px;background:#0c120e;border-radius:12px";
+
+  if(p.photo_url){
+    const photo=document.createElement("img");
+    photo.src=p.photo_url;
+    photo.alt="Ảnh "+p.full_name;
+    photo.style.cssText="width:82px;height:82px;object-fit:cover;border-radius:12px;background:#303a32";
+    photo.onerror=()=>photo.style.display="none";
+    profile.appendChild(photo);
+  }
+
+  const identity=document.createElement("div");
+  identity.style.cssText="min-width:0";
+
+  const playerName=document.createElement("h2");
+  playerName.style.cssText="margin:0 0 6px;font-size:20px";
+  playerName.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+
+  const position=document.createElement("div");
+  position.style.cssText="color:#aab5ac;font-size:13px";
+  position.textContent=(p.position||"Chưa cập nhật vị trí")+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
+
+  identity.append(playerName,position);
+  profile.appendChild(identity);
+  content.appendChild(profile);
+
+  const stats=document.createElement("div");
+  stats.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0";
+
+  [[played.length,"TRẬN ĐÃ ĐÁ"],[goals,"BÀN THẮNG"]].forEach(([value,label])=>{
+    const tile=document.createElement("div");
+    tile.style.cssText="padding:15px;background:#17221a;border:1px solid #354238;border-radius:10px;text-align:center";
+
+    const number=document.createElement("strong");
+    number.style.cssText="display:block;font-size:26px;color:#d9f99d";
+    number.textContent=value;
+
+    const caption=document.createElement("small");
+    caption.style.cssText="color:#aab5ac";
+    caption.textContent=label;
+
+    tile.append(number,caption);
+    stats.appendChild(tile);
+  });
+
+  content.appendChild(stats);
+
+  const historyTitle=document.createElement("h3");
+  historyTitle.textContent="LỊCH SỬ THI ĐẤU";
+  historyTitle.style.marginTop="22px";
+  content.appendChild(historyTitle);
+
+  if(!matches.length){
+    const empty=document.createElement("p");
+    empty.style.color="#aab5ac";
+    empty.textContent="Cầu thủ chưa có dữ liệu tham gia trận đấu.";
+    content.appendChild(empty);
+    return;
+  }
+
+  matches.forEach(match=>{
+    const card=document.createElement("div");
+    card.style.cssText="padding:12px;margin:9px 0;background:#0c120e;border:1px solid #354238;border-radius:10px";
+
+    const title=document.createElement("strong");
+    title.textContent=match.title||"Trận đấu OLD BOYS";
+
+    const date=document.createElement("div");
+    date.style.cssText="margin-top:5px;color:#aab5ac;font-size:12px";
+    date.textContent=(match.match_date||"")+(match.start_time?" · "+String(match.start_time).slice(0,5):"")+" · "+(match.format||match.match_format||"");
+
+    const score=document.createElement("div");
+    score.style.cssText="margin-top:9px;font-weight:700";
+    score.textContent=(match.team_a_name||"ĐỘI A")+"  "+(match.score_a??0)+" - "+(match.score_b??0)+"  "+(match.team_b_name||"ĐỘI B");
+
+    card.append(title,date,score);
+    content.appendChild(card);
   });
 }
 
@@ -926,7 +1067,9 @@ async function loadMatchHistory() {
           ? "#" + item.player.jersey_number + " "
           : "") +
         item.player.full_name;
-
+      name.style.cursor="pointer";
+      name.title="Bấm để xem hồ sơ cầu thủ";
+      name.addEventListener("click",()=>openPlayerDetail(item.player));
       const count = document.createElement("strong");
       count.className = "goal-count";
       count.textContent = item.goals + " bàn";
@@ -1003,7 +1146,11 @@ async function loadMatchHistory() {
           (player.jersey_number != null
             ? "#" + player.jersey_number + " "
             : "") +
-          player.full_name + "  × " + item.goals;
+                    player.full_name + "  × " + item.goals;
+
+        line.style.cursor="pointer";
+        line.title="Bấm để xem hồ sơ cầu thủ";
+        line.addEventListener("click",()=>openPlayerDetail(player));
 
         scorerBox.appendChild(line);
       });
