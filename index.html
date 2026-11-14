@@ -100,8 +100,11 @@ button:disabled{opacity:.5}
         <option>Tiền đạo</option>
         <option>Đa năng</option>
       </select>
-      <label>Đường dẫn ảnh thành viên (nếu có)</label>
-      <input id="photo" type="url" placeholder="https://...">
+      <label>Ảnh cầu thủ</label>
+<input id="photoFile" type="file" accept="image/*">
+<img id="photoPreview" class="hidden" alt="Ảnh xem trước"
+     style="width:110px;height:110px;object-fit:cover;border-radius:12px;margin:5px 0 12px">
+<div id="photoMsg" class="message"></div>
       <label>Điểm ELO</label>
       <input id="rating" type="number" min="0" value="1000">
       <label>Trạng thái</label>
@@ -165,6 +168,63 @@ const $ = id => document.getElementById(id);
 let playerData = [];
 let sessionData = [];
 let attendanceData = [];
+ let selectedPhotoFile = null;
+
+$("photoFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+  selectedPhotoFile = file || null;
+
+  const preview = $("photoPreview");
+
+  if (!file) {
+    preview.src = "";
+    preview.classList.add("hidden");
+    message("photoMsg", "");
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    selectedPhotoFile = null;
+    e.target.value = "";
+    preview.classList.add("hidden");
+    message("photoMsg", "Vui lòng chọn một tệp hình ảnh.");
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    selectedPhotoFile = null;
+    e.target.value = "";
+    preview.classList.add("hidden");
+    message("photoMsg", "Ảnh vượt quá giới hạn 5 MB.");
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  preview.classList.remove("hidden");
+  message("photoMsg", "Đã chọn ảnh. Hãy xem trước trước khi lưu.");
+});
+ async function uploadPlayerPhoto(file) {
+  if (!file) return null;
+
+  const extension = file.name.split(".").pop().toLowerCase();
+  const filePath = `${crypto.randomUUID()}.${extension}`;
+
+  const { data, error } = await db.storage
+    .from("player-photos")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type
+    });
+
+  if (error) throw error;
+
+  const { data: publicData } = db.storage
+    .from("player-photos")
+    .getPublicUrl(data.path);
+
+  return publicData.publicUrl;
+}
 
 function message(id,text){
   $(id).textContent=text;
@@ -269,7 +329,6 @@ function editPlayer(p){
   $("fullName").value=p.full_name||"";
   $("jersey").value=p.jersey_number??"";
   $("position").value=p.position||"";
-  $("photo").value=p.photo_url||"";
   $("rating").value=p.elo??1000;
   $("status").value=String(p.is_active);
   $("formTitle").textContent="Chỉnh sửa cầu thủ";
@@ -280,6 +339,10 @@ function editPlayer(p){
 
 function resetForm(){
   $("playerForm").reset();
+ selectedPhotoFile=null;
+$("photoPreview").src="";
+$("photoPreview").classList.add("hidden");
+message("photoMsg","");
   $("playerId").value="";
   $("rating").value=1000;
   $("status").value="true";
@@ -292,32 +355,43 @@ function resetForm(){
 $("playerForm").addEventListener("submit",async e=>{
   e.preventDefault();
   $("saveBtn").disabled=true;
-  message("formMsg","Đang lưu...");
+  message("formMsg","Đang lưu cầu thủ...");
 
-  const id=$("playerId").value;
-  const player={
-    full_name:$("fullName").value.trim(),
-    jersey_number:$("jersey").value===""?null:Number($("jersey").value),
-    position:$("position").value||null,
-    photo_url:$("photo").value.trim()||null,
-    elo:Number($("rating").value)||1000,
-    is_active:$("status").value==="true"
-  };
+  try {
+    const id=$("playerId").value;
+    const existingPlayer=playerData.find(p=>p.id===id);
 
-  const result=id
-    ? await db.from("players").update(player).eq("id",id)
-    : await db.from("players").insert(player);
+    let photoUrl=existingPlayer?.photo_url||null;
 
-  $("saveBtn").disabled=false;
+    if(selectedPhotoFile){
+      message("formMsg","Đang tải ảnh lên...");
+      photoUrl=await uploadPlayerPhoto(selectedPhotoFile);
+    }
 
-  if(result.error){
-    message("formMsg","Lỗi lưu dữ liệu: "+result.error.message);
-    return;
+    const player={
+      full_name:$("fullName").value.trim(),
+      jersey_number:$("jersey").value===""?null:Number($("jersey").value),
+      position:$("position").value||null,
+      photo_url:photoUrl,
+      elo:Number($("rating").value)||1000,
+      is_active:$("status").value==="true"
+    };
+
+    const result=id
+      ? await db.from("players").update(player).eq("id",id)
+      : await db.from("players").insert(player);
+
+    if(result.error) throw result.error;
+
+    message("formMsg","Đã lưu cầu thủ và ảnh thành công.");
+    resetForm();
+    await loadPlayers();
+
+  } catch(error) {
+    message("formMsg","Lỗi lưu cầu thủ: "+error.message);
+  } finally {
+    $("saveBtn").disabled=false;
   }
-
-  message("formMsg","Đã lưu cầu thủ thành công.");
-  resetForm();
-  await loadPlayers();
 });
 
 async function deletePlayer(p){
