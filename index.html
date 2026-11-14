@@ -759,6 +759,155 @@ loadPlayers = async function() {
 };
 
 $("matchDate").value = localDateValue();
+ 
+/* LƯU TRẬN ĐẤU VÀ HIỂN THỊ LỊCH SỬ */
+
+async function loadMatchHistory() {
+  const box = $("matchHistory");
+  box.textContent = "Đang tải lịch sử trận đấu...";
+
+  const { data, error } = await db
+    .from("matches")
+    .select("*")
+    .order("match_date", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    box.textContent = "Không tải được lịch sử: " + error.message;
+    return;
+  }
+
+  box.innerHTML = "";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "LỊCH SỬ TRẬN ĐẤU";
+  box.appendChild(heading);
+
+  if (!data || !data.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "Chưa có trận đấu nào.";
+    box.appendChild(empty);
+    return;
+  }
+
+  data.forEach(match => {
+    const card = document.createElement("div");
+    card.style.cssText =
+      "padding:14px;margin:10px 0;background:#0c120e;border:1px solid #354238;border-radius:12px";
+
+    const title = document.createElement("strong");
+    title.textContent = match.title || "Trận đấu OLD BOYS";
+
+    const date = document.createElement("div");
+    date.style.cssText = "margin-top:7px;color:#aaa;font-size:13px";
+    date.textContent =
+      (match.match_date || "") +
+      (match.start_time ? " · " + match.start_time.slice(0, 5) : "") +
+      " · " + match.format;
+
+    const score = document.createElement("div");
+    score.style.cssText =
+      "display:flex;justify-content:space-between;gap:8px;margin-top:12px;font-size:16px;font-weight:bold";
+
+    const teamA = document.createElement("span");
+    teamA.textContent = match.team_a_name || "ĐỘI A";
+
+    const result = document.createElement("span");
+    result.textContent =
+      (match.score_a ?? 0) + " - " + (match.score_b ?? 0);
+
+    const teamB = document.createElement("span");
+    teamB.textContent = match.team_b_name || "ĐỘI B";
+
+    score.append(teamA, result, teamB);
+
+    const status = document.createElement("div");
+    status.style.cssText = "margin-top:8px;color:#aaa;font-size:12px";
+    status.textContent =
+      match.status === "completed" ? "Đã hoàn thành" : "Chưa hoàn thành";
+
+    card.append(title, date, score, status);
+    box.appendChild(card);
+  });
+}
+
+$("createMatch").addEventListener("click", async () => {
+  const button = $("createMatch");
+  const title = $("matchTitle").value.trim();
+  const date = $("matchDate").value;
+  const time = $("matchTime").value;
+  const teamAName = $("teamAName").value.trim() || "ĐỘI A";
+  const teamBName = $("teamBName").value.trim() || "ĐỘI B";
+
+  if (!title || !date) {
+    message("matchMsg", "Vui lòng nhập tên trận và ngày đấu.");
+    return;
+  }
+
+  if (!matchTeamA.size || !matchTeamB.size) {
+    message("matchMsg", "Vui lòng chọn cầu thủ cho cả hai đội.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "ĐANG LƯU...";
+
+  try {
+    const { data: match, error } = await db
+      .from("matches")
+      .insert({
+        title: title,
+        match_date: date,
+        start_time: time || null,
+        format: $("matchFormat").value,
+        team_a_name: teamAName,
+        team_b_name: teamBName,
+        score_a: 0,
+        score_b: 0,
+        status: "scheduled"
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    const players = [
+      ...[...matchTeamA].map(id => ({
+        match_id: match.id,
+        player_id: id,
+        team: "A"
+      })),
+      ...[...matchTeamB].map(id => ({
+        match_id: match.id,
+        player_id: id,
+        team: "B"
+      }))
+    ];
+
+    const { error: playerError } = await db
+      .from("match_players")
+      .insert(players);
+
+    if (playerError) {
+      await db.from("matches").delete().eq("id", match.id);
+      throw playerError;
+    }
+
+    matchTeamA.clear();
+    matchTeamB.clear();
+    renderMatchPlayerOptions();
+
+    message("matchMsg", "Đã tạo và lưu trận đấu thành công!");
+    await loadMatchHistory();
+
+  } catch (error) {
+    message("matchMsg", "Không lưu được trận đấu: " + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = "TẠO TRẬN ĐẤU";
+  }
+});
+
 start();
 </script>
 </body>
