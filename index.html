@@ -602,9 +602,22 @@ async function openPlayerDetail(p){
     return;
   }
 
-  const played=appearances||[];
-  const goals=(goalRows||[]).reduce((sum,x)=>sum+(Number(x.goals)||0),0);
-  const matchIds=[...new Set(played.map(x=>x.match_id))];
+    const played = appearances || [];
+  const matchIds = [...new Set(played.map(x => x.match_id))];
+
+  const currentYear = new Date().getFullYear();
+
+  const yearMatchIds = new Set(
+    matches
+      .filter(match =>
+        Number(String(match.match_date || "").slice(0, 4)) === currentYear
+      )
+      .map(match => match.id)
+  );
+
+  const annualGoals = (goalRows || [])
+    .filter(row => yearMatchIds.has(row.match_id))
+    .reduce((sum, row) => sum + (Number(row.goals) || 0), 0);
   let matches=[];
 
   if(matchIds.length){
@@ -653,7 +666,7 @@ async function openPlayerDetail(p){
   const stats=document.createElement("div");
   stats.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0";
 
-  [[played.length,"TRẬN ĐÃ ĐÁ"],[goals,"BÀN THẮNG"]].forEach(([value,label])=>{
+  [[played.length,"TRẬN ĐÃ ĐÁ"],[annualGoals,"BÀN THẮNG NĂM "+currentYear]].forEach(([value,label])=>{
     const tile=document.createElement("div");
     tile.style.cssText="padding:15px;background:#17221a;border:1px solid #354238;border-radius:10px;text-align:center";
 
