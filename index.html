@@ -2125,7 +2125,14 @@ async function openMatchEditor(match, card) {
 
      if(insertEventsError)throw insertEventsError;
     }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
+    startedAt = null;
+    activeMatchSession = null;
+    $("activeMatchBar").classList.add("hidden");
    await loadMatchHistory();
    modal.classList.add("hidden");
 
