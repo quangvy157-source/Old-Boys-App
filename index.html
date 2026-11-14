@@ -1543,7 +1543,8 @@ async function openMatchEditor(match, card) {
 
  const goals=[];
 
-   const refresh = () => {
+   
+  const refresh = () => {
     scoreA.textContent = goals
       .filter(x => x.team === "A")
       .reduce((n, x) => n + x.value, 0);
@@ -1572,26 +1573,19 @@ async function openMatchEditor(match, card) {
       if (!player) return;
 
       const item = document.createElement("div");
-      item.style.cssText = "display:flex;justify-content:space-between;gap:12px;padding:10px;background:#101812;border-radius:9px";
+      item.style.cssText = "padding:8px 0;color:#fff;border-bottom:1px solid #344638";
 
-      const name = document.createElement("span");
-      const teamName = entry.team === "A"
-        ? (match.team_a_name || "ĐỘI A")
-        : (match.team_b_name || "ĐỘI B");
+      const minutes = (entry.events || [])
+        .map(minute => "(" + minute + "')")
+        .join(", ");
 
-      name.textContent = teamName + " · " +
-        (player.jersey_number != null
-          ? "#" + player.jersey_number + " "
-          : "") + player.full_name;
+      item.textContent = player.full_name +
+        (minutes ? " " + minutes : "");
 
-      const count = document.createElement("strong");
-      count.textContent = entry.value + " bàn";
-      count.style.color = "#b6ff35";
-
-      item.append(name, count);
       scorerList.appendChild(item);
     });
   };
+
 
  (assigned||[]).forEach(item=>{
   const p=playerData.find(x=>x.id===item.player_id);
@@ -1619,23 +1613,40 @@ async function openMatchEditor(match, card) {
   plus.className="goal-btn";
   plus.textContent="+";
 
+  
   const entry={
-   player_id:item.player_id,
-   team:item.team,
-   value:oldGoals.get(item.player_id)||0
+    player_id:item.player_id,
+    team:item.team,
+    value:oldGoals.get(item.player_id)||0,
+    events:[...(oldEventMap.get(item.player_id)||[])]
   };
 
   minus.onclick=()=>{
-   entry.value=Math.max(0,entry.value-1);
-   count.textContent=entry.value;
-   refresh();
+    entry.value=Math.max(0,entry.value-1);
+
+    if(entry.events.length){
+      entry.events.pop();
+    }
+
+    count.textContent=entry.value;
+    refresh();
   };
 
   plus.onclick=()=>{
-   entry.value++;
-   count.textContent=entry.value;
-   refresh();
+    const seconds=elapsedSeconds+
+      (startedAt!==null
+        ? Math.floor((Date.now()-startedAt)/1000)
+        : 0);
+
+    const minute=Math.max(1,Math.floor(seconds/60));
+
+    entry.value++;
+    entry.events.push(minute);
+
+    count.textContent=entry.value;
+    refresh();
   };
+
 
   goals.push(entry);
   row.append(name,minus,count,plus);
