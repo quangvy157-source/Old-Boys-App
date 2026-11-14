@@ -129,7 +129,43 @@ button:disabled{opacity:.5}
   font-size:30px;
   color:#b7ff36
 }
-@media(max-width:480px){
+/* GIAO DIỆN THU GỌN */
+.accordion{
+  padding:0;
+  overflow:hidden;
+}
+.accordion summary{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:17px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:bold;
+}
+.accordion summary::-webkit-details-marker{
+  display:none;
+}
+.accordion summary::after{
+  content:"+";
+  color:#b7ff36;
+  font-size:23px;
+  line-height:1;
+}
+.accordion[open] summary::after{
+  content:"−";
+}
+.accordion-body{
+  padding:0 17px 17px;
+  border-top:1px solid #29342c;
+}
+.accordion summary h2{
+  margin:0;
+  font-size:15px;
+}
+ @media(max-width:480px){
  body{padding:12px}
  .panel{padding:15px}
  .actions{flex-direction:column}
