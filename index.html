@@ -1177,12 +1177,39 @@ async function loadMatchHistory() {
   heading.textContent = "LỊCH SỬ TRẬN ĐẤU";
   box.appendChild(heading);
 
+    const searchInput = $("matchSearch");
+  const dateInput = $("matchDateFilter");
+
+  searchInput.oninput = () => loadMatchHistory();
+  dateInput.onchange = () => loadMatchHistory();
+
   if (!data || !data.length) {
     box.append("Chưa có trận đấu nào.");
     return;
   }
 
-  data.forEach(match => {
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  const selectedDate = dateInput.value;
+
+  const filteredData = data.filter(match => {
+    const teamA = (match.team_a_name || "ĐỘI A").toLowerCase();
+    const teamB = (match.team_b_name || "ĐỘI B").toLowerCase();
+
+    const matchesName =
+      teamA.includes(searchTerm) || teamB.includes(searchTerm);
+
+    const matchesDate =
+      !selectedDate || match.match_date === selectedDate;
+
+    return matchesName && matchesDate;
+  });
+
+  if (!filteredData.length) {
+    box.append("Không tìm thấy trận đấu phù hợp.");
+    return;
+  }
+
+  filteredData.forEach(match => {
     const card = document.createElement("div");
     card.className = "match-card";
 
