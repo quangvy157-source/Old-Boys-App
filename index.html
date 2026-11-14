@@ -1375,7 +1375,98 @@ async function openMatchEditor(match, card) {
  boxB.append(labelB,scoreB);
  board.append(boxA,boxB);
  content.appendChild(board);
+  const timerPanel = document.createElement("div");
+  timerPanel.style.cssText = "text-align:center;padding:18px;margin:16px 0;background:#17231b;border:1px solid #344638;border-radius:14px";
 
+  const timerLabel = document.createElement("div");
+  timerLabel.textContent = "THỜI GIAN THI ĐẤU";
+  timerLabel.style.cssText = "font-size:12px;color:#a4afa6;letter-spacing:2px";
+
+  const timerDisplay = document.createElement("div");
+  timerDisplay.textContent = "00:00";
+  timerDisplay.style.cssText = "font-size:48px;font-weight:800;letter-spacing:3px;margin:8px 0;color:#fff";
+
+  const timerControls = document.createElement("div");
+  timerControls.style.cssText = "display:flex;gap:8px;justify-content:center;flex-wrap:wrap";
+
+  const startTimer = document.createElement("button");
+  startTimer.type = "button";
+  startTimer.textContent = "BẮT ĐẦU";
+
+  const pauseTimer = document.createElement("button");
+  pauseTimer.type = "button";
+  pauseTimer.className = "secondary";
+  pauseTimer.textContent = "TẠM DỪNG";
+  pauseTimer.disabled = true;
+
+  const resetTimer = document.createElement("button");
+  resetTimer.type = "button";
+  resetTimer.className = "secondary";
+  resetTimer.textContent = "ĐẶT LẠI";
+
+  let elapsedSeconds = 0;
+  let startedAt = null;
+  let timerInterval = null;
+
+  const updateTimer = () => {
+    const seconds = elapsedSeconds +
+      (startedAt !== null
+        ? Math.floor((Date.now() - startedAt) / 1000)
+        : 0);
+
+    const minutesText = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const secondsText = String(seconds % 60).padStart(2, "0");
+
+    timerDisplay.textContent = minutesText + ":" + secondsText;
+  };
+
+  startTimer.onclick = () => {
+    if (startedAt !== null) return;
+
+    startedAt = Date.now();
+    startTimer.disabled = true;
+    pauseTimer.disabled = false;
+
+    timerInterval = setInterval(() => {
+      if (modal.classList.contains("hidden")) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        startedAt = null;
+        return;
+      }
+
+      updateTimer();
+    }, 250);
+  };
+
+  pauseTimer.onclick = () => {
+    if (startedAt === null) return;
+
+    elapsedSeconds += Math.floor((Date.now() - startedAt) / 1000);
+    startedAt = null;
+
+    clearInterval(timerInterval);
+    timerInterval = null;
+
+    updateTimer();
+    startTimer.disabled = false;
+    pauseTimer.disabled = true;
+  };
+
+  resetTimer.onclick = () => {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    elapsedSeconds = 0;
+    startedAt = null;
+
+    updateTimer();
+    startTimer.disabled = false;
+    pauseTimer.disabled = true;
+  };
+
+  timerControls.append(startTimer, pauseTimer, resetTimer);
+  timerPanel.append(timerLabel, timerDisplay, timerControls);
+  content.appendChild(timerPanel);
  const heading=document.createElement("h3");
  heading.textContent="CHẠM + / − ĐỂ CẬP NHẬT BÀN THẮNG";
  content.appendChild(heading);
