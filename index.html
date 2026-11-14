@@ -281,11 +281,15 @@ button:disabled{opacity:.5}
       <div class="accordion-body">
         <button type="button" id="openCreateMatch" style="width:100%">+ TẠO TRẬN ĐẤU</button>
         <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px">
-  <input
-    id="matchSearch"
-    type="text"
-    placeholder="Tìm theo tên đội..."
-  >
+  <div style="position:relative">
+    <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:18px;color:#888;pointer-events:none">⌕</span>
+    <input
+      id="matchSearch"
+      type="text"
+      placeholder="Tìm theo tên đội..."
+      style="padding-left:40px"
+    >
+  </div>
   <input
     id="matchDateFilter"
     type="date"
