@@ -484,6 +484,82 @@ button:disabled{opacity:.5}
 </div>
 
 <script>
+ 
+const demoSlides = [
+  {
+    icon: "👥",
+    title: "QUẢN LÝ CẦU THỦ",
+    text: "Lưu hồ sơ, hình ảnh, số áo, vị trí và thông tin của từng thành viên OLD BOYS."
+  },
+  {
+    icon: "⚽",
+    title: "TẠO TRẬN ĐẤU",
+    text: "Chủ động chọn cầu thủ, chia đội và đặt tên riêng cho hai đội trong mỗi trận."
+  },
+  {
+    icon: "⏱️",
+    title: "TỶ SỐ TRỰC TIẾP",
+    text: "Cập nhật bàn thắng, theo dõi thời gian thi đấu và lưu chính xác phút ghi bàn."
+  },
+  {
+    icon: "📋",
+    title: "LỊCH SỬ TRẬN ĐẤU",
+    text: "Xem lại kết quả, danh sách người ghi bàn và tìm kiếm trận đấu theo tên đội hoặc ngày."
+  },
+  {
+    icon: "🏆",
+    title: "THỐNG KÊ & VUA PHÁ LƯỚI",
+    text: "Theo dõi tổng số trận, bàn thắng và bảng xếp hạng ghi bàn của các cầu thủ."
+  }
+];
+
+let currentDemo = 0;
+let demoTimer = null;
+
+function showDemo(index) {
+  currentDemo = index;
+
+  const content = $("demoContent");
+  const counter = $("demoCounter");
+  const dots = $("demoDots").querySelectorAll(".demo-dot");
+  const slide = demoSlides[index];
+
+  content.style.opacity = "0";
+
+  setTimeout(() => {
+    content.innerHTML =
+      '<div class="demo-icon">' + slide.icon + '</div>' +
+      '<h3>' + slide.title + '</h3>' +
+      '<p>' + slide.text + '</p>';
+
+    content.style.opacity = "1";
+  }, 180);
+
+  counter.textContent =
+    String(index + 1).padStart(2, "0") + " / 05";
+
+  dots.forEach((dot, i) => {
+    dot.classList.toggle("active", i === index);
+  });
+}
+
+function startDemo() {
+  if (demoTimer) clearInterval(demoTimer);
+
+  demoTimer = setInterval(() => {
+    showDemo((currentDemo + 1) % demoSlides.length);
+  }, 5000);
+}
+
+$("demoDots").querySelectorAll(".demo-dot").forEach((dot, index) => {
+  dot.addEventListener("click", () => {
+    showDemo(index);
+    startDemo();
+  });
+});
+
+showDemo(0);
+
 const SUPABASE_URL = "https://pspiboiojswnonupcyrx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nWVOoHgBNGB9Xln0M4G4jQ_YLynX-Rl";
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
