@@ -1204,10 +1204,17 @@ async function loadMatchHistory() {
   box.appendChild(heading);
 
     const searchInput = $("matchSearch");
-  const dateInput = $("matchDateFilter");
+const dateInput = $("matchDateFilter");
+const clearButton = $("clearMatchFilters");
 
-  searchInput.oninput = () => loadMatchHistory();
-  dateInput.onchange = () => loadMatchHistory();
+searchInput.oninput = () => loadMatchHistory();
+dateInput.onchange = () => loadMatchHistory();
+
+clearButton.onclick = () => {
+  searchInput.value = "";
+  dateInput.value = "";
+  loadMatchHistory();
+};
 
   if (!data || !data.length) {
     box.append("Chưa có trận đấu nào.");
