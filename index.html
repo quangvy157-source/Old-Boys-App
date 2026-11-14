@@ -717,11 +717,27 @@ async function openPlayerDetail(p){
     date.style.cssText="margin-top:5px;color:#aab5ac;font-size:12px";
     date.textContent=(match.match_date||"")+(match.start_time?" · "+String(match.start_time).slice(0,5):"")+" · "+(match.format||match.match_format||"");
 
-    const score=document.createElement("div");
+        const score=document.createElement("div");
     score.style.cssText="margin-top:9px;font-weight:700";
     score.textContent=(match.team_a_name||"ĐỘI A")+"  "+(match.score_a??0)+" - "+(match.score_b??0)+"  "+(match.team_b_name||"ĐỘI B");
 
-    card.append(title,date,score);
+    const playerGoals=(goalRows||[]).find(
+      row=>row.match_id===match.id
+    );
+
+    const goalInfo=document.createElement("div");
+    goalInfo.style.cssText="margin-top:7px;color:#d9f99d;font-size:13px";
+
+    const minutes=(playerGoalEvents||[])
+      .filter(event=>event.match_id===match.id)
+      .map(event=>"("+event.minute+"')")
+      .join(", ");
+
+    goalInfo.textContent=playerGoals && Number(playerGoals.goals)>0
+      ? "⚽ Ghi "+playerGoals.goals+" bàn"+(minutes?" · "+minutes:"")
+      : "Không ghi bàn";
+
+    card.append(title,date,score,goalInfo);
     content.appendChild(card);
   });
 }
