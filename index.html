@@ -574,7 +574,35 @@ button:disabled{opacity:.5}
 <script>
  const $ = id => document.getElementById(id);
  let activeMatchSession = null;
+const LIVE_MATCH_DRAFT_KEY = "oldBoysLiveMatchDraft";
 
+function getLiveMatchDraft() {
+  try {
+    const saved = localStorage.getItem(LIVE_MATCH_DRAFT_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function saveLiveMatchDraft(draft) {
+  try {
+    localStorage.setItem(
+      LIVE_MATCH_DRAFT_KEY,
+      JSON.stringify(draft)
+    );
+  } catch (error) {
+    console.error("Không thể lưu trận đấu tạm:", error);
+  }
+}
+
+function clearLiveMatchDraft() {
+  try {
+    localStorage.removeItem(LIVE_MATCH_DRAFT_KEY);
+  } catch (error) {
+    console.error("Không thể xóa bản lưu trận đấu:", error);
+  }
+}
 $("resumeMatchBtn").onclick = () => {
   if (activeMatchSession) {
     $("matchDetailModal").classList.remove("hidden");
