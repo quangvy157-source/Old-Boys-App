@@ -594,11 +594,97 @@ function showDemo(index) {
   currentDemo = index;
 
   const content = $("demoContent");
+  const preview = $("demoPreview");
   const counter = $("demoCounter");
   const dots = $("demoDots").querySelectorAll(".demo-dot");
   const slide = demoSlides[index];
 
+  const previews = [
+    `
+      <div class="preview-bar">
+        <span>ĐỘI HÌNH OLD BOYS</span>
+        <span class="preview-tag">CẦU THỦ</span>
+      </div>
+      <div class="preview-row">
+        <span>10 · Nguyễn Văn An</span>
+        <span class="preview-muted">Tiền đạo</span>
+      </div>
+      <div class="preview-row">
+        <span>07 · Trần Minh Khang</span>
+        <span class="preview-muted">Tiền vệ</span>
+      </div>
+      <div class="preview-row">
+        <span>22 · Lê Hoàng Nam</span>
+        <span class="preview-muted">Hậu vệ</span>
+      </div>
+    `,
+    `
+      <div class="preview-bar">
+        <span>TẠO TRẬN ĐẤU</span>
+        <span class="preview-tag">5 VS 5</span>
+      </div>
+      <div class="preview-row">
+        <span>ĐỘI A · OLD BOYS XANH</span>
+        <span class="preview-number">05</span>
+      </div>
+      <div class="preview-row">
+        <span>ĐỘI B · OLD BOYS ĐỎ</span>
+        <span class="preview-number">05</span>
+      </div>
+      <div class="preview-muted">Chọn cầu thủ và chia đội theo ý muốn.</div>
+    `,
+    `
+      <div class="preview-bar">
+        <span>LIVE MATCH</span>
+        <span class="preview-tag">ĐANG ĐẤU</span>
+      </div>
+      <div class="preview-score">
+        <span>2</span> : <span>1</span>
+      </div>
+      <div class="preview-row">
+        <span>⏱ 18:35</span>
+        <span class="preview-muted">Phút thi đấu</span>
+      </div>
+      <div class="preview-muted">⚽ Nguyễn Văn An (5'), (12')</div>
+    `,
+    `
+      <div class="preview-bar">
+        <span>LỊCH SỬ TRẬN ĐẤU</span>
+        <span class="preview-tag">ĐÃ LƯU</span>
+      </div>
+      <div class="preview-row">
+        <span>OLD BOYS XANH</span>
+        <strong>3 - 2</strong>
+        <span>OLD BOYS ĐỎ</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-muted">14/11/2026</span>
+        <span class="preview-muted">⚽ 5 bàn thắng</span>
+      </div>
+      <div class="preview-muted">Tìm trận theo tên đội hoặc ngày đấu.</div>
+    `,
+    `
+      <div class="preview-bar">
+        <span>THỐNG KÊ MÙA GIẢI</span>
+        <span class="preview-tag">TOP SCORER</span>
+      </div>
+      <div class="preview-row">
+        <span>⚽ Nguyễn Văn An</span>
+        <span class="preview-number">12 bàn</span>
+      </div>
+      <div class="preview-row">
+        <span>⚽ Trần Minh Khang</span>
+        <span class="preview-number">8 bàn</span>
+      </div>
+      <div class="preview-row">
+        <span>⚽ Lê Hoàng Nam</span>
+        <span class="preview-number">6 bàn</span>
+      </div>
+    `
+  ];
+
   content.style.opacity = "0";
+  preview.style.opacity = "0";
 
   setTimeout(() => {
     content.innerHTML =
@@ -606,7 +692,10 @@ function showDemo(index) {
       '<h3>' + slide.title + '</h3>' +
       '<p>' + slide.text + '</p>';
 
+    preview.innerHTML = previews[index];
+
     content.style.opacity = "1";
+    preview.style.opacity = "1";
   }, 180);
 
   counter.textContent =
