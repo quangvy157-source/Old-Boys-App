@@ -209,60 +209,63 @@ button:disabled{opacity:.5}
     </div>
   </div>
 
-  <section class="panel">
-    <h2 id="formTitle">Thêm cầu thủ</h2>
-    <form id="playerForm">
-      <input type="hidden" id="playerId">
-      <label>Họ và tên</label>
-      <input id="fullName" required placeholder="Tên cầu thủ">
-      <label>Số áo</label>
-      <input id="jersey" type="number" min="0" placeholder="Ví dụ: 10">
-      <label>Vị trí</label>
-      <select id="position">
-        <option value="">Chọn vị trí</option>
-        <option>Thủ môn</option>
-        <option>Hậu vệ</option>
-        <option>Tiền vệ</option>
-        <option>Tiền đạo</option>
-        <option>Đa năng</option>
-      </select>
-      <label>Ảnh cầu thủ</label>
-<input id="photoFile" type="file" accept="image/*">
-<img id="photoPreview" class="hidden" alt="Ảnh xem trước"
-     style="width:110px;height:110px;object-fit:cover;border-radius:12px;margin:5px 0 12px">
-<div id="photoMsg" class="message"></div>
-      <label>Điểm ELO</label>
-      <input id="rating" type="number" min="0" value="1000">
-      <label>Trạng thái</label>
-      <select id="status">
-        <option value="true">Đang hoạt động</option>
-        <option value="false">Không hoạt động</option>
-      </select>
-      <button id="saveBtn" type="submit" style="width:100%">LƯU CẦU THỦ</button>
-      <button id="cancelEdit" type="button" class="secondary hidden" style="width:100%;margin-top:8px">HỦY CHỈNH SỬA</button>
-    </form>
-    <div id="formMsg" class="message"></div>
+  
+  <details class="panel accordion">
+    <summary><h2 id="formTitle">THÊM CẦU THỦ</h2></summary>
+    <div class="accordion-body">
+      <form id="playerForm">
+        <input type="hidden" id="playerId">
+        <label>Họ và tên</label>
+        <input id="fullName" required placeholder="Tên cầu thủ">
+        <label>Số áo</label>
+        <input id="jersey" type="number" min="0" placeholder="Ví dụ: 10">
+        <label>Vị trí</label>
+        <select id="position">
+          <option value="">Chọn vị trí</option>
+          <option>Thủ môn</option>
+          <option>Hậu vệ</option>
+          <option>Tiền vệ</option>
+          <option>Tiền đạo</option>
+          <option>Đa năng</option>
+        </select>
+        <label>Ảnh cầu thủ</label>
+        <input id="photoFile" type="file" accept="image/*">
+        <img id="photoPreview" class="hidden" alt="Ảnh xem trước"
+             style="width:110px;height:110px;object-fit:cover;border-radius:12px;margin:5px 0 12px">
+        <div id="photoMsg" class="message"></div>
+        <label>Điểm ELO</label>
+        <input id="rating" type="number" min="0" value="1000">
+        <label>Trạng thái</label>
+        <select id="status">
+          <option value="true">Đang hoạt động</option>
+          <option value="false">Không hoạt động</option>
+        </select>
+        <button id="saveBtn" type="submit" style="width:100%">LƯU CẦU THỦ</button>
+        <button id="cancelEdit" type="button" class="secondary hidden" style="width:100%;margin-top:8px">HỦY CHỈNH SỬA</button>
+      </form>
+      <div id="formMsg" class="message"></div>
+    </div>
+  </details>
+
+  <details class="panel accordion">
+    <summary><h2>DANH SÁCH CẦU THỦ</h2></summary>
+    <div class="accordion-body">
+      <button id="refresh" class="secondary" type="button">LÀM MỚI</button>
+      <input id="search" placeholder="Tìm tên cầu thủ...">
+      <div id="players">Đang tải danh sách...</div>
+    </div>
+  </details>
+
+  <section class="panel accordion" id="matchesPanel">
+    <details class="accordion">
+      <summary><h2>QUẢN LÝ TRẬN ĐẤU</h2></summary>
+      <div class="accordion-body">
+        <button type="button" id="openCreateMatch" style="width:100%">+ TẠO TRẬN ĐẤU</button>
+        <div id="matchHistory" style="margin-top:18px"></div>
+      </div>
+    </details>
   </section>
 
-  <section class="panel">
-    <div class="top">
-      <h2>Danh sách cầu thủ</h2>
-      <button id="refresh" class="secondary">Làm mới</button>
-    </div>
-    <input id="search" placeholder="Tìm tên cầu thủ...">
-    <div id="players">Đang tải danh sách...</div>
-  </section>
-
-  <section class="panel" id="matchesPanel">
-  <div class="top">
-    <div>
-      <h2>QUẢN LÝ TRẬN ĐẤU</h2>
-      <div class="sub">MATCH CENTER · OLD BOYS</div>
-    </div>
-    <button type="button" id="openCreateMatch">+ TẠO TRẬN ĐẤU</button>
-  </div>
-  <div id="matchHistory" style="margin-top:18px"></div>
-</section>
 
 <div id="createMatchModal" class="modal-overlay hidden">
   <div class="modal-card">
