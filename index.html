@@ -280,7 +280,18 @@ button:disabled{opacity:.5}
       <summary><h2>QUẢN LÝ TRẬN ĐẤU</h2></summary>
       <div class="accordion-body">
         <button type="button" id="openCreateMatch" style="width:100%">+ TẠO TRẬN ĐẤU</button>
-        <div id="matchHistory" style="margin-top:18px"></div>
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px">
+  <input
+    id="matchSearch"
+    type="text"
+    placeholder="Tìm theo tên đội..."
+  >
+  <input
+    id="matchDateFilter"
+    type="date"
+  >
+</div>
+<div id="matchHistory" style="margin-top:18px"></div>
       </div>
     </details>
   </section>
