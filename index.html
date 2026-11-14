@@ -1754,6 +1754,15 @@ clearButton.onclick = () => {
 }
 
 async function openMatchEditor(match, card) {
+   if (activeMatchSession) {
+    if (activeMatchSession.matchId === String(match.id)) {
+      $("matchDetailModal").classList.remove("hidden");
+      return;
+    }
+
+    alert("Bạn đang có trận đấu chưa kết thúc. Hãy kết thúc trận hiện tại trước khi mở trận khác.");
+    return;
+  }
  const modal=$("matchDetailModal"), content=$("matchDetailContent");
  content.innerHTML="<p>Đang tải thông tin trận đấu...</p>";
  modal.classList.remove("hidden");
