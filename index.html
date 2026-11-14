@@ -634,7 +634,7 @@ function renderAttendance(){
     $("attendanceList").append(row);
   });
 }
-
+if ($("createSession")) {
 $("createSession").onclick=async()=>{
   const title=$("sessionTitle").value.trim()||"Buổi đá OLD BOYS";
   const date=$("sessionDate").value;
@@ -693,7 +693,7 @@ $("saveAttendance").onclick=async()=>{
 
   $("saveAttendance").disabled=true;
   message("attendanceMsg","Đang lưu điểm danh...");
-
+}
   const {error}=await db.from("attendance")
     .upsert(rows,{onConflict:"session_id,player_id"});
 
