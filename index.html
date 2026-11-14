@@ -603,6 +603,25 @@ function clearLiveMatchDraft() {
     console.error("Không thể xóa bản lưu trận đấu:", error);
   }
 }
+ function persistCurrentLiveMatchDraft(
+  match,
+  elapsedSeconds,
+  startedAt,
+  goals
+) {
+  saveLiveMatchDraft({
+    matchId: String(match.id),
+    elapsedSeconds: elapsedSeconds,
+    startedAt: startedAt,
+    savedAt: Date.now(),
+    goals: goals.map(entry => ({
+      player_id: entry.player_id,
+      team: entry.team,
+      value: entry.value,
+      events: [...(entry.events || [])]
+    }))
+  });
+}
 $("resumeMatchBtn").onclick = () => {
   if (activeMatchSession) {
     $("matchDetailModal").classList.remove("hidden");
