@@ -639,11 +639,20 @@ async function showApp(user){
   $("login").classList.add("hidden");
   $("app").classList.remove("hidden");
   $("account").textContent=user.email || "";
+
+  showDemo(0);
+  startDemo();
+
   await loadPlayers();
- await loadMatchHistory();
+  await loadMatchHistory();
 }
 
 function showLogin(){
+  if(demoTimer){
+    clearInterval(demoTimer);
+    demoTimer = null;
+  }
+
   $("app").classList.add("hidden");
   $("login").classList.remove("hidden");
 }
