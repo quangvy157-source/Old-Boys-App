@@ -851,6 +851,7 @@ $("matchDate").value = localDateValue();
 /* LƯU TRẬN ĐẤU VÀ HIỂN THỊ LỊCH SỬ */
 
 
+
 async function loadMatchHistory() {
   const box = $("matchHistory");
   box.textContent = "Đang tải lịch sử trận đấu...";
@@ -866,7 +867,76 @@ async function loadMatchHistory() {
     return;
   }
 
+  const { data: scorerData, error: scorerError } = await db
+    .from("match_scorers")
+    .select("match_id,player_id,goals,team");
+
+  if (scorerError) {
+    box.textContent = "Không tải được dữ liệu ghi bàn: " + scorerError.message;
+    return;
+  }
+
+  const scorers = scorerData || [];
+
   box.innerHTML = "";
+
+  // BẢNG XẾP HẠNG VUA PHÁ LƯỚI
+  const totals = new Map();
+
+  scorers.forEach(item => {
+    const goals = Number(item.goals) || 0;
+    if (goals <= 0) return;
+
+    totals.set(
+      item.player_id,
+      (totals.get(item.player_id) || 0) + goals
+    );
+  });
+
+  const ranking = [...totals.entries()]
+    .map(([playerId, goals]) => ({
+      player: playerData.find(p => p.id === playerId),
+      goals
+    }))
+    .filter(x => x.player)
+    .sort((a, b) => b.goals - a.goals);
+
+  const rankingBox = document.createElement("div");
+  rankingBox.className = "match-card";
+
+  const rankingTitle = document.createElement("h3");
+  rankingTitle.textContent = "🏆 VUA PHÁ LƯỚI OLD BOYS";
+  rankingBox.appendChild(rankingTitle);
+
+  if (!ranking.length) {
+    const empty = document.createElement("div");
+    empty.style.color = "#aaa";
+    empty.textContent = "Chưa có cầu thủ ghi bàn.";
+    rankingBox.appendChild(empty);
+  } else {
+    ranking.slice(0, 10).forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "goal-row";
+
+      const name = document.createElement("span");
+      name.className = "goal-name";
+      name.textContent =
+        (index + 1) + ". " +
+        (item.player.jersey_number != null
+          ? "#" + item.player.jersey_number + " "
+          : "") +
+        item.player.full_name;
+
+      const count = document.createElement("strong");
+      count.className = "goal-count";
+      count.textContent = item.goals + " bàn";
+
+      row.append(name, count);
+      rankingBox.appendChild(row);
+    });
+  }
+
+  box.appendChild(rankingBox);
 
   const heading = document.createElement("h3");
   heading.textContent = "LỊCH SỬ TRẬN ĐẤU";
@@ -880,6 +950,7 @@ async function loadMatchHistory() {
   data.forEach(match => {
     const card = document.createElement("div");
     card.className = "match-card";
+
     const title = document.createElement("strong");
     title.textContent = match.title || "Trận đấu OLD BOYS";
 
@@ -896,7 +967,7 @@ async function loadMatchHistory() {
     const teamA = document.createElement("span");
     teamA.textContent = match.team_a_name || "ĐỘI A";
 
-    const result = document.createElement("span");
+    const result = document.createElement("strong");
     result.textContent =
       (match.score_a ?? 0) + " - " + (match.score_b ?? 0);
 
@@ -904,6 +975,39 @@ async function loadMatchHistory() {
     teamB.textContent = match.team_b_name || "ĐỘI B";
 
     score.append(teamA, result, teamB);
+
+    // DANH SÁCH CẦU THỦ GHI BÀN TRẬN NÀY
+    const scorerBox = document.createElement("div");
+    scorerBox.style.cssText =
+      "margin:8px 0;padding:10px;background:#0c120e;border-radius:9px";
+
+    const matchScorers = scorers.filter(x =>
+      x.match_id === match.id && Number(x.goals) > 0
+    );
+
+    if (!matchScorers.length) {
+      scorerBox.textContent = "Chưa có dữ liệu người ghi bàn.";
+      scorerBox.style.color = "#89938b";
+      scorerBox.style.fontSize = "12px";
+    } else {
+      matchScorers.forEach(item => {
+        const player = playerData.find(p => p.id === item.player_id);
+        if (!player) return;
+
+        const line = document.createElement("div");
+        line.style.cssText =
+          "font-size:13px;padding:4px 0;color:#dce5dc";
+
+        line.textContent =
+          (item.team === "A" ? "A · " : "B · ") +
+          (player.jersey_number != null
+            ? "#" + player.jersey_number + " "
+            : "") +
+          player.full_name + "  × " + item.goals;
+
+        scorerBox.appendChild(line);
+      });
+    }
 
     const status = document.createElement("div");
     status.style.cssText = "margin-top:8px;color:#aaa;font-size:12px";
@@ -918,7 +1022,7 @@ async function loadMatchHistory() {
       openMatchEditor(match, card);
     });
 
-    card.append(title, date, score, status, editButton);
+    card.append(title, date, score, scorerBox, status, editButton);
     box.appendChild(card);
   });
 }
