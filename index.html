@@ -182,12 +182,12 @@ button:disabled{opacity:.5}
   <h2 style="margin-top:15px">ĐỘI A</h2>
   <input id="teamAName" value="ĐỘI A" placeholder="Tên đội A">
   <label>Chọn cầu thủ đội A</label>
-  <select id="teamAPlayers" multiple size="6"></select>
+  <div id="teamAPlayers" class="match-player-list"></div>
 
   <h2 style="margin-top:15px">ĐỘI B</h2>
   <input id="teamBName" value="ĐỘI B" placeholder="Tên đội B">
   <label>Chọn cầu thủ đội B</label>
-  <select id="teamBPlayers" multiple size="6"></select>
+  <div id="teamBPlayers" class="match-player-list"></div>
 
   <button id="createMatch" type="button" style="width:100%;margin-top:15px">
     TẠO TRẬN ĐẤU
@@ -657,7 +657,10 @@ async function start(){
 db.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT")showLogin();
 });
-/* DANH SÁCH CHỌN CẦU THỦ CHO TRẬN ĐẤU */
+/* CHỌN CẦU THỦ CHO TRẬN ĐẤU */
+
+let matchTeamA = new Set();
+let matchTeamB = new Set();
 
 function renderMatchPlayerOptions() {
   const a = $("teamAPlayers");
@@ -665,58 +668,86 @@ function renderMatchPlayerOptions() {
 
   if (!a || !b) return;
 
-  const selectedA = [...a.selectedOptions].map(o => o.value);
-  const selectedB = [...b.selectedOptions].map(o => o.value);
+  function renderList(container, team, otherTeam) {
+    container.innerHTML = "";
 
-  function fill(select, excluded, selected) {
-    select.innerHTML = "";
+    const available = playerData.filter(p =>
+      p.is_active && (!otherTeam.has(p.id) || team.has(p.id))
+    );
 
-    playerData
-      .filter(p => p.is_active && !excluded.includes(p.id))
-      .forEach(p => {
-        const option = new Option(
-          (p.jersey_number != null ? "#" + p.jersey_number + " " : "") + p.full_name,
-          p.id
-        );
+    if (!available.length) {
+      container.textContent = "Chưa có cầu thủ phù hợp.";
+      return;
+    }
 
-        option.selected = selected.includes(p.id);
-        select.add(option);
+    available.forEach(p => {
+      const label = document.createElement("label");
+      label.style.cssText =
+        "display:flex;align-items:center;gap:12px;padding:10px;margin:7px 0;background:#0c120e;border:1px solid #354238;border-radius:10px;cursor:pointer";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = team.has(p.id);
+      checkbox.style.cssText = "width:20px;height:20px;margin:0;flex-shrink:0";
+
+      checkbox.addEventListener("change", () => {
+        const limit = $("matchFormat").value === "5v5" ? 5 : 7;
+
+        if (checkbox.checked) {
+          if (team.size >= limit) {
+            checkbox.checked = false;
+            message("matchMsg", "Mỗi đội chỉ được chọn tối đa " + limit + " cầu thủ.");
+            return;
+          }
+
+          team.add(p.id);
+          otherTeam.delete(p.id);
+        } else {
+          team.delete(p.id);
+        }
+
+        message("matchMsg", "");
+        renderMatchPlayerOptions();
       });
-  }
 
-  fill(a, selectedB, selectedA);
-  fill(b, selectedA, selectedB);
-}
+      const img = document.createElement("img");
+      img.src = p.photo_url || "";
+      img.alt = "";
+      img.style.cssText =
+        "width:45px;height:45px;object-fit:cover;border-radius:8px;background:#303a32;flex-shrink:0";
 
-function handleTeamSelection() {
-  const limit = $("matchFormat").value === "5v5" ? 5 : 7;
-  const selected = [...this.selectedOptions];
+      img.onerror = () => {
+        img.style.display = "none";
+      };
 
-  if (selected.length > limit) {
-    selected.slice(limit).forEach(option => {
-      option.selected = false;
+      const info = document.createElement("span");
+      info.style.cssText = "flex:1;min-width:0;color:white;font-size:14px";
+
+      const name = document.createElement("strong");
+      name.textContent =
+        (p.jersey_number != null ? "#" + p.jersey_number + " " : "") +
+        p.full_name;
+
+      info.appendChild(name);
+      label.append(checkbox, img, info);
+      container.appendChild(label);
     });
-
-    message("matchMsg", "Mỗi đội chỉ được chọn tối đa " + limit + " cầu thủ.");
-  } else {
-    message("matchMsg", "");
   }
 
-  renderMatchPlayerOptions();
+  renderList(a, matchTeamA, matchTeamB);
+  renderList(b, matchTeamB, matchTeamA);
 }
-
-$("teamAPlayers").addEventListener("change", handleTeamSelection);
-$("teamBPlayers").addEventListener("change", handleTeamSelection);
 
 $("matchFormat").addEventListener("change", () => {
   const limit = $("matchFormat").value === "5v5" ? 5 : 7;
 
-  [$("teamAPlayers"), $("teamBPlayers")].forEach(select => {
-    [...select.selectedOptions].slice(limit).forEach(option => {
-      option.selected = false;
-    });
+  [matchTeamA, matchTeamB].forEach(team => {
+    while (team.size > limit) {
+      team.delete([...team].pop());
+    }
   });
 
+  message("matchMsg", "");
   renderMatchPlayerOptions();
 });
 
