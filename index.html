@@ -657,7 +657,77 @@ async function start(){
 db.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT")showLogin();
 });
+/* DANH SÁCH CHỌN CẦU THỦ CHO TRẬN ĐẤU */
 
+function renderMatchPlayerOptions() {
+  const a = $("teamAPlayers");
+  const b = $("teamBPlayers");
+
+  if (!a || !b) return;
+
+  const selectedA = [...a.selectedOptions].map(o => o.value);
+  const selectedB = [...b.selectedOptions].map(o => o.value);
+
+  function fill(select, excluded, selected) {
+    select.innerHTML = "";
+
+    playerData
+      .filter(p => p.is_active && !excluded.includes(p.id))
+      .forEach(p => {
+        const option = new Option(
+          (p.jersey_number != null ? "#" + p.jersey_number + " " : "") + p.full_name,
+          p.id
+        );
+
+        option.selected = selected.includes(p.id);
+        select.add(option);
+      });
+  }
+
+  fill(a, selectedB, selectedA);
+  fill(b, selectedA, selectedB);
+}
+
+function handleTeamSelection() {
+  const limit = $("matchFormat").value === "5v5" ? 5 : 7;
+  const selected = [...this.selectedOptions];
+
+  if (selected.length > limit) {
+    selected.slice(limit).forEach(option => {
+      option.selected = false;
+    });
+
+    message("matchMsg", "Mỗi đội chỉ được chọn tối đa " + limit + " cầu thủ.");
+  } else {
+    message("matchMsg", "");
+  }
+
+  renderMatchPlayerOptions();
+}
+
+$("teamAPlayers").addEventListener("change", handleTeamSelection);
+$("teamBPlayers").addEventListener("change", handleTeamSelection);
+
+$("matchFormat").addEventListener("change", () => {
+  const limit = $("matchFormat").value === "5v5" ? 5 : 7;
+
+  [$("teamAPlayers"), $("teamBPlayers")].forEach(select => {
+    [...select.selectedOptions].slice(limit).forEach(option => {
+      option.selected = false;
+    });
+  });
+
+  renderMatchPlayerOptions();
+});
+
+const originalLoadPlayers = loadPlayers;
+
+loadPlayers = async function() {
+  await originalLoadPlayers();
+  renderMatchPlayerOptions();
+};
+
+$("matchDate").value = localDateValue();
 start();
 </script>
 </body>
