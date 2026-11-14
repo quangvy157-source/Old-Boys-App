@@ -283,6 +283,7 @@ async function showApp(user){
   $("account").textContent=user.email || "";
   await loadPlayers();
   await loadSessions();
+ await loadMatchHistory();
 }
 
 function showLogin(){
@@ -762,6 +763,7 @@ $("matchDate").value = localDateValue();
  
 /* LƯU TRẬN ĐẤU VÀ HIỂN THỊ LỊCH SỬ */
 
+
 async function loadMatchHistory() {
   const box = $("matchHistory");
   box.textContent = "Đang tải lịch sử trận đấu...";
@@ -784,9 +786,7 @@ async function loadMatchHistory() {
   box.appendChild(heading);
 
   if (!data || !data.length) {
-    const empty = document.createElement("p");
-    empty.textContent = "Chưa có trận đấu nào.";
-    box.appendChild(empty);
+    box.append("Chưa có trận đấu nào.");
     return;
   }
 
@@ -803,7 +803,7 @@ async function loadMatchHistory() {
     date.textContent =
       (match.match_date || "") +
       (match.start_time ? " · " + match.start_time.slice(0, 5) : "") +
-      " · " + match.format;
+      " · " + (match.format || match.match_format || "");
 
     const score = document.createElement("div");
     score.style.cssText =
@@ -826,10 +826,211 @@ async function loadMatchHistory() {
     status.textContent =
       match.status === "completed" ? "Đã hoàn thành" : "Chưa hoàn thành";
 
-    card.append(title, date, score, status);
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.textContent = "NHẬP TỶ SỐ / NGƯỜI GHI BÀN";
+    editButton.style.cssText = "width:100%;margin-top:12px";
+    editButton.addEventListener("click", () => {
+      openMatchEditor(match, card);
+    });
+
+    card.append(title, date, score, status, editButton);
     box.appendChild(card);
   });
 }
+
+async function openMatchEditor(match, card) {
+  let editor = card.querySelector(".match-editor");
+
+  if (editor) {
+    editor.remove();
+    return;
+  }
+
+  editor = document.createElement("div");
+  editor.className = "match-editor";
+  editor.style.cssText =
+    "margin-top:14px;padding-top:12px;border-top:1px solid #354238";
+
+  editor.textContent = "Đang tải cầu thủ...";
+  card.appendChild(editor);
+
+  const { data: assigned, error } = await db
+    .from("match_players")
+    .select("player_id,team")
+    .eq("match_id", match.id);
+
+  if (error) {
+    editor.textContent = "Lỗi tải cầu thủ: " + error.message;
+    return;
+  }
+
+  const { data: oldScorers, error: scorerError } = await db
+    .from("match_scorers")
+    .select("player_id,goals")
+    .eq("match_id", match.id);
+
+  if (scorerError) {
+    editor.textContent = "Lỗi tải người ghi bàn: " + scorerError.message;
+    return;
+  }
+
+  const oldGoals = new Map(
+    (oldScorers || []).map(s => [s.player_id, s.goals])
+  );
+
+  editor.innerHTML = "";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "CẬP NHẬT KẾT QUẢ";
+  editor.appendChild(heading);
+
+  function addScoreInput(labelText, id, value) {
+    const label = document.createElement("label");
+    label.textContent = labelText;
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "1";
+    input.id = id;
+    input.value = value ?? 0;
+    input.style.marginBottom = "10px";
+
+    editor.append(label, input);
+  }
+
+  addScoreInput("Tỷ số " + (match.team_a_name || "ĐỘI A"), "scoreA_" + match.id, match.score_a);
+  addScoreInput("Tỷ số " + (match.team_b_name || "ĐỘI B"), "scoreB_" + match.id, match.score_b);
+
+  const scorerHeading = document.createElement("h3");
+  scorerHeading.textContent = "NGƯỜI GHI BÀN";
+  editor.appendChild(scorerHeading);
+
+  if (!assigned || !assigned.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "Trận đấu chưa có cầu thủ.";
+    editor.appendChild(empty);
+  }
+
+  const goalInputs = [];
+
+  (assigned || []).forEach(item => {
+    const player = playerData.find(p => p.id === item.player_id);
+    if (!player) return;
+
+    const row = document.createElement("div");
+    row.style.cssText =
+      "display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;padding:9px;background:#182019;border-radius:8px";
+
+    const name = document.createElement("span");
+    name.style.cssText = "flex:1;font-size:13px";
+    name.textContent =
+      (item.team === "A" ? "Đội A · " : "Đội B · ") +
+      (player.jersey_number != null ? "#" + player.jersey_number + " " : "") +
+      player.full_name;
+
+    const goals = document.createElement("input");
+    goals.type = "number";
+    goals.min = "0";
+    goals.step = "1";
+    goals.value = oldGoals.get(item.player_id) || 0;
+    goals.style.cssText = "width:65px;margin:0";
+
+    goalInputs.push({
+      player_id: item.player_id,
+      team: item.team,
+      input: goals
+    });
+
+    row.append(name, goals);
+    editor.appendChild(row);
+  });
+
+  const saveButton = document.createElement("button");
+  saveButton.type = "button";
+  saveButton.textContent = "LƯU KẾT QUẢ";
+  saveButton.style.cssText = "width:100%;margin-top:14px";
+
+  const msg = document.createElement("div");
+  msg.className = "message";
+
+  saveButton.addEventListener("click", async () => {
+    const scoreA = Number($("scoreA_" + match.id).value);
+    const scoreB = Number($("scoreB_" + match.id).value);
+
+    if (
+      !Number.isInteger(scoreA) || scoreA < 0 ||
+      !Number.isInteger(scoreB) || scoreB < 0
+    ) {
+      msg.textContent = "Tỷ số phải là số nguyên không âm.";
+      return;
+    }
+
+    const scorers = [];
+
+    for (const item of goalInputs) {
+      const goals = Number(item.input.value);
+
+      if (!Number.isInteger(goals) || goals < 0) {
+        msg.textContent = "Số bàn thắng phải là số nguyên không âm.";
+        return;
+      }
+
+      if (goals > 0) {
+        scorers.push({
+          match_id: match.id,
+          player_id: item.player_id,
+          team: item.team,
+          goals: goals
+        });
+      }
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = "ĐANG LƯU...";
+
+    try {
+      const { error: updateError } = await db
+        .from("matches")
+        .update({
+          score_a: scoreA,
+          score_b: scoreB,
+          status: "completed"
+        })
+        .eq("id", match.id);
+
+      if (updateError) throw updateError;
+
+      const { error: deleteError } = await db
+        .from("match_scorers")
+        .delete()
+        .eq("match_id", match.id);
+
+      if (deleteError) throw deleteError;
+
+      if (scorers.length) {
+        const { error: insertError } = await db
+          .from("match_scorers")
+          .insert(scorers);
+
+        if (insertError) throw insertError;
+      }
+
+      msg.textContent = "Đã lưu tỷ số và người ghi bàn!";
+      await loadMatchHistory();
+
+    } catch (error) {
+      msg.textContent = "Không lưu được: " + error.message;
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = "LƯU KẾT QUẢ";
+    }
+  });
+
+  editor.append(saveButton, msg);
+}
+
 
 $("createMatch").addEventListener("click", async () => {
   const button = $("createMatch");
