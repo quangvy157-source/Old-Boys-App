@@ -1694,6 +1694,27 @@ async function openMatchEditor(match, card) {
     if(i)throw i;
    }
 
+    const {error:deleteEventsError}=await db.from("match_goal_events")
+     .delete().eq("match_id",match.id);
+
+    if(deleteEventsError)throw deleteEventsError;
+
+    const goalEvents=goals.flatMap(entry=>
+     (entry.events||[]).map(minute=>({
+      match_id:String(match.id),
+      player_id:String(entry.player_id),
+      team:entry.team,
+      minute:minute
+     }))
+    );
+
+    if(goalEvents.length){
+     const {error:insertEventsError}=await db
+      .from("match_goal_events").insert(goalEvents);
+
+     if(insertEventsError)throw insertEventsError;
+    }
+
    await loadMatchHistory();
    modal.classList.add("hidden");
 
