@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -35,7 +36,17 @@ button:disabled{opacity:.5}
 .player-info small{color:#9eaaa0;display:block;margin-top:5px}
 .actions{display:flex;gap:6px}
 .actions button{padding:9px;font-size:12px}
-@media(max-width:480px){body{padding:12px}.panel{padding:15px}.actions{flex-direction:column}.player img{width:48px;height:48px}}
+.att-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #303a32}
+.att-row strong{flex:1;min-width:0;font-size:14px}
+.att-row select{width:145px;margin:0;padding:10px;font-size:13px}
+@media(max-width:480px){
+ body{padding:12px}
+ .panel{padding:15px}
+ .actions{flex-direction:column}
+ .player img{width:48px;height:48px}
+ .att-row{gap:7px}
+ .att-row select{width:130px}
+}
 </style>
 </head>
 <body>
@@ -112,6 +123,36 @@ button:disabled{opacity:.5}
     <input id="search" placeholder="Tìm tên cầu thủ...">
     <div id="players">Đang tải danh sách...</div>
   </section>
+
+  <section class="panel" id="attendancePanel">
+    <div class="top">
+      <h2>Điểm danh buổi đá</h2>
+      <button id="reloadSessions" class="secondary" type="button">Làm mới</button>
+    </div>
+    <label>Tên buổi đá</label>
+    <input id="sessionTitle" value="Buổi đá OLD BOYS" placeholder="Tên buổi đá">
+    <div class="top" style="gap:12px">
+      <div style="flex:1;min-width:140px">
+        <label>Ngày đá</label>
+        <input id="sessionDate" type="date">
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label>Giờ bắt đầu</label>
+        <input id="sessionTime" type="time">
+      </div>
+    </div>
+    <button id="createSession" type="button" style="width:100%">TẠO BUỔI ĐIỂM DANH</button>
+    <div id="sessionMsg" class="message"></div>
+    <div style="margin-top:18px">
+      <label>Chọn buổi cần điểm danh / xem lại</label>
+      <select id="sessionSelect">
+        <option value="">Chưa có buổi đá</option>
+      </select>
+    </div>
+    <div id="attendanceList" style="margin-top:12px">Chọn một buổi đá để điểm danh.</div>
+    <button id="saveAttendance" type="button" style="width:100%;margin-top:14px">LƯU ĐIỂM DANH</button>
+    <div id="attendanceMsg" class="message"></div>
+  </section>
 </main>
 </div>
 
@@ -122,14 +163,25 @@ const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 const $ = id => document.getElementById(id);
 let playerData = [];
+let sessionData = [];
+let attendanceData = [];
 
-function message(id,text){$(id).textContent=text}
+function message(id,text){
+  $(id).textContent=text;
+}
 
-function showApp(user){
+function localDateValue(){
+  const d=new Date();
+  const offset=d.getTimezoneOffset();
+  return new Date(d.getTime()-offset*60000).toISOString().slice(0,10);
+}
+
+async function showApp(user){
   $("login").classList.add("hidden");
   $("app").classList.remove("hidden");
   $("account").textContent=user.email || "";
-  loadPlayers();
+  await loadPlayers();
+  await loadSessions();
 }
 
 function showLogin(){
@@ -150,12 +202,17 @@ async function loadPlayers(){
 
   playerData=data || [];
   renderPlayers();
+
   $("total").textContent=playerData.length;
   $("active").textContent=playerData.filter(p=>p.is_active).length;
+
   const avg=playerData.length
     ? Math.round(playerData.reduce((s,p)=>s+(p.elo||0),0)/playerData.length)
     : 0;
+
   $("elo").textContent=avg;
+
+  if($("sessionSelect").value) await loadAttendance();
 }
 
 function renderPlayers(){
@@ -179,24 +236,29 @@ function renderPlayers(){
 
     const info=document.createElement("div");
     info.className="player-info";
+
     const name=document.createElement("strong");
     name.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+
     const detail=document.createElement("small");
     detail.textContent=(p.position||"Chưa có vị trí")+" · ELO "+(p.elo||0)+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
+
     info.append(name,detail);
 
     const actions=document.createElement("div");
     actions.className="actions";
+
     const edit=document.createElement("button");
     edit.className="secondary";
     edit.textContent="Sửa";
     edit.onclick=()=>editPlayer(p);
+
     const del=document.createElement("button");
     del.className="danger";
     del.textContent="Xóa";
     del.onclick=()=>deletePlayer(p);
-    actions.append(edit,del);
 
+    actions.append(edit,del);
     item.append(img,info,actions);
     $("players").append(item);
   });
@@ -260,8 +322,14 @@ $("playerForm").addEventListener("submit",async e=>{
 
 async function deletePlayer(p){
   if(!confirm("Bạn có chắc muốn xóa "+p.full_name+"?"))return;
+
   const {error}=await db.from("players").delete().eq("id",p.id);
-  if(error){alert("Không xóa được: "+error.message);return}
+
+  if(error){
+    alert("Không xóa được: "+error.message);
+    return;
+  }
+
   await loadPlayers();
 }
 
@@ -269,19 +337,196 @@ $("cancelEdit").onclick=resetForm;
 $("refresh").onclick=loadPlayers;
 $("search").addEventListener("input",renderPlayers);
 
+/* ĐIỂM DANH THEO TỪNG BUỔI */
+
+async function loadSessions(){
+  $("sessionDate").value=$("sessionDate").value||localDateValue();
+
+  const {data,error}=await db.from("sessions")
+    .select("id,title,session_date,start_time,created_at")
+    .order("session_date",{ascending:false});
+
+  if(error){
+    message("sessionMsg","Không tải được buổi đá: "+error.message);
+    return;
+  }
+
+  sessionData=data||[];
+
+  const select=$("sessionSelect");
+  const previous=select.value;
+  select.innerHTML="";
+
+  if(!sessionData.length){
+    select.add(new Option("Chưa có buổi đá",""));
+    $("attendanceList").textContent="Chưa có buổi đá. Hãy tạo buổi mới ở phía trên.";
+    return;
+  }
+
+  sessionData.forEach(x=>{
+    const label=(x.title||"Buổi đá")+" · "+x.session_date+
+      (x.start_time?" · "+String(x.start_time).slice(0,5):"");
+    select.add(new Option(label,x.id));
+  });
+
+  select.value=sessionData.some(x=>x.id===previous)
+    ? previous
+    : sessionData[0].id;
+
+  await loadAttendance();
+}
+
+async function loadAttendance(){
+  const sid=$("sessionSelect").value;
+
+  if(!sid){
+    $("attendanceList").textContent="Chọn một buổi đá để điểm danh.";
+    return;
+  }
+
+  const {data,error}=await db.from("attendance")
+    .select("player_id,status,note")
+    .eq("session_id",sid);
+
+  if(error){
+    $("attendanceList").textContent="Lỗi tải điểm danh: "+error.message;
+    return;
+  }
+
+  attendanceData=data||[];
+  renderAttendance();
+}
+
+function renderAttendance(){
+  const saved=new Map(attendanceData.map(x=>[x.player_id,x.status]));
+  const players=playerData.filter(p=>p.is_active);
+
+  $("attendanceList").innerHTML="";
+
+  if(!players.length){
+    $("attendanceList").textContent="Chưa có cầu thủ đang hoạt động.";
+    return;
+  }
+
+  players.forEach(p=>{
+    const row=document.createElement("div");
+    row.className="att-row";
+
+    const name=document.createElement("strong");
+    name.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+
+    const select=document.createElement("select");
+    select.dataset.playerId=p.id;
+
+    [
+      ["present","Có mặt"],
+      ["late","Có mặt trễ"],
+      ["absent","Vắng mặt"]
+    ].forEach(([v,t])=>select.add(new Option(t,v)));
+
+    select.value=saved.get(p.id)||"present";
+
+    row.append(name,select);
+    $("attendanceList").append(row);
+  });
+}
+
+$("createSession").onclick=async()=>{
+  const title=$("sessionTitle").value.trim()||"Buổi đá OLD BOYS";
+  const date=$("sessionDate").value;
+
+  if(!date){
+    message("sessionMsg","Vui lòng chọn ngày đá.");
+    return;
+  }
+
+  $("createSession").disabled=true;
+  message("sessionMsg","Đang tạo buổi đá...");
+
+  const {data,error}=await db.from("sessions").insert({
+    title,
+    session_date:date,
+    start_time:$("sessionTime").value||null
+  }).select("id").single();
+
+  $("createSession").disabled=false;
+
+  if(error){
+    message("sessionMsg","Không tạo được: "+error.message);
+    return;
+  }
+
+  message("sessionMsg","Đã tạo buổi điểm danh thành công.");
+
+  await loadSessions();
+  $("sessionSelect").value=data.id;
+  await loadAttendance();
+};
+
+$("sessionSelect").onchange=loadAttendance;
+$("reloadSessions").onclick=loadSessions;
+
+$("saveAttendance").onclick=async()=>{
+  const sid=$("sessionSelect").value;
+
+  if(!sid){
+    message("attendanceMsg","Hãy tạo hoặc chọn một buổi đá trước.");
+    return;
+  }
+
+  const rows=[
+    ...$("attendanceList").querySelectorAll("select[data-player-id]")
+  ].map(el=>({
+    session_id:sid,
+    player_id:el.dataset.playerId,
+    status:el.value
+  }));
+
+  if(!rows.length){
+    message("attendanceMsg","Chưa có cầu thủ để điểm danh.");
+    return;
+  }
+
+  $("saveAttendance").disabled=true;
+  message("attendanceMsg","Đang lưu điểm danh...");
+
+  const {error}=await db.from("attendance")
+    .upsert(rows,{onConflict:"session_id,player_id"});
+
+  $("saveAttendance").disabled=false;
+
+  if(error){
+    message("attendanceMsg","Lỗi lưu điểm danh: "+error.message);
+    return;
+  }
+
+  attendanceData=rows.map(x=>({
+    player_id:x.player_id,
+    status:x.status
+  }));
+
+  message("attendanceMsg","Đã lưu điểm danh thành công.");
+};
+
+/* ĐĂNG NHẬP VÀ ĐĂNG XUẤT */
+
 $("loginBtn").onclick=async()=>{
   $("loginBtn").disabled=true;
   message("loginMsg","Đang đăng nhập...");
+
   const {data,error}=await db.auth.signInWithPassword({
     email:$("email").value.trim(),
     password:$("password").value
   });
+
   $("loginBtn").disabled=false;
+
   if(error){
     message("loginMsg","Đăng nhập không thành công: "+error.message);
     return;
   }
-  showApp(data.user);
+
+  await showApp(data.user);
 };
 
 $("logout").onclick=async()=>{
@@ -291,11 +536,13 @@ $("logout").onclick=async()=>{
 
 async function start(){
   const {data}=await db.auth.getSession();
-  if(data.session)showApp(data.session.user);
+  if(data.session)await showApp(data.session.user);
 }
+
 db.auth.onAuthStateChange((event,session)=>{
   if(event==="SIGNED_OUT")showLogin();
 });
+
 start();
 </script>
 </body>
