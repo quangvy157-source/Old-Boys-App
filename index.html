@@ -180,6 +180,70 @@ button:disabled{opacity:.5}
   margin:0;
   font-size:15px;
 }
+ 
+/* DEMO GIỚI THIỆU TÍNH NĂNG */
+.demo-panel{
+  padding:18px;
+  background:linear-gradient(145deg,#19251b,#0c120e);
+  border:1px solid #40513b;
+  border-radius:15px;
+  overflow:hidden;
+}
+.demo-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+.demo-label{
+  color:#b7ff36;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:2px;
+}
+.demo-counter{
+  color:#89938b;
+  font-size:11px;
+}
+.demo-content{
+  min-height:125px;
+  transition:opacity .3s ease;
+}
+.demo-icon{
+  font-size:30px;
+  margin-bottom:10px;
+}
+.demo-content h3{
+  margin:0 0 9px;
+  font-size:18px;
+  color:#b7ff36;
+}
+.demo-content p{
+  margin:0;
+  color:#c0c9c1;
+  font-size:13px;
+  line-height:1.6;
+}
+.demo-dots{
+  display:flex;
+  justify-content:center;
+  gap:9px;
+  margin-top:15px;
+}
+.demo-dot{
+  width:8px;
+  height:8px;
+  padding:0;
+  border-radius:50%;
+  background:#526052;
+}
+.demo-dot.active{
+  width:22px;
+  border-radius:10px;
+  background:#b7ff36;
+}
+
  @media(max-width:480px){
  body{padding:12px}
  .panel{padding:15px}
