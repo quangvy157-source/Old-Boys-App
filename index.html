@@ -602,8 +602,23 @@ async function openPlayerDetail(p){
     return;
   }
 
-    const played = appearances || [];
+      const played = appearances || [];
   const matchIds = [...new Set(played.map(x => x.match_id))];
+  let matches = [];
+
+  if(matchIds.length){
+    const {data:matchData,error:matchError}=await db
+      .from("matches")
+      .select("id,title,match_date,start_time,format,match_format,team_a_name,team_b_name,score_a,score_b")
+      .in("id",matchIds)
+      .order("match_date",{ascending:false});
+
+    if(matchError){
+      content.textContent="Không tải được danh sách trận đấu: "+matchError.message;
+      return;
+    }
+        matches = matchData || [];
+  }
 
   const currentYear = new Date().getFullYear();
 
@@ -618,21 +633,6 @@ async function openPlayerDetail(p){
   const annualGoals = (goalRows || [])
     .filter(row => yearMatchIds.has(row.match_id))
     .reduce((sum, row) => sum + (Number(row.goals) || 0), 0);
-  let matches=[];
-
-  if(matchIds.length){
-    const {data:matchData,error:matchError}=await db
-      .from("matches")
-      .select("id,title,match_date,start_time,format,match_format,team_a_name,team_b_name,score_a,score_b")
-      .in("id",matchIds)
-      .order("match_date",{ascending:false});
-
-    if(matchError){
-      content.textContent="Không tải được danh sách trận đấu: "+matchError.message;
-      return;
-    }
-    matches=matchData||[];
-  }
 
   content.innerHTML="";
 
