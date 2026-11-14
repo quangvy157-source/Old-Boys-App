@@ -573,6 +573,13 @@ button:disabled{opacity:.5}
 
 <script>
  const $ = id => document.getElementById(id);
+ let activeMatchSession = null;
+
+$("resumeMatchBtn").onclick = () => {
+  if (activeMatchSession) {
+    $("matchDetailModal").classList.remove("hidden");
+  }
+};
 const demoSlides = [
   {
     icon: "👥",
