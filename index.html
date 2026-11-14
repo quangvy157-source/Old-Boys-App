@@ -1392,7 +1392,19 @@ async function openMatchEditor(match, card) {
  content.appendChild(board);
   const timerPanel = document.createElement("div");
   timerPanel.style.cssText = "text-align:center;padding:18px;margin:16px 0;background:#17231b;border:1px solid #344638;border-radius:14px";
+  const fullscreenButton = document.createElement("button");
+  fullscreenButton.type = "button";
+  fullscreenButton.className = "secondary";
+  fullscreenButton.textContent = "TOÀN MÀN HÌNH";
 
+  const modalCard = modal.querySelector(".modal-card");
+
+  fullscreenButton.onclick = () => {
+    const isFullscreen = modalCard.classList.toggle("score-fullscreen");
+    fullscreenButton.textContent = isFullscreen
+      ? "THOÁT TOÀN MÀN HÌNH"
+      : "TOÀN MÀN HÌNH";
+  };
   const timerLabel = document.createElement("div");
   timerLabel.textContent = "THỜI GIAN THI ĐẤU";
   timerLabel.style.cssText = "font-size:12px;color:#a4afa6;letter-spacing:2px";
@@ -1479,7 +1491,7 @@ async function openMatchEditor(match, card) {
     pauseTimer.disabled = true;
   };
 
-  timerControls.append(startTimer, pauseTimer, resetTimer);
+  timerControls.append(startTimer, pauseTimer, resetTimer, fullscreenButton);
   timerPanel.append(timerLabel, timerDisplay, timerControls);
   content.appendChild(timerPanel);
  const heading=document.createElement("h3");
