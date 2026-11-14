@@ -484,7 +484,7 @@ button:disabled{opacity:.5}
 </div>
 
 <script>
- 
+ const $ = id => document.getElementById(id);
 const demoSlides = [
   {
     icon: "👥",
@@ -564,7 +564,6 @@ const SUPABASE_URL = "https://pspiboiojswnonupcyrx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nWVOoHgBNGB9Xln0M4G4jQ_YLynX-Rl";
 const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const $ = id => document.getElementById(id);
 let playerData = [];
 let sessionData = [];
 let attendanceData = [];
