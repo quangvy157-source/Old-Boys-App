@@ -1,298 +1,302 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080b0a">
-  <title>OLD BOYS | Admin</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #080b0a;
-      color: #f5f7f5;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 390px;
-    }
-
-    .brand {
-      text-align: center;
-      margin-bottom: 34px;
-    }
-
-    .crest {
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 18px;
-      border: 2px solid #b7ff36;
-      border-radius: 22px;
-      display: grid;
-      place-items: center;
-      color: #b7ff36;
-      font-size: 25px;
-      font-weight: 900;
-      letter-spacing: -2px;
-      transform: rotate(-3deg);
-      box-shadow: 0 0 28px #b7ff3620;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 29px;
-      letter-spacing: 5px;
-      font-weight: 900;
-    }
-
-    .subtitle {
-      color: #9ca69e;
-      font-size: 11px;
-      letter-spacing: 3px;
-      margin-top: 9px;
-    }
-
-    .panel {
-      background: #111714;
-      border: 1px solid #28322b;
-      border-radius: 20px;
-      padding: 25px 21px;
-    }
-
-    .panel h2 {
-      font-size: 20px;
-      margin: 0 0 7px;
-    }
-
-    .description {
-      color: #9ca69e;
-      font-size: 13px;
-      margin-bottom: 25px;
-    }
-
-    label {
-      display: block;
-      color: #d4ddd5;
-      font-size: 12px;
-      margin: 17px 0 8px;
-    }
-
-    input {
-      width: 100%;
-      height: 49px;
-      border-radius: 10px;
-      border: 1px solid #344039;
-      background: #090e0b;
-      color: white;
-      padding: 0 14px;
-      font-size: 15px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #b7ff36;
-    }
-
-    button {
-      width: 100%;
-      height: 51px;
-      margin-top: 23px;
-      border: none;
-      border-radius: 10px;
-      background: #b7ff36;
-      color: #10150b;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .55;
-    }
-
-    .message {
-      min-height: 20px;
-      margin-top: 15px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #ffb4a9;
-    }
-
-    .hidden { display: none; }
-
-    .welcome {
-      text-align: center;
-      padding: 12px 0;
-    }
-
-    .welcome h2 {
-      color: #b7ff36;
-    }
-
-    .footer {
-      text-align: center;
-      color: #68736b;
-      font-size: 10px;
-      letter-spacing: 2px;
-      margin-top: 25px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d0a">
+<title>OLD BOYS | Football Club</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d0a;color:#f4f6f4;font-family:Arial,sans-serif;padding:20px}
+.wrap{max-width:850px;margin:auto}
+header{text-align:center;padding:25px 0}
+.logo{color:#b7ff36;font-size:35px;font-weight:900;letter-spacing:5px}
+.sub{color:#89938b;font-size:11px;letter-spacing:3px;margin-top:8px}
+.panel{background:#141b16;border:1px solid #29342c;border-radius:15px;padding:20px;margin:15px 0}
+h2{font-size:19px;margin:0 0 15px}
+input,select{width:100%;padding:13px;margin:7px 0 12px;background:#090f0b;border:1px solid #354238;border-radius:8px;color:white;font-size:15px}
+label{font-size:12px;color:#b7c2b8}
+button{border:0;border-radius:8px;padding:12px 16px;background:#b7ff36;color:#10150b;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
+.secondary{background:#303b32;color:white}
+.danger{background:#612d2d;color:white}
+.hidden{display:none!important}
+.message{font-size:13px;color:#b7ff36;margin-top:10px;white-space:pre-wrap}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#0c120e;padding:15px;border-radius:10px;text-align:center}
+.stat strong{display:block;color:#b7ff36;font-size:24px}
+.stat span{font-size:11px;color:#a4afa6}
+.player{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid #303a32}
+.player img{width:55px;height:55px;border-radius:10px;object-fit:cover;background:#303a32}
+.player-info{flex:1;min-width:0}
+.player-info strong{display:block;overflow-wrap:anywhere}
+.player-info small{color:#9eaaa0;display:block;margin-top:5px}
+.actions{display:flex;gap:6px}
+.actions button{padding:9px;font-size:12px}
+@media(max-width:480px){body{padding:12px}.panel{padding:15px}.actions{flex-direction:column}.player img{width:48px;height:48px}}
+</style>
 </head>
-
 <body>
-  <main class="container">
+<div class="wrap">
+<header>
+  <div class="logo">OLD BOYS</div>
+  <div class="sub">FOOTBALL CLUB MANAGEMENT</div>
+</header>
 
-    <header class="brand">
-      <div class="crest">OB</div>
-      <h1>OLD BOYS</h1>
-      <div class="subtitle">FOOTBALL CLUB MANAGEMENT</div>
-    </header>
+<section id="login" class="panel">
+  <h2>Đăng nhập</h2>
+  <label>Email</label>
+  <input id="email" type="email" placeholder="Email tài khoản">
+  <label>Mật khẩu</label>
+  <input id="password" type="password" placeholder="Mật khẩu">
+  <button id="loginBtn" style="width:100%">ĐĂNG NHẬP</button>
+  <div id="loginMsg" class="message"></div>
+</section>
 
-    <section class="panel" id="loginPanel">
-      <h2>Admin Login</h2>
-      <div class="description">Đăng nhập để quản lý đội bóng</div>
+<main id="app" class="hidden">
+  <div class="panel top">
+    <div>
+      <strong>QUẢN LÝ ĐỘI BÓNG</strong>
+      <div id="account" class="sub"></div>
+    </div>
+    <button id="logout" class="secondary">Đăng xuất</button>
+  </div>
 
-      <form id="loginForm">
-        <label for="email">EMAIL</label>
-        <input id="email" type="email"
-          placeholder="admin@example.com"
-          autocomplete="username" required>
+  <div class="panel">
+    <div class="stats">
+      <div class="stat"><strong id="total">0</strong><span>Tổng cầu thủ</span></div>
+      <div class="stat"><strong id="active">0</strong><span>Đang hoạt động</span></div>
+      <div class="stat"><strong id="elo">0</strong><span>ELO trung bình</span></div>
+    </div>
+  </div>
 
-        <label for="password">MẬT KHẨU</label>
-        <input id="password" type="password"
-          placeholder="Nhập mật khẩu"
-          autocomplete="current-password" required>
+  <section class="panel">
+    <h2 id="formTitle">Thêm cầu thủ</h2>
+    <form id="playerForm">
+      <input type="hidden" id="playerId">
+      <label>Họ và tên</label>
+      <input id="fullName" required placeholder="Tên cầu thủ">
+      <label>Số áo</label>
+      <input id="jersey" type="number" min="0" placeholder="Ví dụ: 10">
+      <label>Vị trí</label>
+      <select id="position">
+        <option value="">Chọn vị trí</option>
+        <option>Thủ môn</option>
+        <option>Hậu vệ</option>
+        <option>Tiền vệ</option>
+        <option>Tiền đạo</option>
+        <option>Đa năng</option>
+      </select>
+      <label>Đường dẫn ảnh thành viên (nếu có)</label>
+      <input id="photo" type="url" placeholder="https://...">
+      <label>Điểm ELO</label>
+      <input id="rating" type="number" min="0" value="1000">
+      <label>Trạng thái</label>
+      <select id="status">
+        <option value="true">Đang hoạt động</option>
+        <option value="false">Không hoạt động</option>
+      </select>
+      <button id="saveBtn" type="submit" style="width:100%">LƯU CẦU THỦ</button>
+      <button id="cancelEdit" type="button" class="secondary hidden" style="width:100%;margin-top:8px">HỦY CHỈNH SỬA</button>
+    </form>
+    <div id="formMsg" class="message"></div>
+  </section>
 
-        <button id="loginButton" type="submit">
-          ĐĂNG NHẬP
-        </button>
-      </form>
+  <section class="panel">
+    <div class="top">
+      <h2>Danh sách cầu thủ</h2>
+      <button id="refresh" class="secondary">Làm mới</button>
+    </div>
+    <input id="search" placeholder="Tìm tên cầu thủ...">
+    <div id="players">Đang tải danh sách...</div>
+  </section>
+</main>
+</div>
 
-      <div class="message" id="message" role="status"></div>
-    </section>
+<script>
+const SUPABASE_URL = "https://pspiboiojswnonupcyrx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nWVOoHgBNGB9Xln0M4G4jQ_YLynX-Rl";
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-    <section class="panel hidden" id="dashboard">
-      <div class="welcome">
-        <h2>WELCOME, ADMIN</h2>
-        <p id="adminEmail"></p>
-        <p>Hệ thống OLD BOYS đã xác thực tài khoản.</p>
-        <button id="logoutButton">ĐĂNG XUẤT</button>
-      </div>
-    </section>
+const $ = id => document.getElementById(id);
+let playerData = [];
 
-    <footer class="footer">
-      OLD BOYS • EST. FOOTBALL COMMUNITY
-    </footer>
-  </main>
+function message(id,text){$(id).textContent=text}
 
-  <script>
-    // THAY 2 GIA TRI BEN DUOI BANG THONG TIN SUPABASE
-    const SUPABASE_URL = "https://pspiboiojswnonupcyrx.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_nWVOoHgBNGB9Xln0M4G4jQ_YLynX-Rl";
+function showApp(user){
+  $("login").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  $("account").textContent=user.email || "";
+  loadPlayers();
+}
 
-    const client = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+function showLogin(){
+  $("app").classList.add("hidden");
+  $("login").classList.remove("hidden");
+}
 
-    const loginPanel = document.getElementById("loginPanel");
-    const dashboard = document.getElementById("dashboard");
-    const message = document.getElementById("message");
-    const loginButton = document.getElementById("loginButton");
+async function loadPlayers(){
+  $("players").textContent="Đang tải danh sách...";
+  const {data,error}=await db.from("players")
+    .select("id,full_name,jersey_number,position,photo_url,elo,is_active,created_at")
+    .order("full_name");
 
-    function showLogin(text = "") {
-      dashboard.classList.add("hidden");
-      loginPanel.classList.remove("hidden");
-      message.textContent = text;
-    }
+  if(error){
+    $("players").textContent="Không tải được dữ liệu: "+error.message;
+    return;
+  }
 
-    function showDashboard(email) {
-      loginPanel.classList.add("hidden");
-      dashboard.classList.remove("hidden");
-      document.getElementById("adminEmail").textContent = email;
-    }
+  playerData=data || [];
+  renderPlayers();
+  $("total").textContent=playerData.length;
+  $("active").textContent=playerData.filter(p=>p.is_active).length;
+  const avg=playerData.length
+    ? Math.round(playerData.reduce((s,p)=>s+(p.elo||0),0)/playerData.length)
+    : 0;
+  $("elo").textContent=avg;
+}
 
-    async function checkAdmin(user) {
-      const { data, error } = await client
-        .from("profiles")
-        .select("role, email")
-        .eq("id", user.id)
-        .maybeSingle();
+function renderPlayers(){
+  const q=$("search").value.trim().toLowerCase();
+  const list=playerData.filter(p=>(p.full_name||"").toLowerCase().includes(q));
+  $("players").innerHTML="";
 
-      if (error || !data || data.role !== "admin") {
-        await client.auth.signOut();
-        showLogin("Tài khoản này không có quyền Admin.");
-        return false;
-      }
+  if(!list.length){
+    $("players").textContent="Chưa có cầu thủ phù hợp.";
+    return;
+  }
 
-      showDashboard(user.email);
-      return true;
-    }
+  list.forEach(p=>{
+    const item=document.createElement("div");
+    item.className="player";
 
-    document.getElementById("loginForm")
-      .addEventListener("submit", async (event) => {
-        event.preventDefault();
+    const img=document.createElement("img");
+    img.src=p.photo_url || "";
+    img.alt="Ảnh cầu thủ";
+    img.onerror=()=>{img.style.display="none"};
 
-        loginButton.disabled = true;
-        loginButton.textContent = "ĐANG KIỂM TRA...";
-        message.textContent = "";
+    const info=document.createElement("div");
+    info.className="player-info";
+    const name=document.createElement("strong");
+    name.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+    const detail=document.createElement("small");
+    detail.textContent=(p.position||"Chưa có vị trí")+" · ELO "+(p.elo||0)+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
+    info.append(name,detail);
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
+    const actions=document.createElement("div");
+    actions.className="actions";
+    const edit=document.createElement("button");
+    edit.className="secondary";
+    edit.textContent="Sửa";
+    edit.onclick=()=>editPlayer(p);
+    const del=document.createElement("button");
+    del.className="danger";
+    del.textContent="Xóa";
+    del.onclick=()=>deletePlayer(p);
+    actions.append(edit,del);
 
-        const { data, error } = await client.auth.signInWithPassword({
-          email,
-          password
-        });
+    item.append(img,info,actions);
+    $("players").append(item);
+  });
+}
 
-        if (error) {
-          message.textContent = "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.";
-        } else {
-          await checkAdmin(data.user);
-        }
+function editPlayer(p){
+  $("playerId").value=p.id;
+  $("fullName").value=p.full_name||"";
+  $("jersey").value=p.jersey_number??"";
+  $("position").value=p.position||"";
+  $("photo").value=p.photo_url||"";
+  $("rating").value=p.elo??1000;
+  $("status").value=String(p.is_active);
+  $("formTitle").textContent="Chỉnh sửa cầu thủ";
+  $("saveBtn").textContent="CẬP NHẬT";
+  $("cancelEdit").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 
-        loginButton.disabled = false;
-        loginButton.textContent = "ĐĂNG NHẬP";
-      });
+function resetForm(){
+  $("playerForm").reset();
+  $("playerId").value="";
+  $("rating").value=1000;
+  $("status").value="true";
+  $("formTitle").textContent="Thêm cầu thủ";
+  $("saveBtn").textContent="LƯU CẦU THỦ";
+  $("cancelEdit").classList.add("hidden");
+  message("formMsg","");
+}
 
-    document.getElementById("logoutButton")
-      .addEventListener("click", async () => {
-        await client.auth.signOut();
-        showLogin("Bạn đã đăng xuất.");
-      });
+$("playerForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  $("saveBtn").disabled=true;
+  message("formMsg","Đang lưu...");
 
-    async function restoreSession() {
-      const { data, error } = await client.auth.getSession();
+  const id=$("playerId").value;
+  const player={
+    full_name:$("fullName").value.trim(),
+    jersey_number:$("jersey").value===""?null:Number($("jersey").value),
+    position:$("position").value||null,
+    photo_url:$("photo").value.trim()||null,
+    elo:Number($("rating").value)||1000,
+    is_active:$("status").value==="true"
+  };
 
-      if (error) {
-        showLogin("Không thể kiểm tra phiên đăng nhập.");
-        return;
-      }
+  const result=id
+    ? await db.from("players").update(player).eq("id",id)
+    : await db.from("players").insert(player);
 
-      if (data.session) {
-        await checkAdmin(data.session.user);
-      }
-    }
+  $("saveBtn").disabled=false;
 
-    restoreSession();
+  if(result.error){
+    message("formMsg","Lỗi lưu dữ liệu: "+result.error.message);
+    return;
+  }
 
-    client.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        showLogin("Bạn đã đăng xuất.");
-      }
-    });
-  </script>
+  message("formMsg","Đã lưu cầu thủ thành công.");
+  resetForm();
+  await loadPlayers();
+});
+
+async function deletePlayer(p){
+  if(!confirm("Bạn có chắc muốn xóa "+p.full_name+"?"))return;
+  const {error}=await db.from("players").delete().eq("id",p.id);
+  if(error){alert("Không xóa được: "+error.message);return}
+  await loadPlayers();
+}
+
+$("cancelEdit").onclick=resetForm;
+$("refresh").onclick=loadPlayers;
+$("search").addEventListener("input",renderPlayers);
+
+$("loginBtn").onclick=async()=>{
+  $("loginBtn").disabled=true;
+  message("loginMsg","Đang đăng nhập...");
+  const {data,error}=await db.auth.signInWithPassword({
+    email:$("email").value.trim(),
+    password:$("password").value
+  });
+  $("loginBtn").disabled=false;
+  if(error){
+    message("loginMsg","Đăng nhập không thành công: "+error.message);
+    return;
+  }
+  showApp(data.user);
+};
+
+$("logout").onclick=async()=>{
+  await db.auth.signOut();
+  showLogin();
+};
+
+async function start(){
+  const {data}=await db.auth.getSession();
+  if(data.session)showApp(data.session.user);
+}
+db.auth.onAuthStateChange((event,session)=>{
+  if(event==="SIGNED_OUT")showLogin();
+});
+start();
+</script>
 </body>
 </html>
