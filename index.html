@@ -1949,7 +1949,9 @@ async function openMatchEditor(match, card) {
     (match.team_a_name + " vs " + match.team_b_name);
 
   $("activeMatchBar").classList.remove("hidden");
-
+  persistCurrentLiveMatchDraft(
+    match, elapsedSeconds, startedAt, goals
+  );
   timerInterval = setInterval(() => {
     updateTimer();
   }, 250);
@@ -1960,7 +1962,11 @@ async function openMatchEditor(match, card) {
 
     elapsedSeconds += Math.floor((Date.now() - startedAt) / 1000);
     startedAt = null;
-
+    if (activeMatchSession) {
+      persistCurrentLiveMatchDraft(
+        match, elapsedSeconds, startedAt, goals
+      );
+    }
     clearInterval(timerInterval);
     timerInterval = null;
 
@@ -1974,7 +1980,11 @@ async function openMatchEditor(match, card) {
     timerInterval = null;
     elapsedSeconds = 0;
     startedAt = null;
-
+    if (activeMatchSession) {
+      persistCurrentLiveMatchDraft(
+        match, elapsedSeconds, startedAt, goals
+      );
+    }
     updateTimer();
     startTimer.disabled = false;
     pauseTimer.disabled = true;
@@ -2088,6 +2098,11 @@ async function openMatchEditor(match, card) {
 
     count.textContent=entry.value;
     refresh();
+       if (activeMatchSession) {
+      persistCurrentLiveMatchDraft(
+        match, elapsedSeconds, startedAt, goals
+      );
+    }
   };
 
   plus.onclick=()=>{
@@ -2103,6 +2118,11 @@ async function openMatchEditor(match, card) {
 
     count.textContent=entry.value;
     refresh();
+       if (activeMatchSession) {
+      persistCurrentLiveMatchDraft(
+        match, elapsedSeconds, startedAt, goals
+      );
+    }
   };
 
 
