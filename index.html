@@ -294,14 +294,14 @@ button:disabled{opacity:.5}
       <option value="7v7">7 người / đội</option>
     </select>
 
-    <h2>ĐỘI A</h2>
-    <input id="teamAName" value="ĐỘI A" placeholder="Tên đội A">
-    <label>Chọn cầu thủ đội A</label>
+        <h2>TÊN ĐỘI THỨ NHẤT</h2>
+    <input id="teamAName" value="" placeholder="Ví dụ: OLD BOYS, HẮC LONG...">
+    <label>Chọn cầu thủ</label>
     <div id="teamAPlayers" class="match-player-list"></div>
 
-    <h2>ĐỘI B</h2>
-    <input id="teamBName" value="ĐỘI B" placeholder="Tên đội B">
-    <label>Chọn cầu thủ đội B</label>
+    <h2>TÊN ĐỘI THỨ HAI</h2>
+    <input id="teamBName" value="" placeholder="Ví dụ: TEAM XANH, TEAM VÀNG...">
+    <label>Chọn cầu thủ</label>
     <div id="teamBPlayers" class="match-player-list"></div>
 
     <button id="createMatch" type="button" style="width:100%;margin-top:15px">
@@ -1181,7 +1181,7 @@ async function loadMatchHistory() {
           "font-size:13px;padding:4px 0;color:#dce5dc";
 
         line.textContent =
-          (item.team === "A" ? "A · " : "B · ") +
+                    (item.team === "A" ? (match.team_a_name || "ĐỘI 1") + " · " : (match.team_b_name || "ĐỘI 2") + " · ") +
           (player.jersey_number != null
             ? "#" + player.jersey_number + " "
             : "") +
@@ -1283,7 +1283,7 @@ async function openMatchEditor(match, card) {
 
   const name=document.createElement("span");
   name.className="goal-name";
-  name.textContent=(item.team==="A"?"A · ":"B · ")+
+    name.textContent=(item.team==="A"?(match.team_a_name||"ĐỘI 1")+" · ":(match.team_b_name||"ĐỘI 2")+" · ")+
    (p.jersey_number!=null?"#"+p.jersey_number+" ":"")+p.full_name;
 
   const minus=document.createElement("button");
@@ -1408,8 +1408,8 @@ $("createMatch").addEventListener("click", async () => {
   const title = $("matchTitle").value.trim();
   const date = $("matchDate").value;
   const time = $("matchTime").value;
-  const teamAName = $("teamAName").value.trim() || "ĐỘI A";
-  const teamBName = $("teamBName").value.trim() || "ĐỘI B";
+    const teamAName = $("teamAName").value.trim() || "ĐỘI 1";
+  const teamBName = $("teamBName").value.trim() || "ĐỘI 2";
 
   if (!title || !date) {
     message("matchMsg", "Vui lòng nhập tên trận và ngày đấu.");
