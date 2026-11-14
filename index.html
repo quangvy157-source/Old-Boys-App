@@ -693,7 +693,7 @@ $("saveAttendance").onclick=async()=>{
 
   $("saveAttendance").disabled=true;
   message("attendanceMsg","Đang lưu điểm danh...");
-}
+
   const {error}=await db.from("attendance")
     .upsert(rows,{onConflict:"session_id,player_id"});
 
@@ -711,7 +711,7 @@ $("saveAttendance").onclick=async()=>{
 
   message("attendanceMsg","Đã lưu điểm danh thành công.");
 };
-
+}
 /* ĐĂNG NHẬP VÀ ĐĂNG XUẤT */
 
 $("loginBtn").onclick=async()=>{
