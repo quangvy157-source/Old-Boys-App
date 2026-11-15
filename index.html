@@ -1015,7 +1015,11 @@ function renderPlayers(){
     del.textContent="Xóa";
     del.onclick=()=>deletePlayer(p);
 
-    actions.append(view,edit,del);
+    actions.append(view);
+
+if (isAdmin()) {
+  actions.append(edit,del);
+}
     item.append(img,info,actions);
     $("players").append(item);
   });
