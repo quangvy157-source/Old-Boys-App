@@ -876,6 +876,26 @@ async function showApp(user){
 
   await loadPlayers();
   await loadMatchHistory();
+   const draft = getLiveMatchDraft();
+
+  if (draft?.matchId) {
+    const {data:activeMatch,error:activeMatchError}=await db
+      .from("matches")
+      .select("*")
+      .eq("id",draft.matchId)
+      .maybeSingle();
+
+    if (activeMatchError) {
+      console.error(
+        "Không thể khôi phục trận đấu:",
+        activeMatchError.message
+      );
+    } else if (activeMatch && activeMatch.status !== "completed") {
+      await openMatchEditor(activeMatch, null);
+    } else {
+      clearLiveMatchDraft();
+    }
+  }
 }
 
 function showLogin(){
