@@ -2772,6 +2772,8 @@ if (hasSavedDraft) {
 
 
 $("openCreateMatch").onclick=()=>{
+ if (!isAdmin()) return;
+
  $("createMatchModal").classList.remove("hidden");
  $("matchMsg").textContent="";
 };
@@ -2796,6 +2798,7 @@ $("matchDetailModal").addEventListener("click",e=>{
  }
 });
 $("createMatch").addEventListener("click", async () => {
+  if (!isAdmin()) return;
   const button = $("createMatch");
   const title = $("matchTitle").value.trim();
   const date = $("matchDate").value;
