@@ -1615,15 +1615,19 @@ function renderMatchPlayerOptions() {
       checkbox.checked = team.has(p.id);
       checkbox.style.cssText = "width:20px;height:20px;margin:0;flex-shrink:0";
 
+      
       checkbox.addEventListener("change", () => {
-        const limit = $("matchFormat").value === "5v5" ? 5 : 7;
-
         if (checkbox.checked) {
-          if (team.size >= limit) {
-            checkbox.checked = false;
-            message("matchMsg", "Mỗi đội chỉ được chọn tối đa " + limit + " cầu thủ.");
-            return;
-          }
+          team.add(p.id);
+          otherTeam.delete(p.id);
+        } else {
+          team.delete(p.id);
+        }
+
+        message("matchMsg", "");
+        renderMatchPlayerOptions();
+      });
+
 
           team.add(p.id);
           otherTeam.delete(p.id);
