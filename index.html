@@ -2621,6 +2621,7 @@ const entry={
 };
 
   minus.onclick=()=>{
+   if (!isAdmin()) return;
     entry.value=Math.max(0,entry.value-1);
 
     if(entry.events.length){
@@ -2637,6 +2638,7 @@ const entry={
   };
 
   plus.onclick=()=>{
+   if (!isAdmin()) return;
     const seconds=elapsedSeconds+
       (startedAt!==null
         ? Math.floor((Date.now()-startedAt)/1000)
@@ -2697,6 +2699,7 @@ if (hasSavedDraft) {
  msg.className="message";
 
  save.onclick=async()=>{
+  if (!isAdmin()) return;
   const score_a=goals.filter(x=>x.team==="A").reduce((n,x)=>n+x.value,0);
   const score_b=goals.filter(x=>x.team==="B").reduce((n,x)=>n+x.value,0);
 
