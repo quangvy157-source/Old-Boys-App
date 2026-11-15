@@ -814,17 +814,20 @@ function clearLiveMatchDraft() {
     console.error("Không thể xóa bản lưu trận đấu:", error);
   }
 }
- function persistCurrentLiveMatchDraft(
+ 
+function persistCurrentLiveMatchDraft(
   match,
   elapsedSeconds,
   startedAt,
-  goals
+  goals,
+  opponentGoals
 ) {
   saveLiveMatchDraft({
     matchId: String(match.id),
     elapsedSeconds: elapsedSeconds,
     startedAt: startedAt,
     savedAt: Date.now(),
+    opponentGoals: opponentGoals,
     goals: goals.map(entry => ({
       player_id: entry.player_id,
       team: entry.team,
@@ -833,6 +836,7 @@ function clearLiveMatchDraft() {
     }))
   });
 }
+
 $("resumeMatchBtn").onclick = () => {
   if (activeMatchSession) {
     $("matchDetailModal").classList.remove("hidden");
@@ -3083,7 +3087,7 @@ let timerInterval = null;
 
   $("activeMatchBar").classList.remove("hidden");
   persistCurrentLiveMatchDraft(
-    match, elapsedSeconds, startedAt, goals
+    match, elapsedSeconds, startedAt, goals, opponentGoals
   );
   timerInterval = setInterval(() => {
     updateTimer();
@@ -3098,7 +3102,7 @@ let timerInterval = null;
     startedAt = null;
     if (activeMatchSession) {
       persistCurrentLiveMatchDraft(
-        match, elapsedSeconds, startedAt, goals
+        match, elapsedSeconds, startedAt, goals, opponentGoals
       );
     }
     clearInterval(timerInterval);
@@ -3117,7 +3121,7 @@ let timerInterval = null;
     startedAt = null;
     if (activeMatchSession) {
       persistCurrentLiveMatchDraft(
-        match, elapsedSeconds, startedAt, goals
+        match, elapsedSeconds, startedAt, goals, opponentGoals
       );
     }
     updateTimer();
@@ -3149,6 +3153,9 @@ let timerInterval = null;
  content.appendChild(heading);
 
  const goals=[];
+let opponentGoals = hasSavedDraft
+  ? Number(savedDraft.opponentGoals) || 0
+  : Number(match.score_b) || 0;
 
   const refresh = () => {
     scoreA.textContent = goals
@@ -3253,7 +3260,7 @@ const entry={
     refresh();
        if (activeMatchSession) {
       persistCurrentLiveMatchDraft(
-        match, elapsedSeconds, startedAt, goals
+        match, elapsedSeconds, startedAt, goals, opponentGoals
       );
     }
   };
@@ -3274,7 +3281,7 @@ const entry={
     refresh();
        if (activeMatchSession) {
       persistCurrentLiveMatchDraft(
-        match, elapsedSeconds, startedAt, goals
+        match, elapsedSeconds, startedAt, goals, opponentGoals
       );
     }
   };
