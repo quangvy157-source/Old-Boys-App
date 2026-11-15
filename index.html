@@ -1584,6 +1584,167 @@ async function loadTeamStats() {
     ? (totalGoals / matches.length).toFixed(1)
     : "0";
 }
+ 
+async function exportMatchImage(match, matchScorers, goalEvents) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.fillStyle = "#080d09";
+  ctx.fillRect(0, 0, W, H);
+
+  const glow = ctx.createRadialGradient(540, 430, 50, 540, 430, 750);
+  glow.addColorStop(0, "#173b25");
+  glow.addColorStop(1, "#080d09");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = "#b5ff35";
+  ctx.lineWidth = 5;
+  ctx.strokeRect(35, 35, W - 70, H - 70);
+
+  ctx.fillStyle = "#b5ff35";
+  ctx.font = "bold 68px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("OLD BOYS", 540, 145);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 25px Arial";
+  ctx.fillText("MATCH REPORT", 540, 205);
+
+  ctx.fillStyle = "#b5ff35";
+  ctx.font = "bold 23px Arial";
+  ctx.fillText("FULL TIME", 540, 285);
+
+  const teamA = match.team_a_name || "ĐỘI A";
+  const teamB = match.team_b_name || "ĐỘI B";
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 39px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(teamA.toUpperCase().slice(0, 18), 270, 430);
+  ctx.fillText(teamB.toUpperCase().slice(0, 18), 810, 430);
+
+  ctx.fillStyle = "#b5ff35";
+  ctx.font = "bold 112px Arial";
+  ctx.fillText(
+    `${match.score_a ?? 0}  -  ${match.score_b ?? 0}`,
+    540,
+    585
+  );
+
+  ctx.fillStyle = "#aab5ac";
+  ctx.font = "27px Arial";
+  ctx.fillText(
+    `${match.match_date || ""}  ·  ${match.title || "TRẬN ĐẤU"}`,
+    540,
+    665
+  );
+
+  ctx.strokeStyle = "#49634b";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(100, 730);
+  ctx.lineTo(980, 730);
+  ctx.stroke();
+
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#b5ff35";
+  ctx.font = "bold 32px Arial";
+  ctx.fillText("GOAL SCORERS", 100, 795);
+
+  let y = 865;
+  ctx.font = "27px Arial";
+
+  if (!matchScorers.length) {
+    ctx.fillStyle = "#aab5ac";
+    ctx.fillText("Chưa có dữ liệu người ghi bàn", 100, y);
+  } else {
+    for (const scorer of matchScorers) {
+      const player = playerData.find(
+        p => String(p.id) === String(scorer.player_id)
+      );
+
+      const name = player?.full_name || "Cầu thủ";
+      const events = goalEvents.filter(
+        e =>
+          String(e.match_id) === String(match.id) &&
+          String(e.player_id) === String(scorer.player_id)
+      );
+
+      const minutes = events
+        .map(e => `${e.minute}'`)
+        .join(", ");
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(name.slice(0, 28), 100, y);
+
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#b5ff35";
+      ctx.fillText(
+        minutes || `${scorer.goals} bàn`,
+        980,
+        y
+      );
+      ctx.textAlign = "left";
+
+      y += 58;
+
+      if (y > 1150) {
+        ctx.fillStyle = "#aab5ac";
+        ctx.fillText("...", 100, y);
+        break;
+      }
+    }
+  }
+
+  ctx.fillStyle = "#b5ff35";
+  ctx.font = "bold 25px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("OLD BOYS  •  FOOTBALL CLUB", 540, 1250);
+
+  canvas.toBlob(async blob => {
+    if (!blob) {
+      alert("Không thể tạo ảnh kết quả. Vui lòng thử lại.");
+      return;
+    }
+
+    const file = new File(
+      [blob],
+      "old-boys-match-report.png",
+      { type: "image/png" }
+    );
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [file] })
+    ) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "Kết quả trận đấu OLD BOYS"
+        });
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          alert("Không thể chia sẻ ảnh. Vui lòng thử tải ảnh xuống.");
+        }
+      }
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "old-boys-match-report.png";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+    }
+  }, "image/png");
+}
+
 async function loadMatchHistory() {
   const box = $("matchHistory");
   box.textContent = "Đang tải lịch sử trận đấu...";
