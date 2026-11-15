@@ -624,6 +624,13 @@ input,select{
           </div>
         </div>
         <button id="createSession" type="button" style="width:100%">
+         
+<label>Thể thức trận đấu</label>
+<select id="sessionFormat" style="width:100%">
+  <option value="7v7">7 người / đội</option>
+  <option value="5v5">5 người / đội</option>
+</select>
+
           TẠO BUỔI ĐIỂM DANH
         </button>
       </div>
@@ -1664,39 +1671,99 @@ function renderAttendanceSummary(){
 }
 
 
+
 if ($("createSession")) {
-$("createSession").onclick=async()=>{
-   if (!isAdmin()) return;
-  const title=$("sessionTitle").value.trim()||"Buổi đá OLD BOYS";
-  const date=$("sessionDate").value;
+  $("createSession").onclick = async () => {
+    if (!isAdmin()) return;
 
-  if(!date){
-    message("sessionMsg","Vui lòng chọn ngày đá.");
-    return;
-  }
+    const button = $("createSession");
+    const title = $("sessionTitle").value.trim() || "Buổi đá OLD BOYS";
+    const date = $("sessionDate").value;
+    const time = $("sessionTime").value || null;
+    const format = $("sessionFormat").value;
 
-  $("createSession").disabled=true;
-  message("sessionMsg","Đang tạo buổi đá...");
+    if (!date) {
+      message("sessionMsg", "Vui lòng chọn ngày đá.");
+      return;
+    }
 
-  const {data,error}=await db.from("sessions").insert({
-    title,
-    session_date:date,
-    start_time:$("sessionTime").value||null
-  }).select("id").single();
+    button.disabled = true;
+    message("sessionMsg", "Đang tạo trận đấu và buổi điểm danh...");
 
-  $("createSession").disabled=false;
+    let matchId = null;
 
-  if(error){
-    message("sessionMsg","Không tạo được: "+error.message);
-    return;
-  }
+    try {
+      // Tạo trận đấu trước
+      const { data: match, error: matchError } = await db
+        .from("matches")
+        .insert({
+          title: title,
+          match_date: date,
+          start_time: time,
+          format: format,
+          match_format: format,
+          team_a_name: "OLD BOYS",
+          team_b_name: "ĐỐI THỦ",
+          score_a: 0,
+          score_b: 0,
+          status: "scheduled"
+        })
+        .select("id")
+        .single();
 
-  message("sessionMsg","Đã tạo buổi điểm danh thành công.");
+      if (matchError) throw matchError;
 
-  await loadSessions();
-  $("sessionSelect").value=data.id;
-  await loadAttendance();
-};
+      matchId = match.id;
+
+      // Tạo buổi điểm danh và liên kết với trận
+      const { data: session, error: sessionError } = await db
+        .from("sessions")
+        .insert({
+          title: title,
+          session_date: date,
+          start_time: time,
+          match_id: matchId
+        })
+        .select("id")
+        .single();
+
+      if (sessionError) throw sessionError;
+
+      message(
+        "sessionMsg",
+        "Đã tạo trận đấu và buổi điểm danh thành công!"
+      );
+
+      await loadSessions();
+      $("sessionSelect").value = session.id;
+      await loadAttendance();
+
+      await loadMatchHistory();
+
+    } catch (error) {
+      // Nếu tạo điểm danh lỗi thì xóa trận vừa tạo
+      if (matchId) {
+        const { error: cleanupError } = await db
+          .from("matches")
+          .delete()
+          .eq("id", matchId);
+
+        if (cleanupError) {
+          console.error("Không thể dọn trận đấu:", cleanupError.message);
+        }
+      }
+
+      message(
+        "sessionMsg",
+        "Không tạo được: " + error.message
+      );
+
+    } finally {
+      button.disabled = false;
+    }
+  };
+}
+
 
 $("sessionSelect").onchange=loadAttendance;
 $("reloadSessions").onclick=loadSessions;
