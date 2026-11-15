@@ -1379,6 +1379,7 @@ function renderAttendance(){
 }
 if ($("createSession")) {
 $("createSession").onclick=async()=>{
+   if (!isAdmin()) return;
   const title=$("sessionTitle").value.trim()||"Buổi đá OLD BOYS";
   const date=$("sessionDate").value;
 
