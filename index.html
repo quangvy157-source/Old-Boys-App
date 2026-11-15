@@ -1590,7 +1590,10 @@ async function loadTeamStats() {
  
 
 
-function exportMatchImage(match, matchScorers, goalEvents) {
+async function exportMatchImage(match, matchScorers, goalEvents) {
+  await document.fonts.load('900 100px "Barlow Condensed"');
+  await document.fonts.load('700 24px "Barlow"');
+  await document.fonts.ready;
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1350;
@@ -1760,19 +1763,19 @@ function exportMatchImage(match, matchScorers, goalEvents) {
   // Brand header
   ctx.textAlign = "left";
   ctx.fillStyle = lime;
-  ctx.font = "900 76px Impact, 'Arial Black', sans-serif";
+  ctx.font = '900 76px "Barlow Condensed", sans-serif';
   ctx.shadowColor = "rgba(197,255,53,0.3)";
   ctx.shadowBlur = 15;
   ctx.fillText("OLD BOYS", 65, 125);
   ctx.shadowBlur = 0;
 
   ctx.fillStyle = white;
-  ctx.font = "bold 19px 'Arial Black', Arial, sans-serif";
+  ctx.font = '700 19px "Barlow", sans-serif';
   ctx.fillText("FOOTBALL CLUB  /  STREET DIVISION", 70, 160);
 
   ctx.textAlign = "right";
   ctx.fillStyle = muted;
-  ctx.font = "bold 18px 'Arial Black', Arial, sans-serif";
+  ctx.font = '700 18px "Barlow", sans-serif';
   ctx.fillText("EST. 2026", 1010, 115);
 
   // FULL TIME centered
@@ -1785,7 +1788,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
   ctx.fillStyle = black;
   ctx.textAlign = "center";
-  ctx.font = "900 62px Impact, 'Arial Black', sans-serif";
+  ctx.font = '900 62px "Barlow Condensed", sans-serif';
   ctx.fillText("FULL TIME", 0, 13);
 
   ctx.restore();
@@ -1805,7 +1808,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
   ctx.textAlign = "center";
   ctx.fillStyle = white;
-  ctx.font = "900 36px 'Arial Black', Impact, sans-serif";
+  ctx.font = '900 36px "Barlow", sans-serif';
 
   ctx.fillText(
     [displayDate, displayTime].filter(Boolean).join("   /   "),
@@ -1816,7 +1819,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
   // Small match title
   ctx.fillStyle = muted;
-  ctx.font = "bold 19px Arial, sans-serif";
+  ctx.font = '600 19px "Barlow", sans-serif';
   ctx.fillText(match.title || "OLD BOYS MATCH", 540, 382, 900);
 
   // Scoreboard background
@@ -1859,13 +1862,13 @@ function exportMatchImage(match, matchScorers, goalEvents) {
   ctx.shadowColor = "rgba(197,255,53,0.4)";
   ctx.shadowBlur = 18;
   ctx.fillStyle = lime;
-  ctx.font = "900 190px Impact, 'Arial Black', sans-serif";
+  ctx.font = '900 190px "Barlow Condensed", sans-serif';
   ctx.fillText(String(match.score_a ?? 0), 285, 735);
   ctx.fillText(String(match.score_b ?? 0), 795, 735);
   ctx.shadowBlur = 0;
 
   ctx.fillStyle = white;
-  ctx.font = "900 38px Impact, 'Arial Black', sans-serif";
+   ctx.font = '900 38px "Barlow Condensed", sans-serif';
   ctx.fillText(":", 540, 680);
 
   roughLine(
@@ -1893,7 +1896,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
     ctx.textAlign = "left";
     ctx.fillStyle = black;
-    ctx.font = "900 27px Impact, 'Arial Black', sans-serif";
+    ctx.font = '900 27px "Barlow Condensed", sans-serif';
     ctx.fillText(title.toUpperCase(), x + 18, panelY + 37, panelW - 36);
 
     const scorers = matchScorers.filter(
@@ -1902,7 +1905,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
     if (!scorers.length) {
       ctx.fillStyle = muted;
-      ctx.font = "bold 21px Arial, sans-serif";
+      ctx.font = '600 21px "Barlow", sans-serif';
       ctx.fillText("Chưa có bàn thắng", x + 20, panelY + 105);
       return;
     }
@@ -1940,7 +1943,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
       ctx.textAlign = "left";
       ctx.fillStyle = white;
-      ctx.font = "bold 23px 'Arial Black', Arial, sans-serif";
+      ctx.font = '700 23px "Barlow", sans-serif';
 
       textFit(
         name,
@@ -1953,7 +1956,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
       );
 
       ctx.fillStyle = lime;
-      ctx.font = "bold 19px Arial, sans-serif";
+      ctx.font = '600 19px "Barlow", sans-serif';
       ctx.fillText(
         minutes || `${scorer.goals} bàn`,
         x + 42,
@@ -1980,7 +1983,7 @@ function exportMatchImage(match, matchScorers, goalEvents) {
 
   ctx.fillStyle = black;
   ctx.textAlign = "center";
-  ctx.font = "900 25px Impact, 'Arial Black', sans-serif";
+  ctx.font = '900 25px "Barlow Condensed", sans-serif';
   ctx.fillText("BUILT BY THE GAME  /  OLD BOYS", 0, 9);
 
   ctx.restore();
