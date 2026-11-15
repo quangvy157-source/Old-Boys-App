@@ -2617,7 +2617,10 @@ const plus=document.createElement("button");
 plus.type="button";
 plus.className="goal-btn";
 plus.textContent="+";
-
+if (!isAdmin()) {
+  minus.classList.add("hidden");
+  plus.classList.add("hidden");
+}
 const entry={
   player_id:item.player_id,
   team:item.team,
@@ -2701,7 +2704,7 @@ if (hasSavedDraft) {
  save.type="button";
  save.textContent="LƯU KẾT QUẢ";
  save.style.cssText="width:100%;margin-top:16px";
-
+if (!isAdmin()) save.classList.add("hidden");
  const msg=document.createElement("div");
  msg.className="message";
 
