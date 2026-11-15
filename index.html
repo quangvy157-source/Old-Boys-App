@@ -2010,6 +2010,10 @@ async function openMatchEditor(match, card) {
  content.appendChild(heading);
 
  const goals=[];
+const savedDraft = getLiveMatchDraft();
+const hasSavedDraft =
+  savedDraft &&
+  savedDraft.matchId === String(match.id);
 
    
   const refresh = () => {
@@ -2072,22 +2076,33 @@ async function openMatchEditor(match, card) {
   minus.className="goal-btn minus";
   minus.textContent="−";
 
-  const count=document.createElement("strong");
-  count.className="goal-count";
-  count.textContent=oldGoals.get(item.player_id)||0;
+  const savedGoal = hasSavedDraft
+  ? savedDraft.goals?.find(
+      saved => String(saved.player_id) === String(item.player_id)
+    )
+  : null;
 
-  const plus=document.createElement("button");
-  plus.type="button";
-  plus.className="goal-btn";
-  plus.textContent="+";
+const initialGoals = savedGoal
+  ? Number(savedGoal.value) || 0
+  : oldGoals.get(item.player_id) || 0;
 
-  
-  const entry={
-    player_id:item.player_id,
-    team:item.team,
-    value:oldGoals.get(item.player_id)||0,
-    events:[...(oldEventMap.get(item.player_id)||[])]
-  };
+const count=document.createElement("strong");
+count.className="goal-count";
+count.textContent=initialGoals;
+
+const plus=document.createElement("button");
+plus.type="button";
+plus.className="goal-btn";
+plus.textContent="+";
+
+const entry={
+  player_id:item.player_id,
+  team:item.team,
+  value:initialGoals,
+  events:savedGoal
+    ? [...(savedGoal.events || [])]
+    : [...(oldEventMap.get(item.player_id)||[])]
+};
 
   minus.onclick=()=>{
     entry.value=Math.max(0,entry.value-1);
