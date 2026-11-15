@@ -1372,7 +1372,7 @@ function renderAttendance(){
     ].forEach(([v,t])=>select.add(new Option(t,v)));
 
     select.value=saved.get(p.id)||"present";
-
+select.disabled = !isAdmin();
     row.append(name,select);
     $("attendanceList").append(row);
   });
