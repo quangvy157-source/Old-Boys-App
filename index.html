@@ -577,6 +577,11 @@ button:disabled{opacity:.5}
 <script>
  const $ = id => document.getElementById(id);
  let activeMatchSession = null;
+ let currentUserRole = "member";
+
+function isAdmin() {
+  return currentUserRole === "admin";
+}
 const LIVE_MATCH_DRAFT_KEY = "oldBoysLiveMatchDraft";
 
 function getLiveMatchDraft() {
@@ -870,9 +875,27 @@ function localDateValue(){
 }
 
 async function showApp(user){
+  const {data: profile, error: profileError} = await db
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    console.error("Không xác định được quyền tài khoản:", profileError);
+    alert("Không thể xác định quyền tài khoản. Vui lòng đăng nhập lại.");
+    await db.auth.signOut();
+    showLogin();
+    return;
+  }
+
+  currentUserRole = profile.role === "admin" ? "admin" : "member";
+
   $("login").classList.add("hidden");
   $("app").classList.remove("hidden");
-  $("account").textContent=user.email || "";
+  $("account").textContent =
+    (user.email || "") + " · " +
+    (isAdmin() ? "ADMIN" : "THÀNH VIÊN");
 
   showDemo(0);
   startDemo();
