@@ -329,6 +329,147 @@ button:disabled{opacity:.5}
  .att-row{gap:7px}
  .att-row select{width:130px}
 }
+ 
+/* OLD BOYS - PREMIUM MINIMAL REFINEMENT */
+body{
+  font-family:'Barlow',Arial,sans-serif;
+  background:
+    radial-gradient(ellipse at 50% -15%,rgba(183,255,54,.08),transparent 42%),
+    #090d0a;
+  padding:14px;
+  letter-spacing:.1px;
+}
+
+.wrap{
+  max-width:760px;
+}
+
+header{
+  padding:16px 0 20px;
+}
+
+.logo{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:5px;
+  line-height:1;
+  text-shadow:0 0 24px rgba(183,255,54,.12);
+}
+
+.sub{
+  font-size:10px;
+  letter-spacing:2px;
+}
+
+.panel{
+  background:linear-gradient(145deg,#151c17,#101612);
+  border:1px solid #29352c;
+  border-radius:14px;
+  padding:16px;
+  margin:10px 0;
+  box-shadow:0 5px 18px rgba(0,0,0,.16);
+}
+
+h2{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+button{
+  font-family:'Barlow',Arial,sans-serif;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.35px;
+  border-radius:9px;
+  transition:filter .15s ease;
+}
+
+button:active{
+  filter:brightness(.88);
+}
+
+input,select{
+  font-family:'Barlow',Arial,sans-serif;
+  border-radius:9px;
+  padding:11px 12px;
+  background:#0b110d;
+  border-color:#303d33;
+}
+
+.stats{
+  gap:8px;
+}
+
+.stat{
+  padding:12px 7px;
+  background:linear-gradient(145deg,#111a13,#0b100d);
+  border:1px solid #263329;
+  border-radius:11px;
+}
+
+.stat strong{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:27px;
+  font-weight:900;
+}
+
+.stat span{
+  font-size:10px;
+  letter-spacing:.3px;
+}
+
+.accordion summary{
+  padding:14px;
+}
+
+.accordion-body{
+  padding:0 14px 14px;
+}
+
+.match-card{
+  border-radius:12px;
+  box-shadow:0 5px 16px rgba(0,0,0,.16);
+}
+
+@media(max-width:480px){
+  body{
+    padding:9px;
+  }
+
+  header{
+    padding:13px 0 16px;
+  }
+
+  .panel{
+    padding:12px;
+    margin:8px 0;
+    border-radius:12px;
+  }
+
+  .accordion summary{
+    padding:13px;
+  }
+
+  .accordion-body{
+    padding:0 12px 12px;
+  }
+
+  .stat{
+    padding:11px 5px;
+  }
+
+  .stat strong{
+    font-size:24px;
+  }
+
+  .stat span{
+    font-size:9px;
+  }
+}
+
 </style>
 </head>
 <body>
