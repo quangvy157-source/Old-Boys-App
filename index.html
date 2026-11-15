@@ -1415,6 +1415,7 @@ $("sessionSelect").onchange=loadAttendance;
 $("reloadSessions").onclick=loadSessions;
 
 $("saveAttendance").onclick=async()=>{
+   if (!isAdmin()) return;
   const sid=$("sessionSelect").value;
 
   if(!sid){
