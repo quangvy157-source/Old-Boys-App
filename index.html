@@ -499,6 +499,11 @@ button:disabled{opacity:.5}
         LƯU ĐIỂM DANH
       </button>
       <div id="attendanceMsg" class="message"></div>
+
+<div style="margin-top:18px;padding:14px;background:#101713;border:1px solid #354238;border-radius:12px">
+  <h3 style="margin:0 0 12px">DANH SÁCH ĐIỂM DANH ĐÃ LƯU</h3>
+  <div id="attendanceSummary"></div>
+</div>
     </div>
   </details>
 
@@ -1419,6 +1424,7 @@ async function loadAttendance(){
 
   attendanceData=data||[];
   renderAttendance();
+renderAttendanceSummary();
 }
 
 function renderAttendance(){
@@ -1454,6 +1460,78 @@ select.disabled = !isAdmin();
     $("attendanceList").append(row);
   });
 }
+ 
+function renderAttendanceSummary(){
+  const box=$("attendanceSummary");
+  if(!box) return;
+
+  box.innerHTML="";
+
+  const groups=[
+    {key:"present",label:"CÓ MẶT"},
+    {key:"late",label:"CÓ MẶT TRỄ"},
+    {key:"absent",label:"VẮNG MẶT"}
+  ];
+
+  const saved=new Map(
+    attendanceData.map(x=>[x.player_id,x.status])
+  );
+
+  const players=playerData.filter(p=>
+    p.is_active && saved.has(p.id)
+  );
+
+  const counts={
+    present:0,
+    late:0,
+    absent:0
+  };
+
+  players.forEach(p=>{
+    const status=saved.get(p.id);
+    if(counts[status]!==undefined) counts[status]++;
+  });
+
+  const total=document.createElement("div");
+  total.style.cssText="margin-bottom:14px;font-weight:bold;color:#fff";
+  total.textContent=
+    "TỔNG: "+players.length+
+    " · Có mặt: "+counts.present+
+    " · Trễ: "+counts.late+
+    " · Vắng: "+counts.absent;
+  box.appendChild(total);
+
+  groups.forEach(group=>{
+    const members=players.filter(
+      p=>saved.get(p.id)===group.key
+    );
+
+    const heading=document.createElement("div");
+    heading.style.cssText=
+      "margin-top:12px;padding:9px;background:#202b24;border-radius:8px;font-weight:bold";
+    heading.textContent=group.label+" ("+members.length+")";
+    box.appendChild(heading);
+
+    if(!members.length){
+      const empty=document.createElement("div");
+      empty.style.cssText="padding:8px;color:#888;font-size:13px";
+      empty.textContent="Chưa có thành viên";
+      box.appendChild(empty);
+      return;
+    }
+
+    members.forEach(p=>{
+      const row=document.createElement("div");
+      row.style.cssText=
+        "padding:9px 4px;border-bottom:1px solid #303a32;color:#eee";
+      row.textContent=
+        (p.jersey_number!=null?"#"+p.jersey_number+" ":"")+
+        p.full_name;
+      box.appendChild(row);
+    });
+  });
+}
+
 if ($("createSession")) {
 $("createSession").onclick=async()=>{
    if (!isAdmin()) return;
@@ -1530,7 +1608,7 @@ $("saveAttendance").onclick=async()=>{
     player_id:x.player_id,
     status:x.status
   }));
-
+renderAttendanceSummary();
   message("attendanceMsg","Đã lưu điểm danh thành công.");
 };
 }
