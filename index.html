@@ -1461,6 +1461,7 @@ select.disabled = !isAdmin();
   });
 }
  
+
 function renderAttendanceSummary(){
   const box=$("attendanceSummary");
   if(!box) return;
@@ -1469,7 +1470,7 @@ function renderAttendanceSummary(){
 
   const groups=[
     {key:"present",label:"CÓ MẶT"},
-    {key:"late",label:"CÓ MẶT TRỄ"},
+    {key:"late",label:"ĐI TRỄ"},
     {key:"absent",label:"VẮNG MẶT"}
   ];
 
@@ -1481,56 +1482,46 @@ function renderAttendanceSummary(){
     p.is_active && saved.has(p.id)
   );
 
-  const counts={
-    present:0,
-    late:0,
-    absent:0
-  };
-
-  players.forEach(p=>{
-    const status=saved.get(p.id);
-    if(counts[status]!==undefined) counts[status]++;
-  });
-
-  const total=document.createElement("div");
-  total.style.cssText="margin-bottom:14px;font-weight:bold;color:#fff";
-  total.textContent=
-    "TỔNG: "+players.length+
-    " · Có mặt: "+counts.present+
-    " · Trễ: "+counts.late+
-    " · Vắng: "+counts.absent;
-  box.appendChild(total);
-
   groups.forEach(group=>{
     const members=players.filter(
       p=>saved.get(p.id)===group.key
     );
 
-    const heading=document.createElement("div");
-    heading.style.cssText=
-      "margin-top:12px;padding:9px;background:#202b24;border-radius:8px;font-weight:bold";
-    heading.textContent=group.label+" ("+members.length+")";
-    box.appendChild(heading);
+    const details=document.createElement("details");
+    details.style.cssText=
+      "margin:8px 0;border:1px solid #354238;border-radius:10px;background:#172019;overflow:hidden";
+
+    const summary=document.createElement("summary");
+    summary.style.cssText=
+      "padding:14px;font-weight:bold;cursor:pointer;list-style:none;color:#fff";
+    summary.textContent=
+      group.label+"  ·  "+members.length+" NGƯỜI";
+
+    const list=document.createElement("div");
+    list.style.cssText="padding:0 14px 8px";
 
     if(!members.length){
       const empty=document.createElement("div");
-      empty.style.cssText="padding:8px;color:#888;font-size:13px";
+      empty.style.cssText="padding:10px 0;color:#888;font-size:13px";
       empty.textContent="Chưa có thành viên";
-      box.appendChild(empty);
-      return;
+      list.appendChild(empty);
+    }else{
+      members.forEach(p=>{
+        const row=document.createElement("div");
+        row.style.cssText=
+          "padding:11px 2px;border-top:1px solid #303a32;color:#eee";
+        row.textContent=
+          (p.jersey_number!=null?"#"+p.jersey_number+" ":"")+
+          p.full_name;
+        list.appendChild(row);
+      });
     }
 
-    members.forEach(p=>{
-      const row=document.createElement("div");
-      row.style.cssText=
-        "padding:9px 4px;border-bottom:1px solid #303a32;color:#eee";
-      row.textContent=
-        (p.jersey_number!=null?"#"+p.jersey_number+" ":"")+
-        p.full_name;
-      box.appendChild(row);
-    });
+    details.append(summary,list);
+    box.appendChild(details);
   });
 }
+
 
 if ($("createSession")) {
 $("createSession").onclick=async()=>{
