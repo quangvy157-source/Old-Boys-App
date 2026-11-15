@@ -466,6 +466,42 @@ button:disabled{opacity:.5}
     </div>
   </details>
 
+  <details class="panel accordion">
+    <summary><h2>ĐIỂM DANH BUỔI ĐÁ</h2></summary>
+    <div class="accordion-body">
+      <div data-admin-only>
+        <label>Tên buổi đá</label>
+        <input id="sessionTitle" placeholder="Ví dụ: Buổi đá OLD BOYS">
+        <div class="top">
+          <div style="flex:1">
+            <label>Ngày đá</label>
+            <input id="sessionDate" type="date">
+          </div>
+          <div style="flex:1">
+            <label>Giờ đá</label>
+            <input id="sessionTime" type="time">
+          </div>
+        </div>
+        <button id="createSession" type="button" style="width:100%">
+          TẠO BUỔI ĐIỂM DANH
+        </button>
+      </div>
+      <div id="sessionMsg" class="message"></div>
+
+      <label>Chọn buổi đá</label>
+      <select id="sessionSelect" style="width:100%"></select>
+      <button id="reloadSessions" type="button" class="secondary" style="width:100%;margin-top:8px">
+        LÀM MỚI DANH SÁCH
+      </button>
+
+      <div id="attendanceList" style="margin-top:15px"></div>
+      <button id="saveAttendance" type="button" style="width:100%;margin-top:12px">
+        LƯU ĐIỂM DANH
+      </button>
+      <div id="attendanceMsg" class="message"></div>
+    </div>
+  </details>
+
   <section class="panel accordion" id="matchesPanel">
     <details class="accordion">
       <summary><h2>QUẢN LÝ TRẬN ĐẤU</h2></summary>
