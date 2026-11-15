@@ -1843,7 +1843,10 @@ async function openMatchEditor(match, card) {
   }
   oldEventMap.get(event.player_id).push(Number(event.minute));
  });
-
+const savedDraft = getLiveMatchDraft();
+const hasSavedDraft =
+  savedDraft &&
+  savedDraft.matchId === String(match.id);
  content.innerHTML="";
 
  const title=document.createElement("h2");
@@ -1917,9 +1920,15 @@ async function openMatchEditor(match, card) {
   resetTimer.className = "secondary";
   resetTimer.textContent = "ĐẶT LẠI";
 
-  let elapsedSeconds = 0;
-  let startedAt = null;
-  let timerInterval = null;
+let elapsedSeconds = hasSavedDraft
+  ? Number(savedDraft.elapsedSeconds) || 0
+  : 0;
+
+let startedAt = hasSavedDraft && savedDraft.startedAt
+  ? Number(savedDraft.startedAt)
+  : null;
+
+let timerInterval = null;
 
   const updateTimer = () => {
     const seconds = elapsedSeconds +
@@ -2010,12 +2019,7 @@ async function openMatchEditor(match, card) {
  content.appendChild(heading);
 
  const goals=[];
-const savedDraft = getLiveMatchDraft();
-const hasSavedDraft =
-  savedDraft &&
-  savedDraft.matchId === String(match.id);
 
-   
   const refresh = () => {
     scoreA.textContent = goals
       .filter(x => x.team === "A")
@@ -2147,7 +2151,31 @@ const entry={
  });
 
  refresh();
+if (hasSavedDraft) {
+  activeMatchSession = {
+    matchId: String(match.id)
+  };
 
+  $("activeMatchInfo").textContent =
+    match.title ||
+    (match.team_a_name + " vs " + match.team_b_name);
+
+  $("activeMatchBar").classList.remove("hidden");
+
+  updateTimer();
+
+  if (startedAt !== null) {
+    startTimer.disabled = true;
+    pauseTimer.disabled = false;
+
+    timerInterval = setInterval(() => {
+      updateTimer();
+    }, 250);
+  } else {
+    startTimer.disabled = false;
+    pauseTimer.disabled = true;
+  }
+}
  const save=document.createElement("button");
  save.type="button";
  save.textContent="LƯU KẾT QUẢ";
