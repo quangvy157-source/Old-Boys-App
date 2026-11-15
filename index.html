@@ -1586,7 +1586,8 @@ async function loadTeamStats() {
 }
  
 
-async function exportMatchImage(match, matchScorers, goalEvents) {
+
+function exportMatchImage(match, matchScorers, goalEvents) {
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1350;
@@ -1594,221 +1595,391 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
   const ctx = canvas.getContext("2d");
   const W = 1080;
   const H = 1350;
+
   const lime = "#c5ff35";
-  const white = "#f4f3ed";
-  const muted = "#9da39a";
+  const white = "#f3f0e7";
+  const muted = "#aaa99e";
+  const black = "#090a09";
 
-  // Background
-  ctx.fillStyle = "#090b0a";
+  const teamA = match.team_a_name || "ĐỘI A";
+  const teamB = match.team_b_name || "ĐỘI B";
+
+  // Helpers
+  function textFit(text, x, y, maxWidth, fontSize, font, color) {
+    ctx.font = `900 ${fontSize}px ${font}`;
+    while (ctx.measureText(text).width > maxWidth && fontSize > 15) {
+      fontSize -= 2;
+      ctx.font = `900 ${fontSize}px ${font}`;
+    }
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
+  }
+
+  function roughLine(x1, y1, x2, y2, color, width) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  // Concrete / asphalt background
+  ctx.fillStyle = "#111310";
   ctx.fillRect(0, 0, W, H);
 
-  const glow = ctx.createRadialGradient(760, 420, 30, 760, 420, 700);
-  glow.addColorStop(0, "#1c3020");
-  glow.addColorStop(1, "#090b0a");
-  ctx.fillStyle = glow;
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, "#242720");
+  bg.addColorStop(0.45, "#10120f");
+  bg.addColorStop(1, "#080a08");
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Grain and street halftone
-  for (let i = 0; i < 1800; i++) {
+  // Concrete stains
+  for (let i = 0; i < 170; i++) {
     const x = Math.random() * W;
     const y = Math.random() * H;
-    ctx.fillStyle = Math.random() > 0.5
-      ? "rgba(255,255,255,0.10)"
-      : "rgba(0,0,0,0.18)";
-    ctx.fillRect(x, y, 2, 2);
-  }
+    const radius = 8 + Math.random() * 55;
 
-  ctx.fillStyle = "rgba(197,255,53,0.20)";
-  for (let y = 70; y < 340; y += 18) {
-    for (let x = 790; x < 1030; x += 18) {
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
+    const stain = ctx.createRadialGradient(
+      x, y, 0, x, y, radius
+    );
 
-  // Diagonal street graphics
-  ctx.save();
-  ctx.translate(900, 450);
-  ctx.rotate(-0.22);
-  ctx.fillStyle = lime;
-  ctx.fillRect(-30, -260, 13, 550);
-  ctx.fillStyle = "rgba(197,255,53,0.13)";
-  ctx.fillRect(5, -260, 45, 550);
-  ctx.restore();
+    stain.addColorStop(0, "rgba(180,180,160,0.07)");
+    stain.addColorStop(1, "rgba(0,0,0,0)");
 
-  // Paint splashes
-  for (let i = 0; i < 85; i++) {
-    const x = 35 + Math.random() * 180;
-    const y = 250 + Math.random() * 210;
-    const radius = 1 + Math.random() * 5;
-    ctx.fillStyle = i % 3 === 0
-      ? lime
-      : "rgba(255,255,255,0.35)";
+    ctx.fillStyle = stain;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // Outer frame
-  ctx.strokeStyle = "rgba(244,243,237,0.35)";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(35, 35, 1010, 1280);
+  // Rough grain
+  for (let i = 0; i < 6500; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    const size = Math.random() * 2.2;
 
-  // Header
-  ctx.fillStyle = lime;
-  ctx.font = "900 66px Arial";
-  ctx.textAlign = "left";
-  ctx.fillText("OLD BOYS", 75, 125);
+    ctx.fillStyle = Math.random() > 0.5
+      ? "rgba(255,255,255,0.12)"
+      : "rgba(0,0,0,0.35)";
 
-  ctx.fillStyle = white;
-  ctx.font = "bold 20px Arial";
-  ctx.fillText("FOOTBALL CLUB  /  MATCH DIVISION", 78, 165);
+    ctx.fillRect(x, y, size, size);
+  }
 
-  ctx.textAlign = "right";
-  ctx.fillStyle = lime;
-  ctx.font = "bold 22px Arial";
-  ctx.fillText("EST. 2026", 1000, 105);
+  // Spray paint cloud
+  for (let i = 0; i < 520; i++) {
+    const x = 760 + Math.random() * 340;
+    const y = 70 + Math.random() * 360;
+    const radius = Math.random() * 3.5;
 
-  // Match report label
+    ctx.fillStyle = Math.random() > 0.35
+      ? "rgba(197,255,53,0.35)"
+      : "rgba(235,235,220,0.2)";
+
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Halftone pattern
+  ctx.fillStyle = "rgba(197,255,53,0.25)";
+  for (let y = 70; y < 430; y += 17) {
+    for (let x = 35; x < 330; x += 17) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Distressed paint strokes
   ctx.save();
-  ctx.translate(80, 250);
-  ctx.rotate(-0.045);
-  ctx.fillStyle = lime;
-  ctx.fillRect(0, 0, 270, 48);
-  ctx.fillStyle = "#090b0a";
-  ctx.font = "900 25px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("FULL TIME  /  90'", 135, 33);
+  ctx.translate(850, 470);
+  ctx.rotate(-0.28);
+
+  for (let i = 0; i < 12; i++) {
+    ctx.fillStyle = i % 2 === 0
+      ? "rgba(197,255,53,0.8)"
+      : "rgba(245,245,230,0.18)";
+
+    ctx.fillRect(
+      -25 + Math.random() * 90,
+      -250 + i * 42,
+      5 + Math.random() * 28,
+      4 + Math.random() * 10
+    );
+  }
+
   ctx.restore();
 
+  // Scratch marks
+  for (let i = 0; i < 65; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+
+    roughLine(
+      x,
+      y,
+      x + 15 + Math.random() * 70,
+      y - 5 + Math.random() * 12,
+      "rgba(235,235,220,0.16)",
+      1 + Math.random() * 2
+    );
+  }
+
+  // Torn graphic corner blocks
+  ctx.fillStyle = lime;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(300, 0);
+  ctx.lineTo(245, 18);
+  ctx.lineTo(0, 48);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "#d9d7ca";
+  ctx.fillRect(850, 0, 230, 8);
+
+  // Outer distressed frame
+  ctx.strokeStyle = "rgba(245,240,225,0.55)";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(32, 32, 1016, 1286);
+
+  ctx.strokeStyle = "rgba(197,255,53,0.65)";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(32, 190);
+  ctx.lineTo(32, 480);
+  ctx.moveTo(1048, 820);
+  ctx.lineTo(1048, 1130);
+  ctx.stroke();
+
+  // Brand header
   ctx.textAlign = "left";
+  ctx.fillStyle = lime;
+  ctx.font = "900 76px Impact, 'Arial Black', sans-serif";
+  ctx.shadowColor = "rgba(197,255,53,0.3)";
+  ctx.shadowBlur = 15;
+  ctx.fillText("OLD BOYS", 65, 125);
+  ctx.shadowBlur = 0;
+
   ctx.fillStyle = white;
-  ctx.font = "900 82px Arial";
-  ctx.fillText("MATCH", 75, 365);
-  ctx.fillStyle = lime;
-  ctx.fillText("REPORT.", 75, 445);
+  ctx.font = "bold 19px 'Arial Black', Arial, sans-serif";
+  ctx.fillText("FOOTBALL CLUB  /  STREET DIVISION", 70, 160);
 
-  // Match information
+  ctx.textAlign = "right";
   ctx.fillStyle = muted;
-  ctx.font = "bold 23px Arial";
-  ctx.fillText(
-    `${match.match_date || ""}   /   ${match.title || "LEAGUE MATCH"}`,
-    78,
-    500
-  );
+  ctx.font = "bold 18px 'Arial Black', Arial, sans-serif";
+  ctx.fillText("EST. 2026", 1010, 115);
 
-  // Scoreboard panel
-  ctx.fillStyle = "#151a16";
-  ctx.fillRect(65, 545, 950, 355);
+  // FULL TIME centered
+  ctx.save();
+  ctx.translate(540, 245);
+  ctx.rotate(-0.025);
 
   ctx.fillStyle = lime;
-  ctx.fillRect(65, 545, 12, 355);
+  ctx.fillRect(-205, -43, 410, 72);
 
-  const teamA = match.team_a_name || "ĐỘI A";
-  const teamB = match.team_b_name || "ĐỘI B";
+  ctx.fillStyle = black;
+  ctx.textAlign = "center";
+  ctx.font = "900 62px Impact, 'Arial Black', sans-serif";
+  ctx.fillText("FULL TIME", 0, 13);
+
+  ctx.restore();
+
+  // Date and time centered
+  const rawDate = match.match_date || "";
+  let displayDate = rawDate;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+    const [year, month, day] = rawDate.split("-");
+    displayDate = `${day}.${month}.${year}`;
+  }
+
+  const displayTime = match.start_time
+    ? match.start_time.slice(0, 5)
+    : "";
 
   ctx.textAlign = "center";
   ctx.fillStyle = white;
-  ctx.font = "900 34px Arial";
-  ctx.fillText(teamA.toUpperCase(), 285, 635, 350);
-  ctx.fillText(teamB.toUpperCase(), 795, 635, 350);
+  ctx.font = "900 36px 'Arial Black', Impact, sans-serif";
 
-  ctx.fillStyle = lime;
-  ctx.font = "900 112px Arial";
-  ctx.fillText(String(match.score_a ?? 0), 285, 795);
-  ctx.fillText(String(match.score_b ?? 0), 795, 795);
+  ctx.fillText(
+    [displayDate, displayTime].filter(Boolean).join("   /   "),
+    540,
+    340,
+    900
+  );
 
+  // Small match title
   ctx.fillStyle = muted;
-  ctx.font = "bold 27px Arial";
-  ctx.fillText("VS", 540, 780);
+  ctx.font = "bold 19px Arial, sans-serif";
+  ctx.fillText(match.title || "OLD BOYS MATCH", 540, 382, 900);
 
-  // Scoreboard divider
-  ctx.strokeStyle = "rgba(255,255,255,0.18)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(540, 660);
-  ctx.lineTo(540, 835);
-  ctx.stroke();
+  // Scoreboard background
+  ctx.fillStyle = "rgba(0,0,0,0.65)";
+  ctx.fillRect(58, 430, 964, 365);
 
-  // Scorers heading
-  ctx.textAlign = "left";
-  ctx.fillStyle = lime;
-  ctx.font = "900 35px Arial";
-  ctx.fillText("GOAL SCORERS", 78, 980);
-
-  ctx.fillStyle = muted;
-  ctx.font = "bold 18px Arial";
-  ctx.textAlign = "right";
-  ctx.fillText("MATCH STATISTICS", 1000, 978);
-
-  ctx.strokeStyle = lime;
+  ctx.strokeStyle = "rgba(197,255,53,0.65)";
   ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(78, 1000);
-  ctx.lineTo(1000, 1000);
-  ctx.stroke();
+  ctx.strokeRect(58, 430, 964, 365);
 
-  // Scorer list
-  let y = 1060;
-  ctx.textAlign = "left";
+  // Rough side accents
+  ctx.fillStyle = lime;
+  ctx.fillRect(58, 430, 12, 365);
+  ctx.fillRect(1010, 430, 12, 365);
 
-  if (!matchScorers.length) {
-    ctx.fillStyle = muted;
-    ctx.font = "25px Arial";
-    ctx.fillText("No goal recorded", 80, y);
-  } else {
-    for (const scorer of matchScorers) {
+  // Team names
+  ctx.textAlign = "center";
+
+  textFit(
+    teamA.toUpperCase(),
+    285,
+    520,
+    390,
+    39,
+    "Impact, 'Arial Black', sans-serif",
+    white
+  );
+
+  textFit(
+    teamB.toUpperCase(),
+    795,
+    520,
+    390,
+    39,
+    "Impact, 'Arial Black', sans-serif",
+    white
+  );
+
+  // Big bold score
+  ctx.shadowColor = "rgba(197,255,53,0.4)";
+  ctx.shadowBlur = 18;
+  ctx.fillStyle = lime;
+  ctx.font = "900 190px Impact, 'Arial Black', sans-serif";
+  ctx.fillText(String(match.score_a ?? 0), 285, 735);
+  ctx.fillText(String(match.score_b ?? 0), 795, 735);
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = white;
+  ctx.font = "900 38px Impact, 'Arial Black', sans-serif";
+  ctx.fillText(":", 540, 680);
+
+  roughLine(
+    540, 545, 540, 750,
+    "rgba(255,255,255,0.25)", 2
+  );
+
+  // Scorer panels by team
+  const panelY = 850;
+  const panelH = 365;
+  const panelW = 458;
+  const leftX = 58;
+  const rightX = 564;
+
+  function drawScorerPanel(x, title, teamCode) {
+    ctx.fillStyle = "rgba(0,0,0,0.72)";
+    ctx.fillRect(x, panelY, panelW, panelH);
+
+    ctx.strokeStyle = "rgba(197,255,53,0.55)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, panelY, panelW, panelH);
+
+    ctx.fillStyle = lime;
+    ctx.fillRect(x, panelY, panelW, 55);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = black;
+    ctx.font = "900 27px Impact, 'Arial Black', sans-serif";
+    ctx.fillText(title.toUpperCase(), x + 18, panelY + 37, panelW - 36);
+
+    const scorers = matchScorers.filter(
+      scorer => scorer.team === teamCode && Number(scorer.goals) > 0
+    );
+
+    if (!scorers.length) {
+      ctx.fillStyle = muted;
+      ctx.font = "bold 21px Arial, sans-serif";
+      ctx.fillText("Chưa có bàn thắng", x + 20, panelY + 105);
+      return;
+    }
+
+    const availableHeight = panelH - 82;
+    const rowHeight = Math.min(
+      52,
+      availableHeight / scorers.length
+    );
+
+    let y = panelY + 105;
+
+    scorers.forEach(scorer => {
       const player = playerData.find(
         p => String(p.id) === String(scorer.player_id)
       );
 
       const name = player?.full_name || "Cầu thủ";
+
       const events = goalEvents.filter(
-        e =>
-          String(e.match_id) === String(match.id) &&
-          String(e.player_id) === String(scorer.player_id)
+        event =>
+          String(event.match_id) === String(match.id) &&
+          String(event.player_id) === String(scorer.player_id) &&
+          event.team === teamCode
       );
 
       const minutes = events
-        .map(e => `${e.minute}'`)
+        .map(event => `${event.minute}'`)
         .join(", ");
 
       ctx.fillStyle = lime;
       ctx.beginPath();
-      ctx.arc(91, y - 9, 7, 0, Math.PI * 2);
+      ctx.arc(x + 23, y - 8, 6, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = white;
-      ctx.font = "bold 25px Arial";
-      ctx.fillText(name, 115, y, 530);
-
-      ctx.textAlign = "right";
-      ctx.fillStyle = lime;
-      ctx.font = "bold 23px Arial";
-      ctx.fillText(minutes || `${scorer.goals} bàn`, 995, y);
       ctx.textAlign = "left";
+      ctx.fillStyle = white;
+      ctx.font = "bold 23px 'Arial Black', Arial, sans-serif";
 
-      y += 55;
+      textFit(
+        name,
+        x + 42,
+        y,
+        panelW - 65,
+        23,
+        "'Arial Black', Arial, sans-serif",
+        white
+      );
 
-      if (y > 1195) {
-        ctx.fillStyle = muted;
-        ctx.fillText("...", 115, y);
-        break;
-      }
-    }
+      ctx.fillStyle = lime;
+      ctx.font = "bold 19px Arial, sans-serif";
+      ctx.fillText(
+        minutes || `${scorer.goals} bàn`,
+        x + 42,
+        y + 27,
+        panelW - 65
+      );
+
+      y += rowHeight;
+
+      if (y > panelY + panelH - 15) return;
+    });
   }
+
+  drawScorerPanel(leftX, teamA, "A");
+  drawScorerPanel(rightX, teamB, "B");
 
   // Footer street tape
   ctx.save();
   ctx.translate(540, 1270);
   ctx.rotate(-0.025);
+
   ctx.fillStyle = lime;
-  ctx.fillRect(-460, -24, 920, 48);
-  ctx.fillStyle = "#090b0a";
+  ctx.fillRect(-310, -23, 620, 46);
+
+  ctx.fillStyle = black;
   ctx.textAlign = "center";
-  ctx.font = "900 23px Arial";
-  ctx.fillText("OLD BOYS  •  BUILT BY THE GAME", 0, 8);
+  ctx.font = "900 25px Impact, 'Arial Black', sans-serif";
+  ctx.fillText("BUILT BY THE GAME  /  OLD BOYS", 0, 9);
+
   ctx.restore();
 
   // Export and share
