@@ -893,7 +893,7 @@ async function showApp(user){
 document.querySelectorAll("[data-admin-only]").forEach(el => {
   el.classList.toggle("hidden", !isAdmin());
 });
- $("saveAttendance").classList.toggle("hidden", !isAdmin());
+ $("saveAttendance")?.classList.toggle("hidden", !isAdmin());
   $("login").classList.add("hidden");
   $("app").classList.remove("hidden");
   $("account").textContent =
