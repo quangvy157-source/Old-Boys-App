@@ -939,7 +939,8 @@ document.querySelectorAll("[data-admin-only]").forEach(el => {
   showDemo(0);
   startDemo();
 
-  await loadPlayers();
+    await loadPlayers();
+  await loadSessions();
   await loadMatchHistory();
    const draft = getLiveMatchDraft();
 
