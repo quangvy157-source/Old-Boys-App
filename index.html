@@ -3152,19 +3152,86 @@ let timerInterval = null;
  heading.textContent="CHẠM + / − ĐỂ CẬP NHẬT BÀN THẮNG";
  content.appendChild(heading);
 
- const goals=[];
+ 
+const goals = [];
+
 let opponentGoals = hasSavedDraft
   ? Number(savedDraft.opponentGoals) || 0
   : Number(match.score_b) || 0;
+
+let opponentScorePanel = null;
+
+if (match.match_type !== "internal") {
+  opponentScorePanel = document.createElement("div");
+  opponentScorePanel.style.cssText =
+    "display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;margin:12px 0;background:#17231b;border:1px solid #344638;border-radius:12px";
+
+  const opponentLabel = document.createElement("strong");
+  opponentLabel.textContent = "BÀN THẮNG ĐỘI ĐỐI THỦ";
+
+  const opponentControls = document.createElement("div");
+  opponentControls.style.cssText =
+    "display:flex;align-items:center;gap:12px";
+
+  const opponentMinus = document.createElement("button");
+  opponentMinus.type = "button";
+  opponentMinus.className = "goal-btn minus";
+  opponentMinus.textContent = "−";
+
+  const opponentCount = document.createElement("strong");
+  opponentCount.textContent = opponentGoals;
+  opponentCount.style.cssText = "font-size:22px;min-width:24px;text-align:center";
+
+  const opponentPlus = document.createElement("button");
+  opponentPlus.type = "button";
+  opponentPlus.className = "goal-btn";
+  opponentPlus.textContent = "+";
+
+  opponentMinus.onclick = () => {
+    if (!isAdmin()) return;
+    opponentGoals = Math.max(0, opponentGoals - 1);
+    opponentCount.textContent = opponentGoals;
+    refresh();
+
+    if (activeMatchSession) {
+      persistCurrentLiveMatchDraft(
+        match, elapsedSeconds, startedAt, goals, opponentGoals
+      );
+    }
+  };
+
+  opponentPlus.onclick = () => {
+    if (!isAdmin()) return;
+    opponentGoals++;
+    opponentCount.textContent = opponentGoals;
+    refresh();
+
+    if (activeMatchSession) {
+      persistCurrentLiveMatchDraft(
+        match, elapsedSeconds, startedAt, goals, opponentGoals
+      );
+    }
+  };
+
+  if (!isAdmin()) {
+    opponentMinus.classList.add("hidden");
+    opponentPlus.classList.add("hidden");
+  }
+
+  opponentControls.append(opponentMinus, opponentCount, opponentPlus);
+  opponentScorePanel.append(opponentLabel, opponentControls);
+  content.appendChild(opponentScorePanel);
+}
+
 
   const refresh = () => {
     scoreA.textContent = goals
       .filter(x => x.team === "A")
       .reduce((n, x) => n + x.value, 0);
 
-    scoreB.textContent = goals
-      .filter(x => x.team === "B")
-      .reduce((n, x) => n + x.value, 0);
+    scoreB.textContent = match.match_type === "internal"
+  ? goals.filter(x => x.team === "B").reduce((n, x) => n + x.value, 0)
+  : opponentGoals;
 
     scorerList.innerHTML = "";
 
