@@ -1985,6 +1985,78 @@ $("saveAttendance").onclick=async()=>{
 
 };
  
+$("saveTeamSplit").onclick = async () => {
+  if (!isAdmin()) return;
+
+  if (!attendanceMatchId || attendanceMatchType !== "internal") {
+    message("teamSplitMsg", "Không tìm thấy trận nội bộ hợp lệ.");
+    return;
+  }
+
+  const selects = [
+    ...$("teamSplitList").querySelectorAll("select[data-player-id]")
+  ];
+
+  if (!selects.length) {
+    message("teamSplitMsg", "Chưa có cầu thủ để chia đội.");
+    return;
+  }
+
+  const unassigned = selects.filter(x => !x.value);
+
+  if (unassigned.length) {
+    message("teamSplitMsg", "Vui lòng chia đội cho tất cả cầu thủ.");
+    return;
+  }
+
+  const button = $("saveTeamSplit");
+  button.disabled = true;
+  message("teamSplitMsg", "Đang lưu đội hình...");
+
+  try {
+    for (const select of selects) {
+      const playerId = select.dataset.playerId;
+      const team = select.value;
+
+      const {data: existing, error: findError} = await db
+        .from("match_players")
+        .select("player_id")
+        .eq("match_id", attendanceMatchId)
+        .eq("player_id", playerId)
+        .maybeSingle();
+
+      if (findError) throw findError;
+
+      if (existing) {
+        const {error} = await db
+          .from("match_players")
+          .update({team})
+          .eq("match_id", attendanceMatchId)
+          .eq("player_id", playerId);
+
+        if (error) throw error;
+      } else {
+        const {error} = await db
+          .from("match_players")
+          .insert({
+            match_id: attendanceMatchId,
+            player_id: playerId,
+            team
+          });
+
+        if (error) throw error;
+      }
+    }
+
+    message("teamSplitMsg", "Đã lưu đội hình hai đội thành công!");
+
+  } catch (error) {
+    message("teamSplitMsg", "Lỗi lưu đội hình: " + error.message);
+  } finally {
+    button.disabled = false;
+  }
+};
+
 /* ĐĂNG NHẬP VÀ ĐĂNG XUẤT */
 
 
