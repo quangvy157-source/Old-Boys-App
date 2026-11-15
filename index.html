@@ -1567,27 +1567,132 @@ async function loadSessions(){
   await loadAttendance();
 }
 
+
+let attendanceMatchId = null;
+let attendanceMatchType = "external";
+
 async function loadAttendance(){
-  const sid=$("sessionSelect").value;
+  const sid = $("sessionSelect").value;
+  attendanceMatchId = null;
+  attendanceMatchType = "external";
 
   if(!sid){
-    $("attendanceList").textContent="Chọn một buổi đá để điểm danh.";
+    $("attendanceList").textContent = "Chọn một buổi đá để điểm danh.";
+    $("teamSplitPanel").style.display = "none";
     return;
   }
 
-  const {data,error}=await db.from("attendance")
+  const {data,error} = await db.from("attendance")
     .select("player_id,status,note")
     .eq("session_id",sid);
 
   if(error){
-    $("attendanceList").textContent="Lỗi tải điểm danh: "+error.message;
+    $("attendanceList").textContent = "Lỗi tải điểm danh: " + error.message;
     return;
   }
 
-  attendanceData=data||[];
+  attendanceData = data || [];
+
+  const {data: session,error: sessionError} = await db
+    .from("sessions")
+    .select("match_id")
+    .eq("id",sid)
+    .single();
+
+  if(sessionError){
+    message("attendanceMsg","Không tải được liên kết trận đấu: " + sessionError.message);
+    return;
+  }
+
+  attendanceMatchId = session?.match_id || null;
+
+  if(attendanceMatchId){
+    const {data: match,error: matchError} = await db
+      .from("matches")
+      .select("match_type")
+      .eq("id",attendanceMatchId)
+      .single();
+
+    if(matchError){
+      message("attendanceMsg","Không tải được loại trận: " + matchError.message);
+      return;
+    }
+
+    attendanceMatchType = match?.match_type || "external";
+  }
+
+  let assigned = [];
+
+  if(attendanceMatchId){
+    const {data,error: assignedError} = await db
+      .from("match_players")
+      .select("player_id,team")
+      .eq("match_id",attendanceMatchId);
+
+    if(assignedError){
+      message("attendanceMsg","Không tải được danh sách đội: " + assignedError.message);
+      return;
+    }
+
+    assigned = data || [];
+  }
+
   renderAttendance();
-renderAttendanceSummary();
+  renderAttendanceSummary();
+  renderTeamSplit(assigned);
 }
+
+function renderTeamSplit(assigned = []){
+  const panel = $("teamSplitPanel");
+  const list = $("teamSplitList");
+
+  panel.style.display =
+    attendanceMatchType === "internal" ? "block" : "none";
+
+  list.innerHTML = "";
+
+  if(attendanceMatchType !== "internal") return;
+
+  const candidates = attendanceData.filter(x =>
+    x.status === "present" || x.status === "late"
+  );
+
+  if(!candidates.length){
+    list.textContent = "Chưa có cầu thủ được điểm danh có mặt hoặc có mặt trễ.";
+    return;
+  }
+
+  candidates.forEach(item => {
+    const player = playerData.find(p => p.id === item.player_id);
+    if(!player) return;
+
+    const row = document.createElement("div");
+    row.className = "att-row";
+
+    const name = document.createElement("span");
+    name.textContent =
+      (player.jersey_number != null ? "#" + player.jersey_number + " " : "") +
+      player.full_name;
+
+    const select = document.createElement("select");
+    select.dataset.playerId = item.player_id;
+    select.style.maxWidth = "120px";
+
+    select.add(new Option("Chưa chia", ""));
+    select.add(new Option("Đội A", "A"));
+    select.add(new Option("Đội B", "B"));
+
+    const current = assigned.find(x =>
+      String(x.player_id) === String(item.player_id)
+    );
+
+    select.value = current?.team || "";
+
+    row.append(name, select);
+    list.appendChild(row);
+  });
+}
+
 
 function renderAttendance(){
   const saved=new Map(attendanceData.map(x=>[x.player_id,x.status]));
