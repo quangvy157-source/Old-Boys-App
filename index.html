@@ -1195,6 +1195,7 @@ async function openPlayerDetail(p){
 }
 
 function editPlayer(p){
+   if (!isAdmin()) return;
   $("playerId").value=p.id;
   $("fullName").value=p.full_name||"";
   $("jersey").value=p.jersey_number??"";
@@ -1265,6 +1266,7 @@ $("playerForm").addEventListener("submit",async e=>{
 });
 
 async function deletePlayer(p){
+   if (!isAdmin()) return;
   if(!confirm("Bạn có chắc muốn xóa "+p.full_name+"?"))return;
 
   const {error}=await db.from("players").delete().eq("id",p.id);
