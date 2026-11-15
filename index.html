@@ -1585,84 +1585,178 @@ async function loadTeamStats() {
     : "0";
 }
  
+
 async function exportMatchImage(match, matchScorers, goalEvents) {
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1350;
 
   const ctx = canvas.getContext("2d");
-  const W = canvas.width;
-  const H = canvas.height;
+  const W = 1080;
+  const H = 1350;
+  const lime = "#c5ff35";
+  const white = "#f4f3ed";
+  const muted = "#9da39a";
 
-  ctx.fillStyle = "#080d09";
+  // Background
+  ctx.fillStyle = "#090b0a";
   ctx.fillRect(0, 0, W, H);
 
-  const glow = ctx.createRadialGradient(540, 430, 50, 540, 430, 750);
-  glow.addColorStop(0, "#173b25");
-  glow.addColorStop(1, "#080d09");
+  const glow = ctx.createRadialGradient(760, 420, 30, 760, 420, 700);
+  glow.addColorStop(0, "#1c3020");
+  glow.addColorStop(1, "#090b0a");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.strokeStyle = "#b5ff35";
-  ctx.lineWidth = 5;
-  ctx.strokeRect(35, 35, W - 70, H - 70);
+  // Grain and street halftone
+  for (let i = 0; i < 1800; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H;
+    ctx.fillStyle = Math.random() > 0.5
+      ? "rgba(255,255,255,0.10)"
+      : "rgba(0,0,0,0.18)";
+    ctx.fillRect(x, y, 2, 2);
+  }
 
-  ctx.fillStyle = "#b5ff35";
-  ctx.font = "bold 68px Arial";
+  ctx.fillStyle = "rgba(197,255,53,0.20)";
+  for (let y = 70; y < 340; y += 18) {
+    for (let x = 790; x < 1030; x += 18) {
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Diagonal street graphics
+  ctx.save();
+  ctx.translate(900, 450);
+  ctx.rotate(-0.22);
+  ctx.fillStyle = lime;
+  ctx.fillRect(-30, -260, 13, 550);
+  ctx.fillStyle = "rgba(197,255,53,0.13)";
+  ctx.fillRect(5, -260, 45, 550);
+  ctx.restore();
+
+  // Paint splashes
+  for (let i = 0; i < 85; i++) {
+    const x = 35 + Math.random() * 180;
+    const y = 250 + Math.random() * 210;
+    const radius = 1 + Math.random() * 5;
+    ctx.fillStyle = i % 3 === 0
+      ? lime
+      : "rgba(255,255,255,0.35)";
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Outer frame
+  ctx.strokeStyle = "rgba(244,243,237,0.35)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(35, 35, 1010, 1280);
+
+  // Header
+  ctx.fillStyle = lime;
+  ctx.font = "900 66px Arial";
+  ctx.textAlign = "left";
+  ctx.fillText("OLD BOYS", 75, 125);
+
+  ctx.fillStyle = white;
+  ctx.font = "bold 20px Arial";
+  ctx.fillText("FOOTBALL CLUB  /  MATCH DIVISION", 78, 165);
+
+  ctx.textAlign = "right";
+  ctx.fillStyle = lime;
+  ctx.font = "bold 22px Arial";
+  ctx.fillText("EST. 2026", 1000, 105);
+
+  // Match report label
+  ctx.save();
+  ctx.translate(80, 250);
+  ctx.rotate(-0.045);
+  ctx.fillStyle = lime;
+  ctx.fillRect(0, 0, 270, 48);
+  ctx.fillStyle = "#090b0a";
+  ctx.font = "900 25px Arial";
   ctx.textAlign = "center";
-  ctx.fillText("OLD BOYS", 540, 145);
+  ctx.fillText("FULL TIME  /  90'", 135, 33);
+  ctx.restore();
 
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 25px Arial";
-  ctx.fillText("MATCH REPORT", 540, 205);
+  ctx.textAlign = "left";
+  ctx.fillStyle = white;
+  ctx.font = "900 82px Arial";
+  ctx.fillText("MATCH", 75, 365);
+  ctx.fillStyle = lime;
+  ctx.fillText("REPORT.", 75, 445);
 
-  ctx.fillStyle = "#b5ff35";
+  // Match information
+  ctx.fillStyle = muted;
   ctx.font = "bold 23px Arial";
-  ctx.fillText("FULL TIME", 540, 285);
+  ctx.fillText(
+    `${match.match_date || ""}   /   ${match.title || "LEAGUE MATCH"}`,
+    78,
+    500
+  );
+
+  // Scoreboard panel
+  ctx.fillStyle = "#151a16";
+  ctx.fillRect(65, 545, 950, 355);
+
+  ctx.fillStyle = lime;
+  ctx.fillRect(65, 545, 12, 355);
 
   const teamA = match.team_a_name || "ĐỘI A";
   const teamB = match.team_b_name || "ĐỘI B";
 
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 39px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(teamA.toUpperCase().slice(0, 18), 270, 430);
-  ctx.fillText(teamB.toUpperCase().slice(0, 18), 810, 430);
+  ctx.fillStyle = white;
+  ctx.font = "900 34px Arial";
+  ctx.fillText(teamA.toUpperCase(), 285, 635, 350);
+  ctx.fillText(teamB.toUpperCase(), 795, 635, 350);
 
-  ctx.fillStyle = "#b5ff35";
-  ctx.font = "bold 112px Arial";
-  ctx.fillText(
-    `${match.score_a ?? 0}  -  ${match.score_b ?? 0}`,
-    540,
-    585
-  );
+  ctx.fillStyle = lime;
+  ctx.font = "900 112px Arial";
+  ctx.fillText(String(match.score_a ?? 0), 285, 795);
+  ctx.fillText(String(match.score_b ?? 0), 795, 795);
 
-  ctx.fillStyle = "#aab5ac";
-  ctx.font = "27px Arial";
-  ctx.fillText(
-    `${match.match_date || ""}  ·  ${match.title || "TRẬN ĐẤU"}`,
-    540,
-    665
-  );
+  ctx.fillStyle = muted;
+  ctx.font = "bold 27px Arial";
+  ctx.fillText("VS", 540, 780);
 
-  ctx.strokeStyle = "#49634b";
+  // Scoreboard divider
+  ctx.strokeStyle = "rgba(255,255,255,0.18)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(100, 730);
-  ctx.lineTo(980, 730);
+  ctx.moveTo(540, 660);
+  ctx.lineTo(540, 835);
   ctx.stroke();
 
+  // Scorers heading
   ctx.textAlign = "left";
-  ctx.fillStyle = "#b5ff35";
-  ctx.font = "bold 32px Arial";
-  ctx.fillText("GOAL SCORERS", 100, 795);
+  ctx.fillStyle = lime;
+  ctx.font = "900 35px Arial";
+  ctx.fillText("GOAL SCORERS", 78, 980);
 
-  let y = 865;
-  ctx.font = "27px Arial";
+  ctx.fillStyle = muted;
+  ctx.font = "bold 18px Arial";
+  ctx.textAlign = "right";
+  ctx.fillText("MATCH STATISTICS", 1000, 978);
+
+  ctx.strokeStyle = lime;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(78, 1000);
+  ctx.lineTo(1000, 1000);
+  ctx.stroke();
+
+  // Scorer list
+  let y = 1060;
+  ctx.textAlign = "left";
 
   if (!matchScorers.length) {
-    ctx.fillStyle = "#aab5ac";
-    ctx.fillText("Chưa có dữ liệu người ghi bàn", 100, y);
+    ctx.fillStyle = muted;
+    ctx.font = "25px Arial";
+    ctx.fillText("No goal recorded", 80, y);
   } else {
     for (const scorer of matchScorers) {
       const player = playerData.find(
@@ -1680,33 +1774,44 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
         .map(e => `${e.minute}'`)
         .join(", ");
 
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText(name.slice(0, 28), 100, y);
+      ctx.fillStyle = lime;
+      ctx.beginPath();
+      ctx.arc(91, y - 9, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = white;
+      ctx.font = "bold 25px Arial";
+      ctx.fillText(name, 115, y, 530);
 
       ctx.textAlign = "right";
-      ctx.fillStyle = "#b5ff35";
-      ctx.fillText(
-        minutes || `${scorer.goals} bàn`,
-        980,
-        y
-      );
+      ctx.fillStyle = lime;
+      ctx.font = "bold 23px Arial";
+      ctx.fillText(minutes || `${scorer.goals} bàn`, 995, y);
       ctx.textAlign = "left";
 
-      y += 58;
+      y += 55;
 
-      if (y > 1150) {
-        ctx.fillStyle = "#aab5ac";
-        ctx.fillText("...", 100, y);
+      if (y > 1195) {
+        ctx.fillStyle = muted;
+        ctx.fillText("...", 115, y);
         break;
       }
     }
   }
 
-  ctx.fillStyle = "#b5ff35";
-  ctx.font = "bold 25px Arial";
+  // Footer street tape
+  ctx.save();
+  ctx.translate(540, 1270);
+  ctx.rotate(-0.025);
+  ctx.fillStyle = lime;
+  ctx.fillRect(-460, -24, 920, 48);
+  ctx.fillStyle = "#090b0a";
   ctx.textAlign = "center";
-  ctx.fillText("OLD BOYS  •  FOOTBALL CLUB", 540, 1250);
+  ctx.font = "900 23px Arial";
+  ctx.fillText("OLD BOYS  •  BUILT BY THE GAME", 0, 8);
+  ctx.restore();
 
+  // Export and share
   canvas.toBlob(async blob => {
     if (!blob) {
       alert("Không thể tạo ảnh kết quả. Vui lòng thử lại.");
@@ -1744,6 +1849,7 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
     }
   }, "image/png");
 }
+
 
 async function loadMatchHistory() {
   const box = $("matchHistory");
