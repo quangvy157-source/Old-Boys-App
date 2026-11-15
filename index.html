@@ -1224,6 +1224,7 @@ message("photoMsg","");
 }
 
 $("playerForm").addEventListener("submit",async e=>{
+   if (!isAdmin()) return;
   e.preventDefault();
   $("saveBtn").disabled=true;
   message("formMsg","Đang lưu cầu thủ...");
