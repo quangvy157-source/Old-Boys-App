@@ -1460,24 +1460,38 @@ $("saveAttendance").onclick=async()=>{
 }
 /* ĐĂNG NHẬP VÀ ĐĂNG XUẤT */
 
-$("loginBtn").onclick=async()=>{
-  $("loginBtn").disabled=true;
-  message("loginMsg","Đang đăng nhập...");
 
-  const {data,error}=await db.auth.signInWithPassword({
-    email:$("email").value.trim(),
-    password:$("password").value
-  });
+$("loginBtn").onclick = async () => {
+  const button = $("loginBtn");
+  button.disabled = true;
+  message("loginMsg", "Đang đăng nhập...");
 
-  $("loginBtn").disabled=false;
+  try {
+    const { data, error } = await db.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
 
-  if(error){
-    message("loginMsg","Đăng nhập không thành công: "+error.message);
-    return;
+    if (error) throw error;
+
+    if (!data.user) {
+      throw new Error("Không nhận được thông tin tài khoản.");
+    }
+
+    await showApp(data.user);
+
+  } catch (error) {
+    console.error("Lỗi đăng nhập:", error);
+    message(
+      "loginMsg",
+      "Đăng nhập không thành công: " +
+      (error.message || "Lỗi kết nối, vui lòng thử lại.")
+    );
+  } finally {
+    button.disabled = false;
   }
-
-  await showApp(data.user);
 };
+
 
 $("logout").onclick=async()=>{
   await db.auth.signOut();
