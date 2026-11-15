@@ -2455,6 +2455,7 @@ let timerInterval = null;
   };
 
   startTimer.onclick = () => {
+       if (!isAdmin()) return;
   if (startedAt !== null) return;
 
   startedAt = Date.now();
@@ -2479,6 +2480,7 @@ let timerInterval = null;
 };
 
   pauseTimer.onclick = () => {
+       if (!isAdmin()) return;
     if (startedAt === null) return;
 
     elapsedSeconds += Math.floor((Date.now() - startedAt) / 1000);
@@ -2497,6 +2499,7 @@ let timerInterval = null;
   };
 
   resetTimer.onclick = () => {
+       if (!isAdmin()) return;
     clearInterval(timerInterval);
     timerInterval = null;
     elapsedSeconds = 0;
@@ -2510,7 +2513,11 @@ let timerInterval = null;
     startTimer.disabled = false;
     pauseTimer.disabled = true;
   };
-
+  if (!isAdmin()) {
+    startTimer.classList.add("hidden");
+    pauseTimer.classList.add("hidden");
+    resetTimer.classList.add("hidden");
+  }
   timerControls.append(startTimer, pauseTimer, resetTimer, fullscreenButton);
   timerPanel.append(timerLabel, timerDisplay, timerControls);
   content.appendChild(timerPanel);
