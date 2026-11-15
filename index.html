@@ -1807,7 +1807,7 @@ clearButton.onclick = () => {
     status.textContent =
       match.status === "completed" ? "Đã hoàn thành" : "Chưa hoàn thành";
 
-    const editButton = document.createElement("button");
+       const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.textContent = "MỞ BẢNG TRẬN ĐẤU";
     editButton.style.cssText = "width:100%;margin-top:12px";
@@ -1815,7 +1815,20 @@ clearButton.onclick = () => {
       openMatchEditor(match, card);
     });
 
+    const exportButton = document.createElement("button");
+    exportButton.type = "button";
+    exportButton.textContent = "XUẤT ẢNH KẾT QUẢ";
+    exportButton.className = "secondary";
+    exportButton.style.cssText = "width:100%;margin-top:8px";
+    exportButton.addEventListener("click", () => {
+      exportMatchImage(match, matchScorers, goalEvents);
+    });
+
     card.append(title, date, score, scorerBox, status, editButton);
+
+    if (match.status === "completed") {
+      card.appendChild(exportButton);
+    }
     box.appendChild(card);
   });
 }
