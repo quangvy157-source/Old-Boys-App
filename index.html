@@ -1233,17 +1233,23 @@ async function openPlayerDetail(p){
 }
 
 function editPlayer(p){
-   if (!isAdmin()) return;
+  if (!isAdmin()) return;
+
+  const formPanel = $("playerForm").closest("details");
+  formPanel.open = true;
+
   $("playerId").value=p.id;
   $("fullName").value=p.full_name||"";
   $("jersey").value=p.jersey_number??"";
   $("position").value=p.position||"";
   $("rating").value=p.elo??1000;
   $("status").value=String(p.is_active);
+
   $("formTitle").textContent="Chỉnh sửa cầu thủ";
   $("saveBtn").textContent="CẬP NHẬT";
   $("cancelEdit").classList.remove("hidden");
-  window.scrollTo({top:0,behavior:"smooth"});
+
+  formPanel.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 function resetForm(){
@@ -1305,17 +1311,50 @@ $("playerForm").addEventListener("submit",async e=>{
 });
 
 async function deletePlayer(p){
-   if (!isAdmin()) return;
-  if(!confirm("Bạn có chắc muốn xóa "+p.full_name+"?"))return;
+  if (!isAdmin()) return;
 
-  const {error}=await db.from("players").delete().eq("id",p.id);
+  if(!confirm("Bạn muốn xóa cầu thủ "+p.full_name+"?")) return;
 
-  if(error){
-    alert("Không xóa được: "+error.message);
-    return;
+  try {
+    const {count:matchCount,error:matchError}=await db
+      .from("match_players")
+      .select("id",{count:"exact",head:true})
+      .eq("player_id",p.id);
+
+    if(matchError) throw matchError;
+
+    const {count:attendanceCount,error:attendanceError}=await db
+      .from("attendance")
+      .select("id",{count:"exact",head:true})
+      .eq("player_id",p.id);
+
+    if(attendanceError) throw attendanceError;
+
+    if((matchCount||0)>0 || (attendanceCount||0)>0){
+      const {error}=await db
+        .from("players")
+        .update({is_active:false})
+        .eq("id",p.id);
+
+      if(error) throw error;
+
+      alert("Cầu thủ đã có lịch sử thi đấu hoặc điểm danh. Đã chuyển sang Không hoạt động để bảo toàn dữ liệu.");
+    } else {
+      const {error}=await db
+        .from("players")
+        .delete()
+        .eq("id",p.id);
+
+      if(error) throw error;
+
+      alert("Đã xóa cầu thủ thành công.");
+    }
+
+    await loadPlayers();
+
+  } catch(error) {
+    alert("Không thể xử lý cầu thủ: "+error.message);
   }
-
-  await loadPlayers();
 }
 
 $("cancelEdit").onclick=resetForm;
