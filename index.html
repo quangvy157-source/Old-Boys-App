@@ -1802,12 +1802,65 @@ $("saveAttendance").onclick=async()=>{
     return;
   }
 
-  attendanceData=rows.map(x=>({
-    player_id:x.player_id,
-    status:x.status
+  
+  // Đồng bộ người tham gia sang trận đấu đã liên kết
+  const { data: linkedSession, error: linkError } = await db
+    .from("sessions")
+    .select("match_id")
+    .eq("id", sid)
+    .single();
+
+  if (linkError) {
+    message("attendanceMsg", "Đã lưu điểm danh nhưng không kiểm tra được trận đấu: " + linkError.message);
+    return;
+  }
+
+  if (linkedSession?.match_id) {
+    const participants = rows
+      .filter(x => x.status === "present" || x.status === "late")
+      .map(x => ({
+        match_id: linkedSession.match_id,
+        player_id: x.player_id,
+        team: "A"
+      }));
+
+    // Xóa danh sách OLD BOYS cũ để cập nhật theo điểm danh mới
+    const { error: clearError } = await db
+      .from("match_players")
+      .delete()
+      .eq("match_id", linkedSession.match_id)
+      .eq("team", "A");
+
+    if (clearError) {
+      message("attendanceMsg", "Đã lưu điểm danh nhưng chưa cập nhật được cầu thủ trận đấu: " + clearError.message);
+      return;
+    }
+
+    if (participants.length) {
+      const { error: playerError } = await db
+        .from("match_players")
+        .insert(participants);
+
+      if (playerError) {
+        message("attendanceMsg", "Đã lưu điểm danh nhưng lỗi đồng bộ cầu thủ: " + playerError.message);
+        return;
+      }
+    }
+  }
+
+  attendanceData = rows.map(x => ({
+    player_id: x.player_id,
+    status: x.status
   }));
-renderAttendanceSummary();
-  message("attendanceMsg","Đã lưu điểm danh thành công.");
+
+  renderAttendanceSummary();
+  message(
+    "attendanceMsg",
+    linkedSession?.match_id
+      ? "Đã lưu điểm danh và cập nhật danh sách OLD BOYS trong trận đấu!"
+      : "Đã lưu điểm danh thành công."
+  );
+
 };
  
 /* ĐĂNG NHẬP VÀ ĐĂNG XUẤT */
