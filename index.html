@@ -2773,6 +2773,7 @@ async function loadMatchHistory() {
     .filter(x => x.player)
     .sort((a, b) => b.goals - a.goals);
 demoRanking = ranking;
+ if (currentDemo === 2) showDemo(2);
   const rankingBox = document.createElement("div");
   rankingBox.className = "match-card";
 
