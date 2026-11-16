@@ -4019,6 +4019,22 @@ const plus=document.createElement("button");
 plus.type="button";
 plus.className="goal-btn";
 plus.textContent="+";
+  const ownGoalMinus=document.createElement("button");
+ownGoalMinus.type="button";
+ownGoalMinus.className="goal-btn";
+ownGoalMinus.textContent="PL−";
+ownGoalMinus.title="Xoá phản lưới gần nhất";
+
+const ownGoalPlus=document.createElement("button");
+ownGoalPlus.type="button";
+ownGoalPlus.className="goal-btn";
+ownGoalPlus.textContent="PL+";
+ownGoalPlus.title="Ghi nhận phản lưới";
+
+if (!isAdmin()) {
+  ownGoalMinus.classList.add("hidden");
+  ownGoalPlus.classList.add("hidden");
+}
 if (!isAdmin()) {
   minus.classList.add("hidden");
   plus.classList.add("hidden");
