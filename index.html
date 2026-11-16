@@ -3121,11 +3121,20 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
     ctx.font = '900 27px "Barlow Condensed", sans-serif';
     ctx.fillText(title.toUpperCase(), x + 18, panelY + 37, panelW - 36);
 
-    const scorers = matchScorers.filter(
+        const scorers = matchScorers.filter(
       scorer => scorer.team === teamCode && Number(scorer.goals) > 0
     );
 
-    if (!scorers.length) {
+    const ownGoals = goalEvents.filter(
+      event =>
+        String(event.match_id) === String(match.id) &&
+        event.team === teamCode &&
+        event.is_own_goal === true
+    );
+
+    const totalRows = scorers.length + ownGoals.length;
+
+    if (!totalRows) {
       ctx.fillStyle = muted;
       ctx.font = '600 21px "Barlow", sans-serif';
       ctx.fillText("Chưa có bàn thắng", x + 20, panelY + 105);
@@ -3133,40 +3142,20 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
     }
 
     const availableHeight = panelH - 82;
-    const rowHeight = Math.min(
-      52,
-      availableHeight / scorers.length
-    );
+    const rowHeight = Math.min(52, availableHeight / totalRows);
 
     let y = panelY + 105;
 
-    scorers.forEach(scorer => {
-      const player = playerData.find(
-        p => String(p.id) === String(scorer.player_id)
-      );
-
+    const drawRow = (player, subtitle, isOwnGoal) => {
       const name = player?.full_name || "Cầu thủ";
 
-      const events = goalEvents.filter(
-  event =>
-    String(event.match_id) === String(match.id) &&
-    String(event.player_id) === String(scorer.player_id) &&
-    event.team === teamCode &&
-    !event.is_own_goal
-);
-
-      const minutes = events
-        .map(event => `${event.minute}'`)
-        .join(", ");
-
-      ctx.fillStyle = lime;
+      ctx.fillStyle = isOwnGoal ? "#f28c28" : lime;
       ctx.beginPath();
       ctx.arc(x + 23, y - 8, 6, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.textAlign = "left";
       ctx.fillStyle = white;
-      ctx.font = '700 23px "Barlow", sans-serif';
 
       textFit(
         name,
@@ -3178,18 +3167,43 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
         white
       );
 
-      ctx.fillStyle = lime;
+      ctx.fillStyle = isOwnGoal ? "#f2a45f" : lime;
       ctx.font = '600 19px "Barlow", sans-serif';
-      ctx.fillText(
-        minutes || `${scorer.goals} bàn`,
-        x + 42,
-        y + 27,
-        panelW - 65
-      );
+      ctx.fillText(subtitle, x + 42, y + 27, panelW - 65);
 
       y += rowHeight;
+    };
 
-      if (y > panelY + panelH - 15) return;
+    scorers.forEach(scorer => {
+      const player = playerData.find(
+        p => String(p.id) === String(scorer.player_id)
+      );
+
+      const events = goalEvents.filter(
+        event =>
+          String(event.match_id) === String(match.id) &&
+          String(event.player_id) === String(scorer.player_id) &&
+          event.team === teamCode &&
+          !event.is_own_goal
+      );
+
+      const minutes = events
+        .map(event => `${event.minute}'`)
+        .join(", ");
+
+      drawRow(player, minutes || `${scorer.goals} bàn`, false);
+    });
+
+    ownGoals.forEach(event => {
+      const player = playerData.find(
+        p => String(p.id) === String(event.player_id)
+      );
+
+      drawRow(
+        player,
+        `PHẢN LƯỚI · ${event.minute}'`,
+        true
+      );
     });
   }
 
