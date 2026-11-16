@@ -2993,6 +2993,19 @@ clearButton.onclick = () => {
       openMatchEditor(match, card);
     });
 
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.textContent = "XÓA TRẬN";
+deleteButton.className = "secondary";
+deleteButton.style.cssText =
+  "width:100%;margin-top:8px;background:#542323;color:#fff";
+
+if (!isAdmin()) deleteButton.classList.add("hidden");
+
+deleteButton.addEventListener("click", async () => {
+  await deleteMatch(match);
+});
+
     const exportButton = document.createElement("button");
     exportButton.type = "button";
     exportButton.textContent = "XUẤT ẢNH KẾT QUẢ";
@@ -3007,6 +3020,7 @@ clearButton.onclick = () => {
     if (match.status === "completed") {
       card.appendChild(exportButton);
     }
+   card.appendChild(deleteButton);
     box.appendChild(card);
   });
 }
