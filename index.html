@@ -1924,39 +1924,71 @@ function renderTeamSplit(assigned = []){
 }
 
 
+
 function renderAttendance(){
-  const saved=new Map(attendanceData.map(x=>[x.player_id,x.status]));
-  const players=playerData.filter(p=>p.is_active);
+  const saved = new Map(
+    attendanceData.map(x => [x.player_id, x.status])
+  );
+  const players = playerData.filter(p => p.is_active);
 
-  $("attendanceList").innerHTML="";
+  $("attendanceList").innerHTML = "";
 
-  if(!players.length){
-    $("attendanceList").textContent="Chưa có cầu thủ đang hoạt động.";
+  if (!players.length) {
+    $("attendanceList").textContent = "Chưa có cầu thủ đang hoạt động.";
     return;
   }
 
-  players.forEach(p=>{
-    const row=document.createElement("div");
-    row.className="att-row";
+  players.forEach(p => {
+    const row = document.createElement("div");
+    row.className = "att-row";
 
-    const name=document.createElement("strong");
-    name.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+    const name = document.createElement("strong");
+    name.className = "att-player-name";
+    name.textContent =
+      (p.jersey_number != null ? "#" + p.jersey_number + " " : "") +
+      (p.full_name || "");
 
-    const select=document.createElement("select");
-    select.dataset.playerId=p.id;
+    const group = document.createElement("div");
+    group.className = "att-status-group";
+    group.dataset.playerId = p.id;
+    group.dataset.status = saved.get(p.id) || "";
 
     [
-      ["present","Có mặt"],
-      ["late","Có mặt trễ"],
-      ["absent","Vắng mặt"]
-    ].forEach(([v,t])=>select.add(new Option(t,v)));
+      ["present", "CÓ"],
+      ["late", "TRỄ"],
+      ["absent", "VẮNG"]
+    ].forEach(([value, label]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.dataset.status = value;
+      btn.title = {
+        present: "Có mặt",
+        late: "Có mặt trễ",
+        absent: "Vắng mặt"
+      }[value];
 
-    select.value=saved.get(p.id)||"present";
-select.disabled = !isAdmin();
-    row.append(name,select);
+      btn.classList.toggle("active", group.dataset.status === value);
+      btn.disabled = !isAdmin();
+
+      btn.onclick = () => {
+        group.dataset.status = value;
+        [...group.children].forEach(item => {
+          item.classList.toggle(
+            "active",
+            item.dataset.status === value
+          );
+        });
+      };
+
+      group.appendChild(btn);
+    });
+
+    row.append(name, group);
     $("attendanceList").append(row);
   });
 }
+
  
 
 function renderAttendanceSummary(){
@@ -2137,6 +2169,7 @@ $("sessionSelect").onchange=loadAttendance;
 $("reloadSessions").onclick=loadSessions;
 
 
+
 $("saveAttendance").onclick = async () => {
   if (!isAdmin()) return;
 
@@ -2147,28 +2180,47 @@ $("saveAttendance").onclick = async () => {
     return;
   }
 
-  const rows = [
-    ...$("attendanceList").querySelectorAll("select[data-player-id]")
-  ].map(el => ({
-    session_id: sid,
-    player_id: el.dataset.playerId,
-    status: el.value
-  }));
+  const groups = [
+    ...$("attendanceList").querySelectorAll(".att-status-group[data-player-id]")
+  ];
 
-  if (!rows.length) {
+  if (!groups.length) {
     message("attendanceMsg", "Chưa có cầu thủ để điểm danh.");
     return;
   }
+
+  const rows = groups
+    .filter(el => el.dataset.status)
+    .map(el => ({
+      session_id: sid,
+      player_id: el.dataset.playerId,
+      status: el.dataset.status
+    }));
+
+  const pendingIds = groups
+    .filter(el => !el.dataset.status)
+    .map(el => el.dataset.playerId);
 
   const button = $("saveAttendance");
   button.disabled = true;
   message("attendanceMsg", "Đang lưu điểm danh...");
 
   try {
-    const { error } = await db.from("attendance")
-      .upsert(rows, { onConflict: "session_id,player_id" });
+    if (rows.length) {
+      const { error } = await db.from("attendance")
+        .upsert(rows, { onConflict: "session_id,player_id" });
 
-    if (error) throw error;
+      if (error) throw error;
+    }
+
+    if (pendingIds.length) {
+      const { error } = await db.from("attendance")
+        .delete()
+        .eq("session_id", sid)
+        .in("player_id", pendingIds);
+
+      if (error) throw error;
+    }
 
     const { data: linkedSession, error: linkError } = await db
       .from("sessions")
@@ -2191,7 +2243,6 @@ $("saveAttendance").onclick = async () => {
 
       matchType = linkedMatch.match_type;
 
-      // Chỉ trận đá kèo ngoài mới tự động đưa người có mặt vào đội A
       if (matchType === "external") {
         const participants = rows
           .filter(x => x.status === "present" || x.status === "late")
@@ -2235,6 +2286,7 @@ $("saveAttendance").onclick = async () => {
     button.disabled = false;
   }
 };
+
 
  
 $("saveTeamSplit").onclick = async () => {
