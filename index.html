@@ -2416,6 +2416,7 @@ $("saveAttendance").onclick = async () => {
 
 
  
+
 $("saveTeamSplit").onclick = async () => {
   if (!isAdmin()) return;
 
@@ -2424,16 +2425,16 @@ $("saveTeamSplit").onclick = async () => {
     return;
   }
 
-  const selects = [
-    ...$("teamSplitList").querySelectorAll("select[data-player-id]")
+  const groups = [
+    ...$("teamSplitList").querySelectorAll(".team-split-group[data-player-id]")
   ];
 
-  if (!selects.length) {
+  if (!groups.length) {
     message("teamSplitMsg", "Chưa có cầu thủ để chia đội.");
     return;
   }
 
-  const unassigned = selects.filter(x => !x.value);
+  const unassigned = groups.filter(x => !x.dataset.team);
 
   if (unassigned.length) {
     message("teamSplitMsg", "Vui lòng chia đội cho tất cả cầu thủ.");
@@ -2445,9 +2446,9 @@ $("saveTeamSplit").onclick = async () => {
   message("teamSplitMsg", "Đang lưu đội hình...");
 
   try {
-    for (const select of selects) {
-      const playerId = select.dataset.playerId;
-      const team = select.value;
+    for (const group of groups) {
+      const playerId = group.dataset.playerId;
+      const team = group.dataset.team;
 
       const {data: existing, error: findError} = await db
         .from("match_players")
@@ -2487,6 +2488,7 @@ $("saveTeamSplit").onclick = async () => {
     button.disabled = false;
   }
 };
+
 
 /* ĐĂNG NHẬP VÀ ĐĂNG XUẤT */
 
