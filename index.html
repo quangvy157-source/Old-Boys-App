@@ -4043,35 +4043,81 @@ goalColumns.appendChild(opponentScorePanel);
 
     const activeScorers = goals.filter(x => x.value > 0);
 
-    activeScorers.forEach(entry => {
-      const player = playerData.find(p => p.id === entry.player_id);
-      if (!player) return;
+activeScorers.forEach(entry => {
+  const player = playerData.find(p => p.id === entry.player_id);
+  if (!player) return;
 
-      const item = document.createElement("div");
-      item.style.cssText = "padding:6px 0;color:#fff;border-bottom:1px solid #344638";
+  const item = document.createElement("div");
+  item.style.cssText = "padding:6px 0;color:#fff;border-bottom:1px solid #344638";
 
-      const minutes = (entry.events || [])
-        .map(minute => "(" + minute + "')")
-        .join(", ");
+  const minutes = (entry.events || [])
+    .map(minute => "(" + minute + "')")
+    .join(", ");
 
-      item.textContent = player.full_name + (minutes ? " " + minutes : "");
+  item.textContent = player.full_name + (minutes ? " " + minutes : "");
 
-      (entry.team === "A" ? scorerListA : scorerListB).appendChild(item);
-    });
+  (entry.team === "A" ? scorerListA : scorerListB).appendChild(item);
+});
 
-    if (!activeScorers.some(x => x.team === "A")) {
-      const emptyA = document.createElement("div");
-      emptyA.textContent = "Chưa có bàn thắng.";
-      emptyA.style.color = "#a4afa6";
-      scorerListA.appendChild(emptyA);
+const ownGoalGroups = new Map();
+
+goals.forEach(entry => {
+  (entry.ownGoalEvents || []).forEach(minute => {
+    const key = entry.team + ":" + entry.player_id;
+
+    if (!ownGoalGroups.has(key)) {
+      ownGoalGroups.set(key, {
+        team: entry.team,
+        player_id: entry.player_id,
+        minutes: []
+      });
     }
 
-    if (!activeScorers.some(x => x.team === "B")) {
-      const emptyB = document.createElement("div");
-      emptyB.textContent = "Chưa có bàn thắng.";
-      emptyB.style.color = "#a4afa6";
-      scorerListB.appendChild(emptyB);
-    }
+    ownGoalGroups.get(key).minutes.push(minute);
+  });
+});
+
+ownGoalGroups.forEach(group => {
+  const player = playerData.find(
+    p => p.id === group.player_id
+  );
+  if (!player) return;
+
+  const item = document.createElement("div");
+  item.style.cssText =
+    "padding:6px 0;color:#f2a45f;border-bottom:1px solid #344638";
+
+  const minutes = group.minutes
+    .map(minute => "(" + minute + "')")
+    .join(", ");
+
+  item.textContent = player.full_name + " " + minutes + " OG";
+
+  (group.team === "A" ? scorerListB : scorerListA)
+    .appendChild(item);
+});
+
+const hasGoalsA =
+  activeScorers.some(x => x.team === "A") ||
+  [...ownGoalGroups.values()].some(x => x.team === "B");
+
+const hasGoalsB =
+  activeScorers.some(x => x.team === "B") ||
+  [...ownGoalGroups.values()].some(x => x.team === "A");
+
+if (!hasGoalsA) {
+  const emptyA = document.createElement("div");
+  emptyA.textContent = "Chưa có bàn thắng.";
+  emptyA.style.color = "#a4afa6";
+  scorerListA.appendChild(emptyA);
+}
+
+if (!hasGoalsB) {
+  const emptyB = document.createElement("div");
+  emptyB.textContent = "Chưa có bàn thắng.";
+  emptyB.style.color = "#a4afa6";
+  scorerListB.appendChild(emptyB);
+}
   };
 
 
