@@ -3148,11 +3148,12 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
       const name = player?.full_name || "Cầu thủ";
 
       const events = goalEvents.filter(
-        event =>
-          String(event.match_id) === String(match.id) &&
-          String(event.player_id) === String(scorer.player_id) &&
-          event.team === teamCode
-      );
+  event =>
+    String(event.match_id) === String(match.id) &&
+    String(event.player_id) === String(scorer.player_id) &&
+    event.team === teamCode &&
+    !event.is_own_goal
+);
 
       const minutes = events
         .map(event => `${event.minute}'`)
