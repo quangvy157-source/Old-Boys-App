@@ -1965,7 +1965,18 @@ function renderAttendanceSummary(){
 }
 
 
+function toggleSessionTeamNames(){
+  const isInternal =
+    $("sessionMatchType").value === "internal";
 
+  $("sessionTeamNames").style.display =
+    isInternal ? "block" : "none";
+}
+
+$("sessionMatchType").onchange =
+  toggleSessionTeamNames;
+
+toggleSessionTeamNames();
 if ($("createSession")) {
   $("createSession").onclick = async () => {
     if (!isAdmin()) return;
