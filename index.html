@@ -39,9 +39,64 @@ button:disabled{opacity:.5}
 .player-info small{color:#9eaaa0;display:block;margin-top:5px}
 .actions{display:flex;gap:6px}
 .actions button{padding:9px;font-size:12px}
-.att-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #303a32}
-.att-row strong{flex:1;min-width:0;font-size:14px}
-.att-row select{width:145px;margin:0;padding:10px;font-size:13px}
+
+/* GIAO DIỆN ĐIỂM DANH OLD BOYS */
+.att-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:12px 0;
+  border-bottom:1px solid #303a32;
+}
+.att-player-name{
+  flex:1;
+  min-width:0;
+  font-size:14px;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.att-status-group{
+  display:flex;
+  gap:4px;
+  flex-shrink:0;
+}
+.att-status-group button{
+  padding:8px 9px;
+  border:1px solid #354238;
+  border-radius:7px;
+  background:#182019;
+  color:#aab5ac;
+  font-size:11px;
+}
+.att-status-group button.active{
+  background:#b7ff36;
+  border-color:#b7ff36;
+  color:#10150b;
+}
+.attendance-counts{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin:12px 0;
+}
+.attendance-count{
+  padding:10px 5px;
+  border:1px solid #303a32;
+  border-radius:10px;
+  background:#0c120e;
+  text-align:center;
+}
+.attendance-count strong{
+  display:block;
+  font-size:22px;
+  color:#b7ff36;
+}
+.attendance-count span{
+  font-size:11px;
+  color:#a4afa6;
+}
+
  .modal-overlay{
   position:fixed;
   inset:0;
