@@ -4164,14 +4164,22 @@ const score_b = match.match_type === "internal"
 
     if(deleteEventsError)throw deleteEventsError;
 
-    const goalEvents=goals.flatMap(entry=>
-     (entry.events||[]).map(minute=>({
-      match_id:String(match.id),
-      player_id:String(entry.player_id),
-      team:entry.team,
-      minute:minute
-     }))
-    );
+    const goalEvents=goals.flatMap(entry=>[
+  ...(entry.events||[]).map(minute=>({
+    match_id:String(match.id),
+    player_id:String(entry.player_id),
+    team:entry.team,
+    minute:minute,
+    is_own_goal:false
+  })),
+  ...(entry.ownGoalEvents||[]).map(minute=>({
+    match_id:String(match.id),
+    player_id:String(entry.player_id),
+    team:entry.team,
+    minute:minute,
+    is_own_goal:true
+  }))
+]);
 
     if(goalEvents.length){
      const {error:insertEventsError}=await db
