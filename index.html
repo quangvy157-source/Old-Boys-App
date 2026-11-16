@@ -2835,13 +2835,18 @@ demoRanking = ranking;
   rankingTitle.textContent = "🏆 VUA PHÁ LƯỚI OLD BOYS";
   rankingBox.appendChild(rankingTitle);
 
+  
+  const rankingList = document.createElement("div");
+  rankingList.style.cssText =
+    "max-height:250px;overflow-y:auto;padding-right:5px";
+
   if (!ranking.length) {
     const empty = document.createElement("div");
     empty.style.color = "#aaa";
     empty.textContent = "Chưa có cầu thủ ghi bàn.";
-    rankingBox.appendChild(empty);
+    rankingList.appendChild(empty);
   } else {
-    ranking.slice(0, 10).forEach((item, index) => {
+    ranking.forEach((item, index) => {
       const row = document.createElement("div");
       row.className = "goal-row";
 
@@ -2853,17 +2858,21 @@ demoRanking = ranking;
           ? "#" + item.player.jersey_number + " "
           : "") +
         item.player.full_name;
-      name.style.cursor="pointer";
-      name.title="Bấm để xem hồ sơ cầu thủ";
-      name.addEventListener("click",()=>openPlayerDetail(item.player));
+      name.style.cursor = "pointer";
+      name.title = "Bấm để xem hồ sơ cầu thủ";
+      name.addEventListener("click", () => openPlayerDetail(item.player));
+
       const count = document.createElement("strong");
       count.className = "goal-count";
       count.textContent = item.goals + " bàn";
 
       row.append(name, count);
-      rankingBox.appendChild(row);
+      rankingList.appendChild(row);
     });
   }
+
+  rankingBox.appendChild(rankingList);
+
 
   const rankingContainer = $("rankingContainer");
 rankingContainer.innerHTML = "";
