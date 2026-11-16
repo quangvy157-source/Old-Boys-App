@@ -76,7 +76,7 @@ button:disabled{opacity:.5}
 }
 .attendance-counts{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(2,1fr);
   gap:8px;
   margin:12px 0;
 }
@@ -1933,6 +1933,7 @@ function renderTeamSplit(assigned = []){
 
 
 
+
 function renderAttendance(){
   const saved = new Map(
     attendanceData.map(x => [x.player_id, x.status])
@@ -1943,6 +1944,7 @@ function renderAttendance(){
 
   if (!players.length) {
     $("attendanceList").textContent = "Chưa có cầu thủ đang hoạt động.";
+    renderAttendanceCounts();
     return;
   }
 
@@ -1981,12 +1983,15 @@ function renderAttendance(){
 
       btn.onclick = () => {
         group.dataset.status = value;
+
         [...group.children].forEach(item => {
           item.classList.toggle(
             "active",
             item.dataset.status === value
           );
         });
+
+        renderAttendanceCounts();
       };
 
       group.appendChild(btn);
@@ -1995,9 +2000,77 @@ function renderAttendance(){
     row.append(name, group);
     $("attendanceList").append(row);
   });
+
+  $("markAllPresent").disabled = !isAdmin();
+  renderAttendanceCounts();
 }
 
- 
+
+function renderAttendanceCounts(){
+  const box = $("attendanceCounts");
+  if (!box) return;
+
+  const groups = [
+    ...$("attendanceList").querySelectorAll(".att-status-group")
+  ];
+
+  const counts = {
+    present: 0,
+    late: 0,
+    absent: 0,
+    pending: 0
+  };
+
+  groups.forEach(group => {
+    const status = group.dataset.status || "pending";
+    counts[status]++;
+  });
+
+  const items = [
+    ["present", "CÓ MẶT"],
+    ["late", "ĐI TRỄ"],
+    ["absent", "VẮNG MẶT"],
+    ["pending", "CHƯA ĐIỂM DANH"]
+  ];
+
+  box.innerHTML = "";
+
+  items.forEach(([key, label]) => {
+    const card = document.createElement("div");
+    card.className = "attendance-count";
+
+    const number = document.createElement("strong");
+    number.textContent = counts[key];
+
+    const title = document.createElement("span");
+    title.textContent = label;
+
+    card.append(number, title);
+    box.appendChild(card);
+  });
+}
+
+
+$("markAllPresent").onclick = () => {
+  if (!isAdmin()) return;
+
+  const groups = [
+    ...$("attendanceList").querySelectorAll(".att-status-group")
+  ];
+
+  groups.forEach(group => {
+    group.dataset.status = "present";
+
+    [...group.children].forEach(btn => {
+      btn.classList.toggle(
+        "active",
+        btn.dataset.status === "present"
+      );
+    });
+  });
+
+  renderAttendanceCounts();
+};
 
 function renderAttendanceSummary(){
   const box=$("attendanceSummary");
