@@ -942,19 +942,30 @@ function showDemo(index) {
       </div>
     `,
 
-    `
+        `
       <div class="preview-bar">
-        <span>LIVE MATCH</span>
-        <span class="preview-tag">ĐANG ĐẤU</span>
+        <span>🏆 VUA PHÁ LƯỚI OLD BOYS</span>
+        <span class="preview-tag">THÀNH TÍCH THẬT</span>
       </div>
-      <div class="preview-score">
-        <span>2</span> : <span>1</span>
+      ${
+        demoRanking.length
+          ? demoRanking.slice(0, 5).map((item, index) => `
+            <div class="preview-row">
+              <span>
+                ${index + 1}. ${
+                  item.player.jersey_number != null
+                    ? "#" + item.player.jersey_number + " "
+                    : ""
+                }${String(item.player.full_name || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+              </span>
+              <span class="preview-number">${item.goals} bàn</span>
+            </div>
+          `).join("")
+          : '<div class="preview-muted">Chưa có cầu thủ ghi bàn.</div>'
+      }
+      <div class="preview-muted">
+        Xếp hạng dựa trên tổng số bàn thắng đã lưu trong app.
       </div>
-      <div class="preview-row">
-        <span>⏱ 18:35</span>
-        <span class="preview-muted">Phút thi đấu</span>
-      </div>
-      <div class="preview-muted">⚽ Nguyễn Văn An (5'), (12')</div>
     `,
     `
       <div class="preview-bar">
