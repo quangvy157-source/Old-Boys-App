@@ -1074,11 +1074,12 @@ function persistCurrentLiveMatchDraft(
     savedAt: Date.now(),
     opponentGoals: opponentGoals,
     goals: goals.map(entry => ({
-      player_id: entry.player_id,
-      team: entry.team,
-      value: entry.value,
-      events: [...(entry.events || [])]
-    }))
+  player_id: entry.player_id,
+  team: entry.team,
+  value: entry.value,
+  events: [...(entry.events || [])],
+  ownGoalEvents: [...(entry.ownGoalEvents || [])]
+}))
   });
 }
 
