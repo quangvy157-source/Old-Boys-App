@@ -3928,13 +3928,21 @@ goalColumns.appendChild(opponentScorePanel);
 
   
   const refresh = () => {
-    scoreA.textContent = goals
-      .filter(x => x.team === "A")
-      .reduce((n, x) => n + x.value, 0);
+  const ownGoalsForA = goals
+    .filter(x => x.team === "B")
+    .reduce((n, x) => n + (x.ownGoalEvents || []).length, 0);
 
-    scoreB.textContent = match.match_type === "internal"
-      ? goals.filter(x => x.team === "B").reduce((n, x) => n + x.value, 0)
-      : opponentGoals;
+  const ownGoalsForB = goals
+    .filter(x => x.team === "A")
+    .reduce((n, x) => n + (x.ownGoalEvents || []).length, 0);
+
+  scoreA.textContent = goals
+    .filter(x => x.team === "A")
+    .reduce((n, x) => n + x.value, 0) + ownGoalsForA;
+
+  scoreB.textContent = match.match_type === "internal"
+    ? goals.filter(x => x.team === "B").reduce((n, x) => n + x.value, 0) + ownGoalsForB
+    : opponentGoals + ownGoalsForB;
 
     scorerListA.innerHTML = "";
     scorerListB.innerHTML = "";
