@@ -4088,7 +4088,41 @@ const entry={
       );
     }
   };
+ownGoalPlus.onclick=()=>{
+  if (!isAdmin()) return;
 
+  const seconds=elapsedSeconds+
+    (startedAt!==null
+      ? Math.floor((Date.now()-startedAt)/1000)
+      : 0);
+
+  const minute=Math.max(1,Math.floor(seconds/60));
+
+  entry.ownGoalEvents.push(minute);
+
+  refresh();
+
+  if (activeMatchSession) {
+    persistCurrentLiveMatchDraft(
+      match, elapsedSeconds, startedAt, goals, opponentGoals
+    );
+  }
+};
+
+ownGoalMinus.onclick=()=>{
+  if (!isAdmin()) return;
+  if (!entry.ownGoalEvents.length) return;
+
+  entry.ownGoalEvents.pop();
+
+  refresh();
+
+  if (activeMatchSession) {
+    persistCurrentLiveMatchDraft(
+      match, elapsedSeconds, startedAt, goals, opponentGoals
+    );
+  }
+};
 
   goals.push(entry);
   row.append(name,minus,count,plus);
