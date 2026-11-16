@@ -2705,6 +2705,8 @@ async function loadMatchHistory() {
     box.textContent = "Không tải được lịch sử: " + error.message;
     return;
   }
+ demoMatches = data || [];
+if (currentDemo === 3) showDemo(3);
   await loadTeamStats();
   const { data: scorerData, error: scorerError } = await db
     .from("match_scorers")
