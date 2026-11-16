@@ -3194,17 +3194,33 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
       drawRow(player, minutes || `${scorer.goals} bàn`, false);
     });
 
-    ownGoals.forEach(event => {
-      const player = playerData.find(
-        p => String(p.id) === String(event.player_id)
-      );
+    const ownGoalGroups = new Map();
 
-      drawRow(
-        player,
-        `(${event.minute}') OG`,
-        true
-      );
-    });
+ownGoals.forEach(event => {
+  const key = String(event.player_id);
+
+  if (!ownGoalGroups.has(key)) {
+    ownGoalGroups.set(key, []);
+  }
+
+  ownGoalGroups.get(key).push(event.minute);
+});
+
+ownGoalGroups.forEach((minutes, playerId) => {
+  const player = playerData.find(
+    p => String(p.id) === playerId
+  );
+
+  const minuteText = minutes
+    .map(minute => minute + "'")
+    .join(", ");
+
+  drawRow(
+    player,
+    `(${minuteText}) OG`,
+    true
+  );
+});
   }
 
   drawScorerPanel(leftX, teamA, "A");
