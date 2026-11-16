@@ -786,12 +786,15 @@ input,select{
     <div id="teamAPlayers" class="match-player-list"></div>
 
     
+
+<input id="teamBName" value="" placeholder="Tên đội đối thủ...">
+
 <div id="teamBSelection">
   <h2>TÊN ĐỘI THỨ HAI</h2>
-  <input id="teamBName" value="" placeholder="Ví dụ: TEAM XANH, TEAM VÀNG...">
   <label>Chọn cầu thủ</label>
   <div id="teamBPlayers" class="match-player-list"></div>
 </div>
+
 
 
     <button id="createMatch" type="button" style="width:100%;margin-top:15px">
@@ -2171,6 +2174,20 @@ db.auth.onAuthStateChange((event,session)=>{
 let matchTeamA = new Set();
 let matchTeamB = new Set();
 
+
+function updateMatchTypeUI() {
+  const isExternal = $("matchType").value === "external";
+  const teamBSelection = $("teamBSelection");
+
+  if (teamBSelection) {
+    teamBSelection.style.display = isExternal ? "none" : "block";
+  }
+
+  if (isExternal) {
+    matchTeamB.clear();
+  }
+}
+
 function renderMatchPlayerOptions() {
   const a = $("teamAPlayers");
   const b = $("teamBPlayers");
@@ -2199,7 +2216,6 @@ function renderMatchPlayerOptions() {
       checkbox.checked = team.has(p.id);
       checkbox.style.cssText = "width:20px;height:20px;margin:0;flex-shrink:0";
 
-      
       checkbox.addEventListener("change", () => {
         if (checkbox.checked) {
           team.add(p.id);
@@ -2237,8 +2253,21 @@ function renderMatchPlayerOptions() {
   }
 
   renderList(a, matchTeamA, matchTeamB);
-  renderList(b, matchTeamB, matchTeamA);
+
+  if ($("matchType").value === "internal") {
+    renderList(b, matchTeamB, matchTeamA);
+  } else {
+    b.innerHTML = "";
+  }
 }
+
+$("matchType").addEventListener("change", () => {
+  updateMatchTypeUI();
+  message("matchMsg", "");
+  renderMatchPlayerOptions();
+});
+
+updateMatchTypeUI();
 
 $("matchFormat").addEventListener("change", () => {
   const limit = $("matchFormat").value === "5v5" ? 5 : 7;
@@ -3641,18 +3670,23 @@ $("createMatch").addEventListener("click", async () => {
   const title = $("matchTitle").value.trim();
   const date = $("matchDate").value;
   const time = $("matchTime").value;
-    const teamAName = $("teamAName").value.trim() || "ĐỘI 1";
-  const teamBName = $("teamBName").value.trim() || "ĐỘI 2";
+    const matchType = $("matchType").value;
+const teamAName = $("teamAName").value.trim() ||
+  (matchType === "external" ? "OLD BOYS" : "ĐỘI 1");
+const teamBName = $("teamBName").value.trim() ||
+  (matchType === "external" ? "ĐỐI THỦ" : "ĐỘI 2");
 
   if (!title || !date) {
     message("matchMsg", "Vui lòng nhập tên trận và ngày đấu.");
     return;
   }
 
-  if (!matchTeamA.size || !matchTeamB.size) {
-    message("matchMsg", "Vui lòng chọn cầu thủ cho cả hai đội.");
-    return;
-  }
+  if (!matchTeamA.size || (matchType === "internal" && !matchTeamB.size)) {
+  message("matchMsg", matchType === "internal"
+    ? "Vui lòng chọn cầu thủ cho cả hai đội."
+    : "Vui lòng chọn cầu thủ OLD BOYS.");
+  return;
+}
 
   button.disabled = true;
   button.textContent = "ĐANG LƯU...";
@@ -3679,18 +3713,19 @@ match_format: $("matchFormat").value,
     if (error) throw error;
 
     const players = [
-      ...[...matchTeamA].map(id => ({
-        match_id: match.id,
-        player_id: id,
-        team: "A"
-      })),
-      ...[...matchTeamB].map(id => ({
+  ...[...matchTeamA].map(id => ({
+    match_id: match.id,
+    player_id: id,
+    team: "A"
+  })),
+  ...(matchType === "internal"
+    ? [...matchTeamB].map(id => ({
         match_id: match.id,
         player_id: id,
         team: "B"
       }))
-    ];
-
+    : [])
+];
     const { error: playerError } = await db
       .from("match_players")
       .insert(players);
