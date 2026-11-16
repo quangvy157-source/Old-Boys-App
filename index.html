@@ -3523,26 +3523,49 @@ clearButton.onclick = () => {
       ownGoalBox.style.cssText =
         "margin:8px 0;padding:10px;background:#24170f;border-radius:9px";
 
-      ownGoalEvents.forEach(event => {
-        const player = playerData.find(p => p.id === event.player_id);
-        if (!player) return;
+      const ownGoalGroups = new Map();
 
-        const line = document.createElement("div");
-        line.style.cssText =
-          "font-size:13px;padding:4px 0;color:#f2a45f";
+ownGoalEvents.forEach(event => {
+  const key = String(event.player_id);
 
-        const teamName = event.team === "A"
-          ? (match.team_a_name || "ĐỘI 1")
-          : (match.team_b_name || "ĐỘI 2");
+  if (!ownGoalGroups.has(key)) {
+    ownGoalGroups.set(key, {
+      player_id: event.player_id,
+      team: event.team,
+      minutes: []
+    });
+  }
 
-        line.textContent =
-          "⚽ PHẢN LƯỚI · " + teamName + " · " +
-          (player.jersey_number != null
-            ? "#" + player.jersey_number + " "
-            : "") +
-          player.full_name + " (" + event.minute + "')";
+  ownGoalGroups.get(key).minutes.push(event.minute);
+});
 
-        ownGoalBox.appendChild(line);
+ownGoalGroups.forEach(group => {
+  const player = playerData.find(
+    p => String(p.id) === String(group.player_id)
+  );
+  if (!player) return;
+
+  const line = document.createElement("div");
+  line.style.cssText =
+    "font-size:13px;padding:4px 0;color:#f2a45f";
+
+  const teamName = group.team === "A"
+    ? (match.team_a_name || "ĐỘI 1")
+    : (match.team_b_name || "ĐỘI 2");
+
+  const minutes = group.minutes
+    .map(minute => "(" + minute + "')")
+    .join(", ");
+
+  line.textContent =
+    "⚽ OG · " + teamName + " · " +
+    (player.jersey_number != null
+      ? "#" + player.jersey_number + " "
+      : "") +
+    player.full_name + " " + minutes;
+
+  ownGoalBox.appendChild(line);
+});
       });
 
       if (ownGoalBox.children.length) {
