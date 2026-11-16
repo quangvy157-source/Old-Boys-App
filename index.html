@@ -917,20 +917,29 @@ function showDemo(index) {
       }
     `,
 
+      
+    `
       <div class="preview-bar">
-        <span>TẠO TRẬN ĐẤU</span>
-        <span class="preview-tag">5 VS 5</span>
+        <span>THIẾT LẬP TRẬN ĐẤU</span>
+        <span class="preview-tag">DỮ LIỆU THẬT</span>
       </div>
       <div class="preview-row">
-        <span>ĐỘI A · OLD BOYS XANH</span>
-        <span class="preview-number">05</span>
+        <span>TỔNG CẦU THỦ</span>
+        <span class="preview-number">${playerData.length}</span>
       </div>
       <div class="preview-row">
-        <span>ĐỘI B · OLD BOYS ĐỎ</span>
-        <span class="preview-number">05</span>
+        <span>ĐANG HOẠT ĐỘNG</span>
+        <span class="preview-number">${playerData.filter(p => p.is_active).length}</span>
       </div>
-      <div class="preview-muted">Chọn cầu thủ và chia đội theo ý muốn.</div>
+      <div class="preview-row">
+        <span>THỂ THỨC HỖ TRỢ</span>
+        <span class="preview-muted">5v5 · 7v7</span>
+      </div>
+      <div class="preview-muted">
+        Chọn loại trận, chia đội và chọn cầu thủ trong chức năng Tạo trận đấu.
+      </div>
     `,
+
     `
       <div class="preview-bar">
         <span>LIVE MATCH</span>
