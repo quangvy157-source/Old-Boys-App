@@ -2297,6 +2297,98 @@ team_b_name: teamBName,
 $("sessionSelect").onchange=loadAttendance;
 $("reloadSessions").onclick=loadSessions;
 
+$("deleteSession").onclick = async () => {
+  if (!isAdmin()) return;
+
+  const sid = $("sessionSelect").value;
+
+  if (!sid) {
+    alert("Vui lòng chọn buổi điểm danh cần xóa.");
+    return;
+  }
+
+  if (!confirm(
+    "Bạn có chắc chắn muốn xóa buổi điểm danh này?\n\n" +
+    "Toàn bộ dữ liệu điểm danh và trận đấu liên kết (nếu có) sẽ bị xóa vĩnh viễn."
+  )) return;
+
+  const button = $("deleteSession");
+  button.disabled = true;
+
+  try {
+    const { data: session, error: sessionError } = await db
+      .from("sessions")
+      .select("id,title,session_date,match_id")
+      .eq("id", sid)
+      .single();
+
+    if (sessionError) throw sessionError;
+
+    if (
+      session.match_id &&
+      activeMatchSession &&
+      activeMatchSession.matchId === String(session.match_id)
+    ) {
+      throw new Error("Không thể xóa buổi đang có trận đấu diễn ra.");
+    }
+
+    if (session.match_id) {
+      const { error } = await db
+        .from("sessions")
+        .update({ match_id: null })
+        .eq("id", sid);
+
+      if (error) throw error;
+    }
+
+    const { error: attendanceError } = await db
+      .from("attendance")
+      .delete()
+      .eq("session_id", sid);
+
+    if (attendanceError) throw attendanceError;
+
+    const { error: deleteSessionError } = await db
+      .from("sessions")
+      .delete()
+      .eq("id", sid);
+
+    if (deleteSessionError) throw deleteSessionError;
+
+    if (session.match_id) {
+      for (const table of [
+        "match_goal_events",
+        "match_scorers",
+        "match_players"
+      ]) {
+        const { error } = await db
+          .from(table)
+          .delete()
+          .eq("match_id", session.match_id);
+
+        if (error) throw error;
+      }
+
+      const { error: matchError } = await db
+        .from("matches")
+        .delete()
+        .eq("id", session.match_id);
+
+      if (matchError) throw matchError;
+    }
+
+    alert("Đã xóa buổi điểm danh thành công!");
+
+    await loadSessions();
+    await loadMatchHistory();
+
+  } catch (error) {
+    alert("Không thể xóa buổi điểm danh: " + error.message);
+  } finally {
+    button.disabled = false;
+  }
+};
+
 
 
 $("saveAttendance").onclick = async () => {
