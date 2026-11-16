@@ -1987,7 +1987,13 @@ if ($("createSession")) {
     const time = $("sessionTime").value || null;
     const format = $("sessionFormat").value;
 const matchType = $("sessionMatchType").value;
+const teamAName = matchType === "internal"
+  ? $("sessionTeamAName").value.trim() || "ĐỘI A"
+  : "OLD BOYS";
 
+const teamBName = matchType === "internal"
+  ? $("sessionTeamBName").value.trim() || "ĐỘI B"
+  : "ĐỐI THỦ";
     if (!date) {
       message("sessionMsg", "Vui lòng chọn ngày đá.");
       return;
@@ -2009,8 +2015,8 @@ const matchType = $("sessionMatchType").value;
           format: format,
           match_format: format,
          match_type: matchType,
-          team_a_name: "OLD BOYS",
-          team_b_name: "ĐỐI THỦ",
+          team_a_name: teamAName,
+team_b_name: teamBName,
           score_a: 0,
           score_b: 0,
           status: "scheduled"
