@@ -3583,22 +3583,29 @@ async function openMatchEditor(match, card) {
  const oldGoals=new Map((oldScorers||[]).map(x=>[x.player_id,Number(x.goals)||0]));
 
  const {data:oldEvents,error:eventError}=await db.from("match_goal_events")
-  .select("player_id,team,minute")
-  .eq("match_id",match.id)
-  .order("created_at",{ascending:true});
+ .select("player_id,team,minute,is_own_goal")
+ .eq("match_id",match.id)
+ .order("created_at",{ascending:true});
 
- if(eventError){
-  content.textContent="Lỗi tải phút ghi bàn: "+eventError.message;
-  return;
+if(eventError){
+ content.textContent="Lỗi tải phút ghi bàn: "+eventError.message;
+ return;
+}
+
+const oldEventMap=new Map();
+const oldOwnGoalMap=new Map();
+
+(oldEvents||[]).forEach(event=>{
+ const targetMap = event.is_own_goal
+   ? oldOwnGoalMap
+   : oldEventMap;
+
+ if(!targetMap.has(event.player_id)){
+  targetMap.set(event.player_id,[]);
  }
 
- const oldEventMap=new Map();
- (oldEvents||[]).forEach(event=>{
-  if(!oldEventMap.has(event.player_id)){
-   oldEventMap.set(event.player_id,[]);
-  }
-  oldEventMap.get(event.player_id).push(Number(event.minute));
- });
+ targetMap.get(event.player_id).push(Number(event.minute));
+});
 const savedDraft = getLiveMatchDraft();
 const hasSavedDraft =
   savedDraft &&
