@@ -3203,6 +3203,35 @@ let timerInterval = null;
  heading.textContent="CHẠM + / − ĐỂ CẬP NHẬT BÀN THẮNG";
  content.appendChild(heading);
 
+const goalColumns = document.createElement("div");
+goalColumns.className = "goal-columns";
+
+const createGoalTeamPanel = (teamName) => {
+  const panel = document.createElement("div");
+  panel.className = "goal-team-panel";
+
+  const title = document.createElement("div");
+  title.className = "goal-team-title";
+  title.textContent = teamName;
+
+  const list = document.createElement("div");
+
+  panel.append(title, list);
+  goalColumns.appendChild(panel);
+
+  return { panel, list };
+};
+
+const teamAPanel = createGoalTeamPanel(
+  match.team_a_name || "ĐỘI A"
+);
+
+const teamBPanel = createGoalTeamPanel(
+  match.team_b_name || "ĐỘI B"
+);
+
+content.appendChild(goalColumns);
+
  
 const goals = [];
 
@@ -3215,7 +3244,7 @@ let opponentScorePanel = null;
 if (match.match_type !== "internal") {
   opponentScorePanel = document.createElement("div");
   opponentScorePanel.style.cssText =
-    "display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;margin:12px 0;background:#17231b;border:1px solid #344638;border-radius:12px";
+    "display:flex;flex-direction:column;gap:10px;padding:10px 6px;background:#182019;border-radius:9px";
 
   const opponentLabel = document.createElement("strong");
   opponentLabel.textContent = "BÀN THẮNG ĐỘI ĐỐI THỦ";
@@ -3271,7 +3300,7 @@ if (match.match_type !== "internal") {
 
   opponentControls.append(opponentMinus, opponentCount, opponentPlus);
   opponentScorePanel.append(opponentLabel, opponentControls);
-  content.appendChild(opponentScorePanel);
+teamBPanel.list.appendChild(opponentScorePanel);
 }
 
 
@@ -3407,7 +3436,8 @@ const entry={
 
   goals.push(entry);
   row.append(name,minus,count,plus);
-  content.appendChild(row);
+  (item.team === "A" ? teamAPanel.list : teamBPanel.list)
+  .appendChild(row);
  });
 
  refresh();
