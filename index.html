@@ -406,11 +406,25 @@ header .sub{
 
 .logo{
   font-family:'Barlow Condensed',sans-serif;
-  font-size:38px;
+  font-size:42px;
   font-weight:900;
-  letter-spacing:5px;
+  letter-spacing:6px;
   line-height:1;
-  text-shadow:0 0 24px rgba(183,255,54,.12);
+  color:#f5f7f2;
+  text-shadow:
+    0 0 10px rgba(183,255,54,.35),
+    0 0 25px rgba(183,255,54,.2);
+}
+
+.logo::after{
+  content:"";
+  display:block;
+  width:58px;
+  height:3px;
+  margin:12px auto 0;
+  border-radius:5px;
+  background:#b7ff36;
+  box-shadow:0 0 10px rgba(183,255,54,.65);
 }
 
 .sub{
