@@ -965,15 +965,21 @@ function showDemo(index) {
         <span>LỊCH SỬ TRẬN ĐẤU</span>
         <span class="preview-tag">ĐÃ LƯU</span>
       </div>
-      <div class="preview-row">
-        <span>OLD BOYS XANH</span>
-        <strong>3 - 2</strong>
-        <span>OLD BOYS ĐỎ</span>
-      </div>
-      <div class="preview-row">
-        <span class="preview-muted">14/11/2026</span>
-        <span class="preview-muted">⚽ 5 bàn thắng</span>
-      </div>
+            ${
+        demoMatches.length
+          ? demoMatches.slice(0, 2).map(match => `
+            <div class="preview-row">
+              <span>${String(match.team_a_name || "ĐỘI A").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}</span>
+              <strong>${match.score_a ?? 0} - ${match.score_b ?? 0}</strong>
+              <span>${String(match.team_b_name || "ĐỘI B").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}</span>
+            </div>
+            <div class="preview-row">
+              <span class="preview-muted">${match.match_date || ""}</span>
+              <span class="preview-muted">${match.status === "completed" ? "Đã kết thúc" : "Đã lưu"}</span>
+            </div>
+          `).join("")
+          : '<div class="preview-muted">Chưa có trận đấu nào được lưu.</div>'
+      }
       <div class="preview-muted">Tìm trận theo tên đội hoặc ngày đấu.</div>
     `,
     
