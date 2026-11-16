@@ -3194,11 +3194,40 @@ let timerInterval = null;
   scorerTitle.textContent = "NGƯỜI GHI BÀN";
   scorerTitle.style.cssText = "font-size:13px;font-weight:800;letter-spacing:2px;color:#a4afa6;margin-bottom:12px";
 
-  const scorerList = document.createElement("div");
-  scorerList.style.cssText = "display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.4";
+  const scorerColumns = document.createElement("div");
+scorerColumns.style.cssText =
+  "display:grid;grid-template-columns:1fr 1fr;gap:10px";
 
-  scorerPanel.append(scorerTitle, scorerList);
-  content.appendChild(scorerPanel);
+const createScorerList = (teamName) => {
+  const panel = document.createElement("div");
+  panel.style.cssText =
+    "min-width:0;padding:8px;background:#101713;border-radius:9px";
+
+  const heading = document.createElement("strong");
+  heading.textContent = teamName;
+  heading.style.cssText =
+    "display:block;font-size:11px;color:#b7ff36;margin-bottom:6px";
+
+  const list = document.createElement("div");
+  list.style.cssText =
+    "display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.4";
+
+  panel.append(heading, list);
+  scorerColumns.appendChild(panel);
+
+  return list;
+};
+
+const scorerListA = createScorerList(
+  match.team_a_name || "ĐỘI A"
+);
+
+const scorerListB = createScorerList(
+  match.team_b_name || "ĐỘI B"
+);
+
+scorerPanel.append(scorerTitle, scorerColumns);
+content.appendChild(scorerPanel);
  const heading=document.createElement("h3");
  heading.textContent="CHẠM + / − ĐỂ CẬP NHẬT BÀN THẮNG";
  content.appendChild(heading);
@@ -3322,39 +3351,51 @@ content.appendChild(opponentScorePanel);
   ? goals.filter(x => x.team === "B").reduce((n, x) => n + x.value, 0)
   : opponentGoals;
 
-    scorerList.innerHTML = "";
+    scorerListA.innerHTML = "";
+scorerListB.innerHTML = "";
 
-    const activeScorers = goals.filter(x => x.value > 0);
+const activeScorers = goals.filter(x => x.value > 0);
 
-    if (!activeScorers.length) {
-      const empty = document.createElement("div");
-      empty.textContent = "Chưa có bàn thắng.";
-      empty.style.color = "#a4afa6";
-      scorerList.appendChild(empty);
-      return;
-    }
+const renderScorers = (entries, list) => {
+  if (!entries.length) {
+    const empty = document.createElement("div");
+    empty.textContent = "Chưa có bàn thắng.";
+    empty.style.color = "#a4afa6";
+    list.appendChild(empty);
+    return;
+  }
 
-    activeScorers.forEach(entry => {
-      const player = playerData.find(
-        p => p.id === entry.player_id
-      );
+  entries.forEach(entry => {
+    const player = playerData.find(
+      p => p.id === entry.player_id
+    );
 
-      if (!player) return;
+    if (!player) return;
 
-      const item = document.createElement("div");
-      item.style.cssText = "padding:8px 0;color:#fff;border-bottom:1px solid #344638";
+    const item = document.createElement("div");
+    item.style.cssText =
+      "padding:6px 0;color:#fff;border-bottom:1px solid #344638";
 
-      const minutes = (entry.events || [])
-        .map(minute => "(" + minute + "')")
-        .join(", ");
+    const minutes = (entry.events || [])
+      .map(minute => "(" + minute + "')")
+      .join(", ");
 
-      item.textContent = player.full_name +
-        (minutes ? " " + minutes : "");
+    item.textContent = player.full_name +
+      (minutes ? " " + minutes : "");
 
-      scorerList.appendChild(item);
-    });
-  };
+    list.appendChild(item);
+  });
+};
 
+renderScorers(
+  activeScorers.filter(x => x.team === "A"),
+  scorerListA
+);
+
+renderScorers(
+  activeScorers.filter(x => x.team === "B"),
+  scorerListB
+);
 
  (assigned||[]).forEach(item=>{
   const p=playerData.find(x=>x.id===item.player_id);
