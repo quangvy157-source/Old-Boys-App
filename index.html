@@ -1901,6 +1901,7 @@ async function loadAttendance(){
   renderTeamSplit(assigned);
 }
 
+
 function renderTeamSplit(assigned = []){
   const panel = $("teamSplitPanel");
   const list = $("teamSplitList");
@@ -1928,29 +1929,52 @@ function renderTeamSplit(assigned = []){
     const row = document.createElement("div");
     row.className = "att-row";
 
-    const name = document.createElement("span");
+    const name = document.createElement("strong");
+    name.className = "att-player-name";
     name.textContent =
       (player.jersey_number != null ? "#" + player.jersey_number + " " : "") +
       player.full_name;
 
-    const select = document.createElement("select");
-    select.dataset.playerId = item.player_id;
-    select.style.maxWidth = "120px";
-
-    select.add(new Option("Chưa chia", ""));
-    select.add(new Option("Đội A", "A"));
-    select.add(new Option("Đội B", "B"));
+    const group = document.createElement("div");
+    group.className = "team-split-group";
+    group.dataset.playerId = item.player_id;
 
     const current = assigned.find(x =>
       String(x.player_id) === String(item.player_id)
     );
 
-    select.value = current?.team || "";
+    group.dataset.team = current?.team || "";
 
-    row.append(name, select);
+    [
+      ["A", "ĐỘI A"],
+      ["B", "ĐỘI B"]
+    ].forEach(([value, label]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.dataset.team = value;
+      btn.classList.toggle("active", group.dataset.team === value);
+      btn.disabled = !isAdmin();
+
+      btn.onclick = () => {
+        group.dataset.team = value;
+
+        [...group.children].forEach(item => {
+          item.classList.toggle(
+            "active",
+            item.dataset.team === value
+          );
+        });
+      };
+
+      group.appendChild(btn);
+    });
+
+    row.append(name, group);
     list.appendChild(row);
   });
 }
+
 
 
 
