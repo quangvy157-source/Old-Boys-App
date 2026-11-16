@@ -1654,16 +1654,36 @@ async function openPlayerDetail(p){
     const goalInfo=document.createElement("div");
     goalInfo.style.cssText="margin-top:7px;color:#d9f99d;font-size:13px";
 
-    const minutes=(playerGoalEvents||[])
-      .filter(event=>event.match_id===match.id)
+        const playerEvents=(playerGoalEvents||[])
+      .filter(event=>event.match_id===match.id);
+
+    const minutes=playerEvents
+      .filter(event=>!event.is_own_goal)
+      .map(event=>"("+event.minute+"')")
+      .join(", ");
+
+    const ownGoalMinutes=playerEvents
+      .filter(event=>event.is_own_goal)
       .map(event=>"("+event.minute+"')")
       .join(", ");
 
     goalInfo.textContent=playerGoals && Number(playerGoals.goals)>0
       ? "⚽ Ghi "+playerGoals.goals+" bàn"+(minutes?" · "+minutes:"")
-      : "Không ghi bàn";
+      : "";
 
-    card.append(title,date,score,goalInfo);
+    if(ownGoalMinutes){
+      const ownGoalInfo=document.createElement("div");
+      ownGoalInfo.style.cssText=
+        "margin-top:5px;color:#f2a45f;font-size:13px";
+      ownGoalInfo.textContent="🟠 Phản lưới · "+ownGoalMinutes;
+      card.append(title,date,score,goalInfo,ownGoalInfo);
+    }else{
+      if(!goalInfo.textContent){
+        goalInfo.textContent="Không ghi bàn";
+        goalInfo.style.color="#aab5ac";
+      }
+      card.append(title,date,score,goalInfo);
+    }
     content.appendChild(card);
   });
 }
