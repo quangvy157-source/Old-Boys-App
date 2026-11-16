@@ -3461,7 +3461,43 @@ clearButton.onclick = () => {
         scorerBox.appendChild(line);
       });
     }
+    // DANH SÁCH PHẢN LƯỚI
+    const ownGoalEvents = goalEvents.filter(event =>
+      event.match_id === match.id &&
+      event.is_own_goal === true
+    );
 
+    if (ownGoalEvents.length) {
+      const ownGoalBox = document.createElement("div");
+      ownGoalBox.style.cssText =
+        "margin:8px 0;padding:10px;background:#24170f;border-radius:9px";
+
+      ownGoalEvents.forEach(event => {
+        const player = playerData.find(p => p.id === event.player_id);
+        if (!player) return;
+
+        const line = document.createElement("div");
+        line.style.cssText =
+          "font-size:13px;padding:4px 0;color:#f2a45f";
+
+        const teamName = event.team === "A"
+          ? (match.team_a_name || "ĐỘI 1")
+          : (match.team_b_name || "ĐỘI 2");
+
+        line.textContent =
+          "⚽ PHẢN LƯỚI · " + teamName + " · " +
+          (player.jersey_number != null
+            ? "#" + player.jersey_number + " "
+            : "") +
+          player.full_name + " (" + event.minute + "')";
+
+        ownGoalBox.appendChild(line);
+      });
+
+      if (ownGoalBox.children.length) {
+        scorerBox.appendChild(ownGoalBox);
+      }
+    }
     const status = document.createElement("div");
     status.style.cssText = "margin-top:8px;color:#aaa;font-size:12px";
     status.textContent =
