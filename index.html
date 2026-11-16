@@ -3011,6 +3011,63 @@ clearButton.onclick = () => {
   });
 }
 
+async function deleteMatch(match) {
+  if (!isAdmin()) return;
+
+  if (
+    activeMatchSession &&
+    activeMatchSession.matchId === String(match.id)
+  ) {
+    alert("Không thể xóa trận đang diễn ra. Hãy kết thúc trận trước.");
+    return;
+  }
+
+  const score =
+    (match.score_a ?? 0) + " - " + (match.score_b ?? 0);
+
+  if (!confirm(
+    "Bạn chắc chắn muốn xóa trận: " +
+    (match.title || "Trận đấu OLD BOYS") +
+    "\nTỉ số: " + score +
+    "\n\nToàn bộ dữ liệu ghi bàn và danh sách cầu thủ của trận này sẽ bị xóa. Dữ liệu điểm danh vẫn được giữ lại.\n\nBạn có chắc chắn?"
+  )) return;
+
+  try {
+    const { error: sessionError } = await db
+      .from("sessions")
+      .update({ match_id: null })
+      .eq("match_id", match.id);
+
+    if (sessionError) throw sessionError;
+
+    for (const table of [
+      "match_goal_events",
+      "match_scorers",
+      "match_players"
+    ]) {
+      const { error } = await db
+        .from(table)
+        .delete()
+        .eq("match_id", match.id);
+
+      if (error) throw error;
+    }
+
+    const { error } = await db
+      .from("matches")
+      .delete()
+      .eq("id", match.id);
+
+    if (error) throw error;
+
+    alert("Đã xóa trận đấu thành công!");
+    await loadMatchHistory();
+
+  } catch (error) {
+    alert("Không thể xóa trận đấu: " + error.message);
+  }
+}
+
 async function openMatchEditor(match, card) {
    if (activeMatchSession) {
     if (activeMatchSession.matchId === String(match.id)) {
