@@ -3365,8 +3365,11 @@ content.appendChild(opponentScorePanel);
 
   const name=document.createElement("span");
   name.className="goal-name";
-    name.textContent=(item.team==="A"?(match.team_a_name||"ĐỘI 1")+" · ":(match.team_b_name||"ĐỘI 2")+" · ")+
-   (p.jersey_number!=null?"#"+p.jersey_number+" ":"")+p.full_name;
+    const scoringTeam = isInternalMatch ? item.team : "A";
+name.textContent = (scoringTeam === "A"
+  ? (isInternalMatch ? (match.team_a_name || "ĐỘI 1") : "OLD BOYS") + " · "
+  : (match.team_b_name || "ĐỘI 2") + " · ") +
+  (p.jersey_number != null ? "#" + p.jersey_number + " " : "") + p.full_name;
 
   const minus=document.createElement("button");
   minus.type="button";
@@ -3397,7 +3400,7 @@ if (!isAdmin()) {
 }
 const entry={
   player_id:item.player_id,
-  team:item.team,
+  team:scoringTeam,
   value:initialGoals,
   events:savedGoal
     ? [...(savedGoal.events || [])]
@@ -3445,8 +3448,8 @@ const entry={
 
   goals.push(entry);
   row.append(name,minus,count,plus);
-  (item.team === "A" ? teamAPanel.list : teamBPanel.list)
-  .appendChild(row);
+  (scoringTeam === "A" ? teamAPanel.list : teamBPanel.list)
+.appendChild(row);
  });
 
  refresh();
