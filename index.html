@@ -889,25 +889,34 @@ function showDemo(index) {
   const slide = demoSlides[index];
 
   const previews = [
+    
     `
       <div class="preview-bar">
-        <span>ĐỘI HÌNH OLD BOYS</span>
-        <span class="preview-tag">CẦU THỦ</span>
+        <span>DANH SÁCH OLD BOYS</span>
+        <span class="preview-tag">${playerData.length} CẦU THỦ</span>
       </div>
-      <div class="preview-row">
-        <span>10 · Nguyễn Văn An</span>
-        <span class="preview-muted">Tiền đạo</span>
-      </div>
-      <div class="preview-row">
-        <span>07 · Trần Minh Khang</span>
-        <span class="preview-muted">Tiền vệ</span>
-      </div>
-      <div class="preview-row">
-        <span>22 · Lê Hoàng Nam</span>
-        <span class="preview-muted">Hậu vệ</span>
-      </div>
+      ${
+        playerData.length
+          ? playerData.slice(0, 5).map(p => `
+            <div class="preview-row">
+              <span>
+                ${p.jersey_number != null ? "#" + p.jersey_number + " · " : ""}
+                ${String(p.full_name || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+              </span>
+              <span class="preview-muted">
+                ${String(p.position || "Chưa có vị trí").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+              </span>
+            </div>
+          `).join("")
+          : '<div class="preview-muted">Chưa có dữ liệu cầu thủ.</div>'
+      }
+      ${
+        playerData.length > 5
+          ? '<div class="preview-muted">Và ' + (playerData.length - 5) + ' cầu thủ khác...</div>'
+          : ''
+      }
     `,
-    `
+
       <div class="preview-bar">
         <span>TẠO TRẬN ĐẤU</span>
         <span class="preview-tag">5 VS 5</span>
@@ -1164,7 +1173,7 @@ async function loadPlayers(){
 
   playerData=data || [];
   renderPlayers();
-
+showDemo(0);
   $("total").textContent=playerData.length;
   $("active").textContent=playerData.filter(p=>p.is_active).length;
 
