@@ -515,7 +515,7 @@ input,select{
   <section class="panel demo-panel" id="appDemo">
     <div class="demo-top">
       <span class="demo-label">KHÁM PHÁ OLD BOYS</span>
-      <span class="demo-counter" id="demoCounter">01 / 05</span>
+      <span class="demo-counter" id="demoCounter">01 / 04</span>
     </div>
 
     <div class="demo-content" id="demoContent">
@@ -529,7 +529,7 @@ input,select{
       <button type="button" class="demo-dot" aria-label="Demo 2"></button>
       <button type="button" class="demo-dot" aria-label="Demo 3"></button>
       <button type="button" class="demo-dot" aria-label="Demo 4"></button>
-      <button type="button" class="demo-dot" aria-label="Demo 5"></button>
+      
     </div>
   </section>
 
@@ -863,18 +863,10 @@ const demoSlides = [
     icon: "🏆",
     title: "VUA PHÁ LƯỚI",
     text: "Bảng xếp hạng ghi bàn được tổng hợp từ thành tích thực tế của các cầu thủ OLD BOYS."
-  },
-  {
-},
-  {
+  },  {
     icon: "📋",
     title: "LỊCH SỬ TRẬN ĐẤU",
     text: "Xem lại kết quả, danh sách người ghi bàn và tìm kiếm trận đấu theo tên đội hoặc ngày."
-  },
-  {
-    icon: "🏆",
-    title: "THỐNG KÊ & VUA PHÁ LƯỚI",
-    text: "Theo dõi tổng số trận, bàn thắng và bảng xếp hạng ghi bàn của các cầu thủ."
   }
 ];
 let demoRanking = [];
@@ -983,24 +975,7 @@ function showDemo(index) {
       </div>
       <div class="preview-muted">Tìm trận theo tên đội hoặc ngày đấu.</div>
     `,
-    `
-      <div class="preview-bar">
-        <span>THỐNG KÊ MÙA GIẢI</span>
-        <span class="preview-tag">TOP SCORER</span>
-      </div>
-      <div class="preview-row">
-        <span>⚽ Nguyễn Văn An</span>
-        <span class="preview-number">12 bàn</span>
-      </div>
-      <div class="preview-row">
-        <span>⚽ Trần Minh Khang</span>
-        <span class="preview-number">8 bàn</span>
-      </div>
-      <div class="preview-row">
-        <span>⚽ Lê Hoàng Nam</span>
-        <span class="preview-number">6 bàn</span>
-      </div>
-    `
+    
   ];
 
   content.style.opacity = "0";
@@ -1019,7 +994,7 @@ function showDemo(index) {
   }, 180);
 
   counter.textContent =
-    String(index + 1).padStart(2, "0") + " / 05";
+    String(index + 1).padStart(2, "0") + " / 04";
 
   dots.forEach((dot, i) => {
     dot.classList.toggle("active", i === index);
