@@ -105,31 +105,61 @@ button:disabled{opacity:.5}
   font-weight:bold;
   overflow-wrap:anywhere
 }
+
+.goal-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  align-items:start;
+}
+.goal-team-panel{
+  min-width:0;
+  padding:9px;
+  background:#17231b;
+  border:1px solid #344638;
+  border-radius:12px;
+}
+.goal-team-title{
+  font-size:12px;
+  font-weight:800;
+  color:#b7ff36;
+  margin-bottom:8px;
+  overflow-wrap:anywhere;
+}
 .goal-row{
   display:flex;
+  flex-wrap:wrap;
   align-items:center;
-  gap:8px;
-  margin:8px 0;
-  padding:10px;
+  gap:5px;
+  margin:6px 0;
+  padding:8px 6px;
   background:#182019;
-  border-radius:10px
+  border-radius:9px;
 }
-.goal-name{flex:1;min-width:0;font-size:13px}
+.goal-name{
+  flex:1;
+  min-width:100%;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
 .goal-count{
-  min-width:28px;
+  min-width:22px;
   text-align:center;
-  font-size:18px;
-  font-weight:bold;
-  color:#b7ff36
+  font-size:16px;
+  font-weight:800;
+  color:#b7ff36;
 }
 .goal-btn{
-  width:38px;
-  height:38px;
+  width:30px;
+  height:32px;
   padding:0;
-  font-size:22px;
-  border-radius:9px
+  font-size:19px;
+  border-radius:8px;
 }
 .goal-btn.minus{background:#303b32;color:#fff}
+
 .score-live{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -3158,14 +3188,14 @@ let timerInterval = null;
   timerPanel.append(timerLabel, timerDisplay, timerControls);
   content.appendChild(timerPanel);
    const scorerPanel = document.createElement("div");
-  scorerPanel.style.cssText = "padding:16px;margin:16px 0;background:#17231b;border:1px solid #344638;border-radius:14px";
+  scorerPanel.style.cssText = "padding:12px;margin:12px 0;background:#17231b;border:1px solid #344638;border-radius:14px";
 
   const scorerTitle = document.createElement("div");
   scorerTitle.textContent = "NGƯỜI GHI BÀN";
   scorerTitle.style.cssText = "font-size:13px;font-weight:800;letter-spacing:2px;color:#a4afa6;margin-bottom:12px";
 
   const scorerList = document.createElement("div");
-  scorerList.style.cssText = "display:flex;flex-direction:column;gap:10px";
+  scorerList.style.cssText = "display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.4";
 
   scorerPanel.append(scorerTitle, scorerList);
   content.appendChild(scorerPanel);
