@@ -3257,7 +3257,7 @@ if (currentDemo === 3) showDemo(3);
   }
   const { data: goalEventData, error: goalEventError } = await db
     .from("match_goal_events")
-    .select("match_id,player_id,team,minute");
+    .select("match_id,player_id,team,minute,is_own_goal");
 
   if (goalEventError) {
     box.textContent = "Không tải được phút ghi bàn: " + goalEventError.message;
