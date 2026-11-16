@@ -1529,7 +1529,7 @@ async function openPlayerDetail(p){
   }
   const {data:playerGoalEvents,error:playerEventError}=await db
     .from("match_goal_events")
-    .select("match_id,minute,team")
+    .select("match_id,minute,team,is_own_goal")
     .eq("player_id",p.id)
     .order("created_at",{ascending:true});
 
