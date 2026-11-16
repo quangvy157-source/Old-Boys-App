@@ -1023,7 +1023,6 @@ $("demoDots").querySelectorAll(".demo-dot").forEach((dot, index) => {
   });
 });
 
-showDemo(0);
 
 const SUPABASE_URL = "https://pspiboiojswnonupcyrx.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nWVOoHgBNGB9Xln0M4G4jQ_YLynX-Rl";
@@ -1033,7 +1032,7 @@ let playerData = [];
 let sessionData = [];
 let attendanceData = [];
  let selectedPhotoFile = null;
-
+showDemo(0);
 $("photoFile").addEventListener("change", e => {
   const file = e.target.files[0];
   selectedPhotoFile = file || null;
