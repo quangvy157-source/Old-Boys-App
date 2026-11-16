@@ -3126,11 +3126,11 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
     );
 
     const ownGoals = goalEvents.filter(
-      event =>
-        String(event.match_id) === String(match.id) &&
-        event.team === teamCode &&
-        event.is_own_goal === true
-    );
+  event =>
+    String(event.match_id) === String(match.id) &&
+    event.team !== teamCode &&
+    event.is_own_goal === true
+);
 
     const totalRows = scorers.length + ownGoals.length;
 
@@ -3201,7 +3201,7 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
 
       drawRow(
         player,
-        `PHẢN LƯỚI · ${event.minute}'`,
+        `(${event.minute}') OG`,
         true
       );
     });
