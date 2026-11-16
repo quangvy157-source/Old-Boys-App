@@ -3203,8 +3203,14 @@ let timerInterval = null;
  heading.textContent="CHẠM + / − ĐỂ CẬP NHẬT BÀN THẮNG";
  content.appendChild(heading);
 
+
+const isInternalMatch = match.match_type === "internal";
+
 const goalColumns = document.createElement("div");
 goalColumns.className = "goal-columns";
+goalColumns.style.gridTemplateColumns = isInternalMatch
+  ? "1fr 1fr"
+  : "1fr";
 
 const createGoalTeamPanel = (teamName) => {
   const panel = document.createElement("div");
@@ -3223,14 +3229,17 @@ const createGoalTeamPanel = (teamName) => {
 };
 
 const teamAPanel = createGoalTeamPanel(
-  match.team_a_name || "ĐỘI A"
+  isInternalMatch
+    ? (match.team_a_name || "ĐỘI A")
+    : "OLD BOYS"
 );
 
-const teamBPanel = createGoalTeamPanel(
-  match.team_b_name || "ĐỘI B"
-);
+const teamBPanel = isInternalMatch
+  ? createGoalTeamPanel(match.team_b_name || "ĐỘI B")
+  : null;
 
 content.appendChild(goalColumns);
+
 
  
 const goals = [];
