@@ -594,6 +594,7 @@ input,select{
       </div>
     </div>
     <div class="message">Thống kê tổng hợp thành tích thực tế của OLD BOYS.</div>
+   <div id="rankingContainer" style="margin-top:15px"></div>
   </div>
 </details>
 
@@ -2864,7 +2865,9 @@ demoRanking = ranking;
     });
   }
 
-  box.appendChild(rankingBox);
+  const rankingContainer = $("rankingContainer");
+rankingContainer.innerHTML = "";
+rankingContainer.appendChild(rankingBox);
 
   const heading = document.createElement("h3");
   heading.textContent = "LỊCH SỬ TRẬN ĐẤU";
