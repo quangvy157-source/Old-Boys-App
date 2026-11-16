@@ -235,7 +235,14 @@ button:disabled{opacity:.5}
   border-radius:6px;
 }
 .goal-btn.minus{background:#303b32;color:#fff}
-
+.goal-btn.own-goal-minus{
+  background:#626b70;
+  color:#fff;
+}
+.goal-btn.own-goal-plus{
+  background:#f28c28;
+  color:#fff;
+}
 .score-live{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -4021,13 +4028,13 @@ plus.className="goal-btn";
 plus.textContent="+";
   const ownGoalMinus=document.createElement("button");
 ownGoalMinus.type="button";
-ownGoalMinus.className="goal-btn";
+ownGoalMinus.className="goal-btn own-goal-minus";
 ownGoalMinus.textContent="PL−";
 ownGoalMinus.title="Xoá phản lưới gần nhất";
 
 const ownGoalPlus=document.createElement("button");
 ownGoalPlus.type="button";
-ownGoalPlus.className="goal-btn";
+ownGoalPlus.className="goal-btn own-goal-plus";
 ownGoalPlus.textContent="PL+";
 ownGoalPlus.title="Ghi nhận phản lưới";
 
