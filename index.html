@@ -4021,7 +4021,10 @@ const entry={
   value:initialGoals,
   events:savedGoal
     ? [...(savedGoal.events || [])]
-    : [...(oldEventMap.get(item.player_id)||[])]
+    : [...(oldEventMap.get(item.player_id)||[])],
+  ownGoalEvents:savedGoal
+    ? [...(savedGoal.ownGoalEvents || [])]
+    : [...(oldOwnGoalMap.get(item.player_id)||[])]
 };
 
   minus.onclick=()=>{
