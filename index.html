@@ -3270,9 +3270,7 @@ const isInternalMatch = match.match_type === "internal";
 
 const goalColumns = document.createElement("div");
 goalColumns.className = "goal-columns";
-goalColumns.style.gridTemplateColumns = isInternalMatch
-  ? "1fr 1fr"
-  : "1fr";
+goalColumns.style.gridTemplateColumns = "1fr 1fr";
 
 const createGoalTeamPanel = (teamName) => {
   const panel = document.createElement("div");
@@ -3371,7 +3369,7 @@ if (match.match_type !== "internal") {
 
   opponentControls.append(opponentMinus, opponentCount, opponentPlus);
   opponentScorePanel.append(opponentLabel, opponentControls);
-content.appendChild(opponentScorePanel);
+goalColumns.appendChild(opponentScorePanel);
 }
 
 
