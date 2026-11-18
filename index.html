@@ -4630,7 +4630,14 @@ $("createMatchModal").classList.add("hidden");
     button.textContent = "TẠO TRẬN ĐẤU";
   }
 });
+const oldBoysSplash = document.getElementById("oldBoysSplash");
 
+if (oldBoysSplash) {
+  window.setTimeout(() => {
+    oldBoysSplash.classList.add("hide");
+    window.setTimeout(() => oldBoysSplash.remove(), 700);
+  }, 2050);
+}
 start();
 </script>
 </body>
