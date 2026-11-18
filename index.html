@@ -686,7 +686,8 @@ min-height:85px;
   overflow-y:auto;
 }
 
-/* OLD BOYS SPLASH SCREEN */
+
+/* OLD BOYS CINEMATIC SPLASH */
 #oldBoysSplash {
   position: fixed;
   inset: 0;
@@ -695,36 +696,45 @@ min-height:85px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background: #090d0a;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.58)),
+    url("old-boys-stadium-bg.png") center center / cover no-repeat;
   opacity: 1;
 }
 
 #oldBoysSplash .splash-logo {
-  width: 190px;
-  height: 190px;
+  position: relative;
+  z-index: 2;
+  width: 210px;
+  height: 210px;
   object-fit: contain;
   opacity: 0;
-  animation: splashLogoIn 0.8s ease 0.2s forwards;
+  animation: splashLogoIn 0.9s ease 0.2s forwards;
 }
 
 #oldBoysSplash .splash-title {
-  margin-top: 20px;
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
   color: #ffffff;
   font-size: 30px;
   font-weight: 900;
   letter-spacing: 6px;
   opacity: 0;
-  animation: splashTitleIn 0.7s ease 0.7s forwards;
+  animation: splashTitleIn 0.8s ease 0.85s forwards;
 }
 
 #oldBoysSplash .splash-subtitle {
+  position: relative;
+  z-index: 2;
   margin-top: 9px;
   color: #b7ff36;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 4px;
   opacity: 0;
-  animation: splashTitleIn 0.7s ease 1s forwards;
+  animation: splashTitleIn 0.8s ease 1.05s forwards;
 }
 
 @keyframes splashLogoIn {
@@ -741,7 +751,7 @@ min-height:85px;
 @keyframes splashTitleIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -749,8 +759,31 @@ min-height:85px;
   }
 }
 
+#oldBoysSplash.hide .splash-logo {
+  animation: splashLogoZoomOut 1.15s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+#oldBoysSplash.hide .splash-title,
+#oldBoysSplash.hide .splash-subtitle {
+  animation: splashTextFade 0.55s ease forwards;
+}
+
 #oldBoysSplash.hide {
-  animation: splashFadeOut 0.65s ease forwards;
+  animation: splashFadeOut 1.15s ease forwards;
+}
+
+@keyframes splashLogoZoomOut {
+  to {
+    opacity: 0;
+    transform: scale(5);
+  }
+}
+
+@keyframes splashTextFade {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes splashFadeOut {
@@ -767,7 +800,7 @@ min-height:85px;
  <div id="oldBoysSplash">
   <img
     class="splash-logo"
-    src="old-boys-crest.png"
+    src="old-boys-crest-transparent.png"
     alt="OLD BOYS Football Club"
   >
   <div class="splash-title">OLD BOYS</div>
@@ -4635,8 +4668,8 @@ const oldBoysSplash = document.getElementById("oldBoysSplash");
 if (oldBoysSplash) {
   window.setTimeout(() => {
     oldBoysSplash.classList.add("hide");
-    window.setTimeout(() => oldBoysSplash.remove(), 700);
-  }, 2050);
+    window.setTimeout(() => oldBoysSplash.remove(), 1200);
+  }, 2350);
 }
 start();
 </script>
