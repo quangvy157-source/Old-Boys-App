@@ -814,12 +814,21 @@ min-height:85px;
   pointer-events: none;
 }
 
-#oldBoysSplash .splash-emblem::after {
-  content: "";
+#oldBoysSplash .splash-sweep-mask {
   position: absolute;
   z-index: 3;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#oldBoysSplash .splash-sweep-mask::after {
+  content: "";
+  position: absolute;
   top: -25%;
-  left: -55%;
+  left: -100%;
   width: 35%;
   height: 150%;
   background: linear-gradient(
@@ -834,7 +843,6 @@ min-height:85px;
   opacity: 0;
   transform: rotate(45deg);
   animation: splashLightSweep 2.4s ease-in-out 0.4s infinite;
-  pointer-events: none;
 }
 @keyframes splashRingSpin {
   to {
