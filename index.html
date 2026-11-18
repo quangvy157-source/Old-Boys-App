@@ -768,12 +768,29 @@ min-height:85px;
   animation: splashTextFade 0.55s ease forwards;
 }
 
+#oldBoysSplash.hide .splash-logo {
+  animation: splashLogoZoomOut 1.15s ease-in forwards;
+}
+
+#oldBoysSplash.hide .splash-title,
+#oldBoysSplash.hide .splash-subtitle {
+  animation: splashTextFade 0.55s ease forwards;
+}
+
 #oldBoysSplash.hide {
-  animation: splashFadeOut 1.15s ease forwards;
+  animation: splashFadeOut 0.35s ease 1.15s forwards;
 }
 
 @keyframes splashLogoZoomOut {
-  to {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(3.5);
+  }
+  100% {
     opacity: 0;
     transform: scale(5);
   }
@@ -4668,7 +4685,7 @@ const oldBoysSplash = document.getElementById("oldBoysSplash");
 if (oldBoysSplash) {
   window.setTimeout(() => {
     oldBoysSplash.classList.add("hide");
-    window.setTimeout(() => oldBoysSplash.remove(), 1200);
+    window.setTimeout(() => oldBoysSplash.remove(), 1600);
   }, 2350);
 }
 start();
