@@ -817,22 +817,19 @@ min-height:85px;
   content: "";
   position: absolute;
   z-index: 3;
-  top: -25%;
-  left: -45%;
-  width: 32%;
-  height: 150%;
+  inset: 20px;
+  border-radius: 50%;
   background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(183, 255, 54, 0.25),
-    #ffffff,
-    rgba(183, 255, 54, 0.85),
-    transparent
+    135deg,
+    transparent 42%,
+    rgba(183, 255, 54, 0.25) 47%,
+    #ffffff 50%,
+    rgba(183, 255, 54, 0.85) 53%,
+    transparent 58%
   );
-  filter: blur(3px);
+  background-size: 250% 250%;
+  background-position: 0% 100%;
   opacity: 0;
-  clip-path: circle(42% at 50% 50%);
-  transform: rotate(45deg);
   animation: splashLightSweep 1.25s ease-in-out 0.65s forwards;
   pointer-events: none;
 }
