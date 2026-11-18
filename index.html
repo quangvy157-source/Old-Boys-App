@@ -781,6 +781,7 @@ min-height:85px;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+ overflow: hidden;
   animation: splashHaloPulse 2.8s ease-in-out infinite;
 }
 
@@ -817,19 +818,21 @@ min-height:85px;
   content: "";
   position: absolute;
   z-index: 3;
-  inset: 20px;
-  border-radius: 50%;
+  top: -25%;
+  left: -55%;
+  width: 35%;
+  height: 150%;
   background: linear-gradient(
-    135deg,
-    transparent 40%,
-    rgba(183, 255, 54, 0.35) 47%,
-    #ffffff 50%,
-    rgba(183, 255, 54, 0.9) 53%,
-    transparent 60%
+    90deg,
+    transparent,
+    rgba(183, 255, 54, 0.35),
+    #ffffff,
+    rgba(183, 255, 54, 0.9),
+    transparent
   );
-  background-size: 300% 300%;
-  background-position: 0% 100%;
+  filter: blur(3px);
   opacity: 0;
+  transform: rotate(45deg);
   animation: splashLightSweep 2.4s ease-in-out 0.4s infinite;
   pointer-events: none;
 }
