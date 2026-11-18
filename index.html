@@ -817,21 +817,22 @@ min-height:85px;
   content: "";
   position: absolute;
   z-index: 3;
-  left: -5%;
-  top: -10%;
-  width: 110%;
-  height: 30px;
+  top: -25%;
+  left: -45%;
+  width: 32%;
+  height: 150%;
   background: linear-gradient(
-    180deg,
+    90deg,
     transparent,
-    rgba(255, 255, 255, 0.08),
-    rgba(183, 255, 54, 0.9),
+    rgba(183, 255, 54, 0.25),
     #ffffff,
-    rgba(183, 255, 54, 0.2),
+    rgba(183, 255, 54, 0.85),
     transparent
   );
   filter: blur(3px);
   opacity: 0;
+  clip-path: circle(42% at 50% 50%);
+  transform: rotate(45deg);
   animation: splashLightSweep 1.25s ease-in-out 0.65s forwards;
   pointer-events: none;
 }
@@ -852,10 +853,20 @@ min-height:85px;
 }
 
 @keyframes splashLightSweep {
-  0% { top: -10%; opacity: 0; }
-  15% { opacity: 1; }
-  85% { opacity: 1; }
-  100% { top: 110%; opacity: 0; }
+  0% {
+    left: -45%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 115%;
+    opacity: 0;
+  }
 }
 #oldBoysSplash .splash-logo {
   position: relative;
