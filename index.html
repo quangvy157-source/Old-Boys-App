@@ -1005,7 +1005,10 @@ min-height:85px;
 #oldBoysSplash.hide .splash-logo {
   animation: splashLogoZoomOut 0.85s ease-in forwards;
 }
-
+#oldBoysSplash.hide .splash-emblem::after {
+  animation: none;
+  opacity: 0;
+}
 #oldBoysSplash.hide .splash-title,
 #oldBoysSplash.hide .splash-subtitle {
   animation: splashTextFade 0.55s ease forwards;
