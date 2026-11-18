@@ -744,6 +744,34 @@ min-height:85px;
     transform: scale(1);
   }
 }
+ #oldBoysSplash::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 2px),
+    radial-gradient(circle, rgba(183,255,54,0.8) 1px, transparent 2px),
+    radial-gradient(circle, rgba(255,255,255,0.7) 1.5px, transparent 2.5px),
+    radial-gradient(circle, rgba(183,255,54,0.65) 1px, transparent 2px),
+    radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 2px);
+  background-size: 97px 113px, 137px 151px, 181px 167px, 211px 193px, 157px 127px;
+  background-position: 12px 20px, 45px 70px, 90px 30px, 130px 110px, 65px 150px;
+  animation: splashDustFloat 4s ease-in-out 0.3s infinite alternate;
+}
+
+@keyframes splashDustFloat {
+  0% {
+    opacity: 0.15;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
+    opacity: 0.65;
+    transform: translate3d(0, -12px, 0);
+  }
+}
 #oldBoysSplash .splash-emblem {
   position: relative;
   z-index: 2;
