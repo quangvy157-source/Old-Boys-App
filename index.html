@@ -802,11 +802,54 @@ min-height:85px;
   z-index: 2;
   margin-top: 18px;
   color: #ffffff;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 900;
-  letter-spacing: 6px;
+  letter-spacing: 9px;
+  text-indent: 9px;
   opacity: 0;
-  animation: splashTitleIn 0.8s ease 0.85s forwards;
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.45),
+    0 0 22px rgba(183, 255, 54, 0.3);
+  animation: splashTitleReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
+}
+
+#oldBoysSplash .splash-title::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 25%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(183, 255, 54, 0.9),
+    #ffffff,
+    transparent
+  );
+  filter: blur(5px);
+  transform: skewX(-20deg);
+  animation: splashTitleShine 1s ease 1.8s forwards;
+  pointer-events: none;
+}
+
+@keyframes splashTitleReveal {
+  from {
+    opacity: 0;
+    letter-spacing: 18px;
+    transform: translateY(18px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 9px;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes splashTitleShine {
+  0% { left: -30%; opacity: 0; }
+  15% { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
 }
 
 #oldBoysSplash .splash-subtitle {
