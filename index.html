@@ -3211,13 +3211,42 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
   await document.fonts.load('900 100px "Barlow Condensed"');
   await document.fonts.load('700 24px "Barlow"');
   await document.fonts.ready;
+    const getTeamRows = teamCode => {
+    const scorerCount = matchScorers.filter(
+      scorer =>
+        scorer.team === teamCode &&
+        Number(scorer.goals) > 0
+    ).length;
+
+    const ownGoalCount = new Set(
+      goalEvents
+        .filter(event =>
+          String(event.match_id) === String(match.id) &&
+          event.team !== teamCode &&
+          event.is_own_goal === true
+        )
+        .map(event => String(event.player_id))
+    ).size;
+
+    return scorerCount + ownGoalCount;
+  };
+
+  const maxRows = Math.max(
+    getTeamRows("A"),
+    getTeamRows("B")
+  );
+
+  const panelY = 850;
+  const panelH = Math.max(365, 130 + maxRows * 42);
+  const footerY = panelY + panelH + 55;
+  const H = footerY + 80;
+
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
-  canvas.height = 1350;
+  canvas.height = H;
 
   const ctx = canvas.getContext("2d");
   const W = 1080;
-  const H = 1350;
 
   const lime = "#c5ff35";
   const white = "#f3f0e7";
@@ -3366,15 +3395,15 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
   // Outer distressed frame
   ctx.strokeStyle = "rgba(245,240,225,0.55)";
   ctx.lineWidth = 3;
-  ctx.strokeRect(32, 32, 1016, 1286);
+    ctx.strokeRect(32, 32, 1016, H - 64);
 
   ctx.strokeStyle = "rgba(197,255,53,0.65)";
   ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(32, 190);
   ctx.lineTo(32, 480);
-  ctx.moveTo(1048, 820);
-  ctx.lineTo(1048, 1130);
+  ctx.moveTo(1048, H - 530);
+  ctx.lineTo(1048, H - 220);
   ctx.stroke();
 
   // Brand header
@@ -3494,9 +3523,7 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
   );
 
   // Scorer panels by team
-  const panelY = 850;
-  const panelH = 365;
-  const panelW = 458;
+    const panelW = 458;
   const leftX = 58;
   const rightX = 564;
 
@@ -3536,9 +3563,7 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
       return;
     }
 
-    const availableHeight = panelH - 82;
-    const rowHeight = Math.min(52, availableHeight / totalRows);
-
+        const rowHeight = 42;
     let y = panelY + 105;
 
     const drawRow = (player, subtitle, isOwnGoal) => {
@@ -3550,22 +3575,34 @@ async function exportMatchImage(match, matchScorers, goalEvents) {
       ctx.fill();
 
       ctx.textAlign = "left";
-      ctx.fillStyle = white;
 
       textFit(
         name,
         x + 42,
         y,
-        panelW - 65,
-        23,
+        210,
+        22,
         '"Barlow", sans-serif',
         white
       );
 
       ctx.fillStyle = isOwnGoal ? "#f2a45f" : lime;
-      ctx.font = '600 19px "Barlow", sans-serif';
-      ctx.fillText(subtitle, x + 42, y + 27, panelW - 65);
 
+      let minuteFont = 17;
+      ctx.font = `600 ${minuteFont}px "Barlow", sans-serif`;
+
+      while (
+        ctx.measureText(subtitle).width > 190 &&
+        minuteFont > 12
+      ) {
+        minuteFont--;
+        ctx.font = `600 ${minuteFont}px "Barlow", sans-serif`;
+      }
+
+      ctx.textAlign = "right";
+      ctx.fillText(subtitle, x + panelW - 18, y, 190);
+
+      ctx.textAlign = "left";
       y += rowHeight;
     };
 
@@ -3623,7 +3660,7 @@ ownGoalGroups.forEach((minutes, playerId) => {
 
   // Footer street tape
   ctx.save();
-  ctx.translate(540, 1270);
+    ctx.translate(540, footerY);
   ctx.rotate(-0.025);
 
   ctx.fillStyle = lime;
