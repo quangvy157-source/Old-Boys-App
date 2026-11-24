@@ -2214,11 +2214,12 @@ $("search").addEventListener("input",renderPlayers);
 
 /* ĐIỂM DANH THEO TỪNG BUỔI */
 
-async function loadSessions(){
+
+async function loadSessions(clearSelection = false){
   $("sessionDate").value=$("sessionDate").value||localDateValue();
 
   const {data,error}=await db.from("sessions")
-    .select("id,title,session_date,start_time,created_at")
+    .select("id,title,session_date,start_time,created_at,match_id")
     .order("session_date",{ascending:false});
 
   if(error){
@@ -2226,17 +2227,41 @@ async function loadSessions(){
     return;
   }
 
-  sessionData=data||[];
+  const allSessions=data||[];
+  const linkedMatchIds=[...new Set(
+    allSessions.map(x=>x.match_id).filter(Boolean).map(String)
+  )];
+
+  let completedMatchIds=new Set();
+
+  if(linkedMatchIds.length){
+    const {data:completedMatches,error:matchError}=await db
+      .from("matches")
+      .select("id")
+      .in("id",linkedMatchIds)
+      .eq("status","completed");
+
+    if(matchError){
+      message("sessionMsg","Không kiểm tra được trạng thái trận đấu: "+matchError.message);
+      return;
+    }
+
+    completedMatchIds=new Set(
+      (completedMatches||[]).map(x=>String(x.id))
+    );
+  }
+
+  sessionData=allSessions.filter(x=>
+    !x.match_id || !completedMatchIds.has(String(x.match_id))
+  );
 
   const select=$("sessionSelect");
   const previous=select.value;
   select.innerHTML="";
-
-  if(!sessionData.length){
-    select.add(new Option("Chưa có buổi đá",""));
-    $("attendanceList").textContent="Chưa có buổi đá. Hãy tạo buổi mới ở phía trên.";
-    return;
-  }
+  select.add(new Option(
+    sessionData.length ? "Chọn buổi đá..." : "Chưa có buổi điểm danh mới",
+    ""
+  ));
 
   sessionData.forEach(x=>{
     const label=(x.title||"Buổi đá")+" · "+x.session_date+
@@ -2244,12 +2269,19 @@ async function loadSessions(){
     select.add(new Option(label,x.id));
   });
 
-  select.value=sessionData.some(x=>x.id===previous)
+  if(clearSelection){
+    select.value="";
+    await loadAttendance();
+    return;
+  }
+
+  select.value=sessionData.some(x=>String(x.id)===String(previous))
     ? previous
-    : sessionData[0].id;
+    : (sessionData[0]?.id || "");
 
   await loadAttendance();
 }
+
 
 
 let attendanceMatchId = null;
@@ -2261,10 +2293,27 @@ async function loadAttendance(){
   attendanceMatchType = "external";
 
   if(!sid){
-    $("attendanceList").textContent = "Chọn một buổi đá để điểm danh.";
+    attendanceData = [];
+    attendanceMatchId = null;
+    attendanceMatchType = "external";
+
+    $("attendanceList").textContent =
+      "Chưa có buổi điểm danh mới. Hãy tạo buổi mới ở phía trên.";
+
+    $("attendanceCounts").innerHTML = "";
+    $("attendanceSummary").textContent =
+      "Chưa có dữ liệu điểm danh.";
+
     $("teamSplitPanel").style.display = "none";
+    $("teamSplitList").innerHTML = "";
+
+    $("attendanceMsg").textContent = "";
+    $("teamSplitMsg").textContent = "";
+
+    $("markAllPresent").disabled = true;
+
     return;
-  }
+}
 
   const {data,error} = await db.from("attendance")
     .select("player_id,status,note")
