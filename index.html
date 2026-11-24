@@ -2289,6 +2289,7 @@ let attendanceMatchType = "external";
 
 async function loadAttendance(){
   const sid = $("sessionSelect").value;
+  $("markAllPresent").classList.toggle("hidden", !sid);
   attendanceMatchId = null;
   attendanceMatchType = "external";
 
