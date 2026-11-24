@@ -4836,12 +4836,7 @@ const score_b = match.match_type === "internal"
   save.textContent="ĐANG LƯU...";
 
   try{
-   const {error:u}=await db.from("matches")
-    .update({score_a,score_b,status:"completed"})
-    .eq("id",match.id);
-
-   if(u)throw u;
-
+   
    const {error:d}=await db.from("match_scorers")
     .delete().eq("match_id",match.id);
 
@@ -4880,6 +4875,11 @@ const score_b = match.match_type === "internal"
 
      if(insertEventsError)throw insertEventsError;
     }
+       const {error:u}=await db.from("matches")
+      .update({score_a,score_b,status:"completed"})
+      .eq("id",match.id);
+
+    if(u)throw u;
     if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
