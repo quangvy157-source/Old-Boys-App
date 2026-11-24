@@ -4635,10 +4635,9 @@ if (!hasGoalsB) {
   const name=document.createElement("span");
   name.className="goal-name";
     const scoringTeam = isInternalMatch ? item.team : "A";
-name.textContent = (scoringTeam === "A"
-  ? (isInternalMatch ? (match.team_a_name || "ĐỘI 1") : "OLD BOYS") + " · "
-  : (match.team_b_name || "ĐỘI 2") + " · ") +
-  (p.jersey_number != null ? "#" + p.jersey_number + " " : "") + p.full_name;
+name.textContent =
+  (p.jersey_number != null ? "#" + p.jersey_number + " " : "") +
+  p.full_name;
 
   const minus=document.createElement("button");
   minus.type="button";
