@@ -4889,7 +4889,8 @@ const score_b = match.match_type === "internal"
    clearLiveMatchDraft();
     activeMatchSession = null;
     $("activeMatchBar").classList.add("hidden");
-   await loadMatchHistory();
+      await loadMatchHistory();
+   await loadSessions(true);
    modal.classList.add("hidden");
 
   }catch(err){
