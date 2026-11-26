@@ -1803,7 +1803,7 @@ function showLogin(){
 async function loadPlayers(){
   $("players").textContent="Đang tải danh sách...";
   const {data,error}=await db.from("players")
-    .select("id,full_name,jersey_number,position,photo_url,elo,is_active,created_at")
+    .select("id,full_name,jersey_number,position,photo_url,is_active,created_at")
     .order("full_name");
 
   if(error){
@@ -1816,12 +1816,6 @@ async function loadPlayers(){
 showDemo(0);
   $("total").textContent=playerData.length;
   $("active").textContent=playerData.filter(p=>p.is_active).length;
-
-  const avg=playerData.length
-    ? Math.round(playerData.reduce((s,p)=>s+(p.elo||0),0)/playerData.length)
-    : 0;
-
-  $("elo").textContent=avg;
 
   if($("sessionSelect")?.value) await loadAttendance();
 }
@@ -1856,7 +1850,7 @@ function renderPlayers(){
     name.addEventListener("click",()=>openPlayerDetail(p));
 
     const detail=document.createElement("small");
-    detail.textContent=(p.position||"Chưa có vị trí")+" · ELO "+(p.elo||0)+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
+    detail.textContent=(p.position||"Chưa có vị trí")+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
 
     info.append(name,detail);
 
@@ -2088,7 +2082,6 @@ function editPlayer(p){
   $("fullName").value=p.full_name||"";
   $("jersey").value=p.jersey_number??"";
   $("position").value=p.position||"";
-  $("rating").value=p.elo??1000;
   $("status").value=String(p.is_active);
 
   $("formTitle").textContent="Chỉnh sửa cầu thủ";
@@ -2105,7 +2098,6 @@ $("photoPreview").src="";
 $("photoPreview").classList.add("hidden");
 message("photoMsg","");
   $("playerId").value="";
-  $("rating").value=1000;
   $("status").value="true";
   $("formTitle").textContent="Thêm cầu thủ";
   $("saveBtn").textContent="LƯU CẦU THỦ";
@@ -2135,7 +2127,6 @@ $("playerForm").addEventListener("submit",async e=>{
       jersey_number:$("jersey").value===""?null:Number($("jersey").value),
       position:$("position").value||null,
       photo_url:photoUrl,
-      elo:Number($("rating").value)||1000,
       is_active:$("status").value==="true"
     };
 
