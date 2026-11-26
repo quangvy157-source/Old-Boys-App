@@ -1112,15 +1112,17 @@ header .sub{
 }
 
 
-/* OLD BOYS - COMPACT PREMIUM STATISTICS */
+
+/* OLD BOYS - BALANCED STATISTICS GRID */
 .accordion-body .stats{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:repeat(6,minmax(0,1fr));
   gap:8px;
   margin-top:12px;
 }
 
 .accordion-body .stat{
+  grid-column:span 2;
   min-height:68px;
   display:flex;
   flex-direction:column;
@@ -1135,6 +1137,10 @@ header .sub{
   );
   border:1px solid #344638;
   border-radius:11px;
+}
+
+.accordion-body .stat:nth-last-child(-n+2){
+  grid-column:span 3;
 }
 
 .accordion-body .stat strong{
@@ -1152,11 +1158,6 @@ header .sub{
   text-align:center;
 }
 
-@media(min-width:600px){
-  .accordion-body .stats{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
-}
 </style>
 </head>
 <body>
