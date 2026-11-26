@@ -1111,64 +1111,52 @@ header .sub{
   text-shadow:0 2px 8px rgba(0,0,0,.8);
 }
 
-/* OLD BOYS - PREMIUM STATISTICS */
+
+/* OLD BOYS - COMPACT PREMIUM STATISTICS */
 .accordion-body .stats{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin-top:15px;
+  gap:8px;
+  margin-top:12px;
 }
 
 .accordion-body .stat{
-  position:relative;
-  min-height:88px;
+  min-height:68px;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  gap:7px;
-  padding:15px 8px;
-  overflow:hidden;
+  gap:5px;
+  padding:10px 6px;
   background:linear-gradient(
     145deg,
     #1b281e,
     #0c120e
   );
   border:1px solid #344638;
-  border-radius:13px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  border-radius:11px;
 }
 
 .accordion-body .stat strong{
   font-family:'Barlow Condensed',sans-serif;
-  font-size:32px;
+  font-size:26px;
   line-height:1;
   font-weight:900;
   color:#b7ff36;
-  text-shadow:0 0 12px rgba(183,255,54,.16);
 }
 
 .accordion-body .stat span{
-  font-size:11px;
+  font-size:10px;
   font-weight:600;
   color:#aab6ac;
   text-align:center;
-}
-
-.accordion-body .stat:last-child{
-  grid-column:span 2;
 }
 
 @media(min-width:600px){
   .accordion-body .stats{
     grid-template-columns:repeat(3,minmax(0,1fr));
   }
-
-  .accordion-body .stat:last-child{
-    grid-column:auto;
-  }
 }
-
 </style>
 </head>
 <body>
