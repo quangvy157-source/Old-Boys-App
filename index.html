@@ -1057,6 +1057,60 @@ animation: splashTitleShine 1s ease 1.8s forwards;
   }
 }
 
+/* OLD BOYS - PREMIUM BALANCED HEADER */
+header{
+  min-height:155px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(26px,4vw,38px) 14px;
+  margin:10px 0 18px;
+  border:1px solid rgba(183,255,54,.28);
+  border-radius:18px;
+  background:
+    radial-gradient(
+      ellipse at 50% 100%,
+      rgba(183,255,54,.13),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(5,10,7,.38),
+      rgba(5,10,7,.82)
+    ),
+    url("stadium-bg.PNG") center 55% / cover no-repeat;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+header .logo{
+  font-size:clamp(38px,7vw,50px);
+  letter-spacing:5px;
+  color:#f5f7f2;
+  text-shadow:
+    0 2px 12px rgba(0,0,0,.8),
+    0 0 18px rgba(183,255,54,.18);
+}
+
+header .logo::after{
+  width:64px;
+  height:3px;
+  margin:13px auto 0;
+  background:#b7ff36;
+  box-shadow:0 0 12px rgba(183,255,54,.55);
+}
+
+header .sub{
+  margin-top:12px;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:2.2px;
+  color:#d5ded4;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+
 </style>
 </head>
 <body>
