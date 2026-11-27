@@ -2006,15 +2006,26 @@ function renderPlayers(){
     return;
   }
 
-  list.forEach(p=>{
-        const item=document.createElement("div");
+    list.forEach(p=>{
+    const item=document.createElement("div");
     item.className="player";
     item.addEventListener("click",()=>openPlayerDetail(p));
 
-    const img=document.createElement("img");
-    img.src=p.photo_url || "";
-    img.alt="Ảnh "+(p.full_name||"cầu thủ");
-    img.onerror=()=>{img.style.display="none"};
+    const photoFrame=document.createElement("div");
+    photoFrame.className="player-photo";
+
+    if(p.photo_url){
+      const img=document.createElement("img");
+      img.src=p.photo_url;
+      img.alt="Ảnh "+(p.full_name||"cầu thủ");
+      img.onerror=()=>{
+        photoFrame.classList.add("no-photo");
+        img.remove();
+      };
+      photoFrame.appendChild(img);
+    }else{
+      photoFrame.classList.add("no-photo");
+    }
 
     const info=document.createElement("div");
     info.className="player-info";
@@ -2032,7 +2043,7 @@ function renderPlayers(){
     position.textContent=p.position||"Chưa cập nhật vị trí";
 
     info.append(number,name,position);
-    item.append(img,info);
+    item.append(photoFrame,info);
     $("players").append(item);
   });
 }
