@@ -1158,6 +1158,88 @@ header .sub{
   text-align:center;
 }
 
+/* OLD BOYS - PREMIUM PLAYER LIST */
+#players .player{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:11px;
+  margin:8px 0;
+  background:linear-gradient(
+    145deg,
+    #17221a,
+    #0c120e
+  );
+  border:1px solid #2d3c30;
+  border-radius:12px;
+}
+
+#players .player img{
+  width:52px;
+  height:52px;
+  flex-shrink:0;
+  border-radius:10px;
+  border:1px solid #3b4c3d;
+  object-fit:cover;
+}
+
+#players .player-info{
+  flex:1;
+  min-width:0;
+}
+
+#players .player-info strong{
+  display:block;
+  color:#f1f5ef;
+  font-size:14px;
+  font-weight:800;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+
+#players .player-info small{
+  display:block;
+  margin-top:5px;
+  color:#aab6ac;
+  font-size:11px;
+  line-height:1.4;
+}
+
+#players .actions{
+  gap:5px;
+  flex-shrink:0;
+}
+
+#players .actions button{
+  padding:7px 9px;
+  min-width:0;
+  border-radius:7px;
+  font-size:11px;
+  font-weight:700;
+}
+
+@media(max-width:480px){
+  #players .player{
+    gap:9px;
+    padding:9px;
+  }
+
+  #players .player img{
+    width:46px;
+    height:46px;
+  }
+
+  #players .actions{
+    flex-direction:column;
+    gap:4px;
+  }
+
+  #players .actions button{
+    padding:6px 8px;
+    font-size:10px;
+  }
+}
+
 </style>
 </head>
 <body>
