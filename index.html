@@ -252,26 +252,36 @@ button:disabled{opacity:.5}
 }
 
 .goal-btn{
-  width:27px;
-  height:29px;
+  width:30px;
+  min-width:30px;
+  height:32px;
   padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   font-size:13px;
-  border-radius:6px;
+  font-weight:800;
+  border-radius:7px;
+  flex-shrink:0;
+  touch-action:manipulation;
 }
 
 .goal-btn.minus{
   background:#303b32;
   color:#fff;
+  border:1px solid #465448;
 }
 
 .goal-btn.own-goal-minus{
-  background:#626b70;
-  color:#fff;
+  background:#303a40;
+  color:#d5e0e5;
+  border:1px solid #46545b;
 }
 
 .goal-btn.own-goal-plus{
-  background:#f28c28;
-  color:#fff;
+  background:#4a2d16;
+  color:#ffb15e;
+  border:1px solid #805022;
 }
  .opponent-score-panel{
   display:flex;
@@ -291,14 +301,27 @@ button:disabled{opacity:.5}
 .opponent-score-controls{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
+}
+
+.opponent-score-controls button{
+  width:32px;
+  min-width:32px;
+  height:32px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  border-radius:7px;
 }
 
 .opponent-score-controls strong{
   font-size:22px !important;
-  min-width:24px;
+  min-width:28px;
   text-align:center;
   color:#b7ff36;
+  font-variant-numeric:tabular-nums;
 }
 .score-live{
   display:grid;
