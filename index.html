@@ -1332,7 +1332,14 @@ header .sub{
   line-height:1.3;
   color:#edf2eb;
 }
-
+.att-player-photo{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+  object-fit:cover;
+  border-radius:50%;
+  border:1px solid #52634e;
+}
 .att-status-group{
   gap:5px;
 }
@@ -2804,7 +2811,11 @@ function renderAttendance(){
     name.textContent =
       (p.jersey_number != null ? "#" + p.jersey_number + " " : "") +
       (p.full_name || "");
-
+    const photo = document.createElement("img");
+    photo.className = "att-player-photo";
+    photo.src = p.photo_url || "";
+    photo.alt = "";
+    photo.loading = "lazy";
     const group = document.createElement("div");
     group.className = "att-status-group";
     group.dataset.playerId = p.id;
@@ -2844,7 +2855,11 @@ function renderAttendance(){
       group.appendChild(btn);
     });
 
-    row.append(name, group);
+        if (p.photo_url) {
+      row.append(name, photo, group);
+    } else {
+      row.append(name, group);
+    }
     $("attendanceList").append(row);
   });
 
