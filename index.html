@@ -2015,53 +2015,32 @@ function renderPlayers(){
   }
 
   list.forEach(p=>{
-    const item=document.createElement("div");
+        const item=document.createElement("div");
     item.className="player";
+    item.addEventListener("click",()=>openPlayerDetail(p));
 
     const img=document.createElement("img");
     img.src=p.photo_url || "";
-    img.alt="Ảnh cầu thủ";
+    img.alt="Ảnh "+(p.full_name||"cầu thủ");
     img.onerror=()=>{img.style.display="none"};
 
     const info=document.createElement("div");
     info.className="player-info";
 
+    const number=document.createElement("span");
+    number.className="player-number";
+    number.textContent=p.jersey_number!=null?"#"+p.jersey_number:"#--";
+
     const name=document.createElement("strong");
-    name.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
-    name.style.cursor="pointer";
-    name.title="Bấm để xem hồ sơ cầu thủ";
-    name.addEventListener("click",()=>openPlayerDetail(p));
+    name.className="player-name";
+    name.textContent=p.full_name||"Chưa có tên";
 
-    const detail=document.createElement("small");
-    detail.textContent=(p.position||"Chưa có vị trí")+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
+    const position=document.createElement("small");
+    position.className="player-position";
+    position.textContent=p.position||"Chưa cập nhật vị trí";
 
-    info.append(name,detail);
-
-    const actions=document.createElement("div");
-    actions.className="actions";
-
-    const view=document.createElement("button");
-    view.type="button";
-    view.className="secondary";
-    view.textContent="Chi tiết";
-    view.onclick=()=>openPlayerDetail(p);
-
-    const edit=document.createElement("button");
-    edit.className="secondary";
-    edit.textContent="Sửa";
-    edit.onclick=()=>editPlayer(p);
-
-    const del=document.createElement("button");
-    del.className="danger";
-    del.textContent="Xóa";
-    del.onclick=()=>deletePlayer(p);
-
-    actions.append(view);
-
-if (isAdmin()) {
-  actions.append(edit,del);
-}
-    item.append(img,info,actions);
+    info.append(number,name,position);
+    item.append(img,info);
     $("players").append(item);
   });
 }
