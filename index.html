@@ -1340,6 +1340,21 @@ header .sub{
   border-radius:50%;
   border:1px solid #52634e;
 }
+ .att-player-name{
+  flex:1;
+  min-width:0;
+}
+
+.att-player-number{
+  color:#b6e477;
+  background:rgba(163,214,92,.12);
+  border:1px solid rgba(163,214,92,.25);
+  border-radius:5px;
+  padding:3px 6px;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
 .att-status-group{
   gap:5px;
 }
@@ -2808,9 +2823,13 @@ function renderAttendance(){
 
     const name = document.createElement("strong");
     name.className = "att-player-name";
-    name.textContent =
-      (p.jersey_number != null ? "#" + p.jersey_number + " " : "") +
-      (p.full_name || "");
+    name.textContent = p.full_name || "";
+
+const number = document.createElement("span");
+number.className = "att-player-number";
+number.textContent = p.jersey_number != null
+  ? "#" + p.jersey_number
+  : "";
     const photo = document.createElement("img");
     photo.className = "att-player-photo";
     photo.src = p.photo_url || "";
@@ -2855,11 +2874,11 @@ function renderAttendance(){
       group.appendChild(btn);
     });
 
-        if (p.photo_url) {
-      row.append(name, photo, group);
-    } else {
-      row.append(name, group);
-    }
+       if (p.photo_url) {
+  row.append(photo, name, number, group);
+} else {
+  row.append(name, number, group);
+}
     $("attendanceList").append(row);
   });
 
