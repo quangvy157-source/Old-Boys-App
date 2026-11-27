@@ -168,21 +168,27 @@ button:disabled{opacity:.5}
 }
 .match-card-score{
   display:grid;
-  grid-template-columns:1fr auto 1fr;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
   align-items:center;
-  gap:10px;
-  margin:15px 0;
-  text-align:center
+  gap:12px;
+  margin:18px 0;
+  text-align:center;
 }
+
 .match-card-score strong{
-  font-size:25px;
+  font-size:27px;
+  font-weight:800;
   color:#b7ff36;
-  white-space:nowrap
+  white-space:nowrap;
+  letter-spacing:1px;
 }
+
 .match-card-score span{
-  font-size:13px;
-  font-weight:bold;
-  overflow-wrap:anywhere
+  font-size:12px;
+  font-weight:700;
+  color:#d5ddd6;
+  overflow-wrap:anywhere;
+  line-height:1.4;
 }
 
 .goal-columns{
