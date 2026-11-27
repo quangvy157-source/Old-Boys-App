@@ -1237,17 +1237,19 @@ header .sub{
   align-self:stretch;
 }
 
+
 #players .player-photo{
   position:relative;
   display:block;
   width:100%;
-  height:0;
-  padding-bottom:100%;
+  height:auto;
+  aspect-ratio:1 / 1;
+  padding:0;
   flex:0 0 auto;
-  box-sizing:content-box;
+  box-sizing:border-box;
   overflow:hidden;
   border-radius:9px;
-  background:#202b23;
+  background:transparent;
 }
 
 #players .player-photo img{
@@ -1261,26 +1263,36 @@ header .sub{
   object-fit:contain;
   object-position:center;
   border-radius:9px;
-  background:#202b23;
+  background:transparent;
 }
 
 #players .player-photo.no-photo{
   display:flex;
   align-items:center;
   justify-content:center;
+  aspect-ratio:1 / 1;
+  height:auto;
+  padding:0;
+  box-sizing:border-box;
   background:linear-gradient(145deg,#202d23,#111a14);
   border:1px dashed #40513b;
 }
 
 #players .player-photo.no-photo::after{
   content:"ẢNH ĐANG CẬP NHẬT";
-  color:#778579;
+  display:block;
+  width:100%;
+  color:#aab6ac;
   font-size:10px;
   font-weight:700;
-  letter-spacing:1px;
+  letter-spacing:0;
+  line-height:1.4;
   text-align:center;
+  white-space:normal;
   padding:8px;
+  box-sizing:border-box;
 }
+
 
 #players .player-info{
   flex:1;
