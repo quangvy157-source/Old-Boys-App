@@ -651,6 +651,20 @@ input,select{
   color:#89948b;
   font-size:11px;
 }
+ .match-history-og{
+  margin:8px 0;
+  padding:8px 12px;
+  background:#19130e;
+  border:1px solid #49321f;
+  border-radius:9px;
+}
+
+.match-history-og > div{
+  font-size:12px !important;
+  padding:6px 0 !important;
+  line-height:1.5;
+  color:#f2a45f !important;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4446,8 +4460,7 @@ if (minutes) {
 
     if (ownGoalEvents.length) {
       const ownGoalBox = document.createElement("div");
-      ownGoalBox.style.cssText =
-        "margin:8px 0;padding:10px;background:#24170f;border-radius:9px";
+ownGoalBox.className = "match-history-og";
 
       const ownGoalGroups = new Map();
 
