@@ -1038,27 +1038,31 @@ margin:8px 0;
   }
   .goal-control-row{
     display:grid;
-    grid-template-columns:minmax(0,1fr) 25px 19px 25px 30px 30px;
-    gap:3px;
-    align-items:center;
-  }
+    .goal-control-row{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:4px;
+  align-items:center;
+}
 
-  .goal-control-row .goal-name{
-    grid-column:1 / -1;
-    min-width:0;
-  }
+.goal-control-row .goal-name{
+  grid-column:1 / -1;
+  min-width:0;
+}
 
-  .goal-control-row .goal-count{
-    min-width:0;
-    width:19px;
-  }
+.goal-control-row .goal-count{
+  min-width:0;
+  width:100%;
+  text-align:center;
+}
 
-  .goal-control-row .goal-btn{
-    width:100%;
-    min-width:0;
-    height:27px;
-    padding:0 2px;
-    font-size:10px;
+.goal-control-row .goal-btn{
+  width:100%;
+  min-width:0;
+  height:29px;
+  padding:0 2px;
+  font-size:10px;
+}
   }
     .goal-name{
     font-size:13px;
