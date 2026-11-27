@@ -2222,15 +2222,19 @@ async function openPlayerDetail(p){
   const identity=document.createElement("div");
   identity.style.cssText="min-width:0";
 
-  const playerName=document.createElement("h2");
-  playerName.style.cssText="margin:0 0 6px;font-size:20px";
-  playerName.textContent=(p.jersey_number!=null?"#"+p.jersey_number+" ":"")+(p.full_name||"");
+    const playerName=document.createElement("h2");
+  playerName.style.cssText="margin:0 0 8px;font-size:23px;font-weight:850;line-height:1.2";
+  playerName.textContent=p.full_name||"Chưa có tên";
 
-  const position=document.createElement("div");
-  position.style.cssText="color:#aab5ac;font-size:13px";
-  position.textContent=(p.position||"Chưa cập nhật vị trí")+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
+  const details=document.createElement("div");
+  details.style.cssText="color:#b6e477;font-size:13px;font-weight:700;margin-bottom:7px";
+  details.textContent=(p.jersey_number!=null?"#"+p.jersey_number:"Chưa có số áo")+" · "+(p.position||"Chưa cập nhật vị trí").toUpperCase();
 
-    identity.append(playerName,position);
+  const status=document.createElement("div");
+  status.style.cssText="color:#aab5ac;font-size:12px;font-weight:600";
+  status.textContent=p.is_active?"Đang hoạt động":"Không hoạt động";
+
+  identity.append(playerName,details,status);
   identity.style.flex="1";
   profile.appendChild(identity);
 
