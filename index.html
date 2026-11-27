@@ -2164,7 +2164,30 @@ async function openPlayerDetail(p){
   identity.append(playerName,position);
   profile.appendChild(identity);
   content.appendChild(profile);
+  if(isAdmin()){
+    const adminActions=document.createElement("div");
+    adminActions.style.cssText="display:flex;gap:10px;margin:12px 0";
 
+    const editButton=document.createElement("button");
+    editButton.type="button";
+    editButton.className="secondary";
+    editButton.textContent="SỬA THÔNG TIN";
+    editButton.style.flex="1";
+    editButton.onclick=()=>{
+      modal.classList.add("hidden");
+      editPlayer(p);
+    };
+
+    const deleteButton=document.createElement("button");
+    deleteButton.type="button";
+    deleteButton.className="danger";
+    deleteButton.textContent="XÓA CẦU THỦ";
+    deleteButton.style.flex="1";
+    deleteButton.onclick=()=>deletePlayer(p);
+
+    adminActions.append(editButton,deleteButton);
+    content.appendChild(adminActions);
+  }
   const stats=document.createElement("div");
   stats.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0";
 
