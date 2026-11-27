@@ -5954,6 +5954,41 @@ if (oldBoysSplash) {
     window.setTimeout(() => oldBoysSplash.remove(), 1200);
   }, 2350);
 }
+const bottomNav = document.getElementById("bottomNav");
+
+if (bottomNav) {
+  bottomNav.querySelectorAll("button[data-target]").forEach(button => {
+    button.addEventListener("click", () => {
+      const targetId = button.dataset.target;
+
+      bottomNav.querySelectorAll("button").forEach(item => {
+        item.classList.toggle("active", item === button);
+      });
+
+      if (targetId === "app") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      if (target.tagName === "DETAILS") {
+        target.open = true;
+      }
+
+      target.querySelectorAll("details").forEach(detail => {
+        detail.open = true;
+      });
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+  });
+}
+
 start();
 </script>
 </body>
