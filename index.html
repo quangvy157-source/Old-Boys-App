@@ -665,6 +665,26 @@ input,select{
   line-height:1.5;
   color:#f2a45f !important;
 }
+ .match-history-status{
+  display:inline-block;
+  margin-top:10px;
+  padding:5px 9px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.match-history-status.is-completed{
+  color:#a8e89b;
+  background:#142319;
+  border:1px solid #294b32;
+}
+
+.match-history-status.is-pending{
+  color:#a3aaa5;
+  background:#191d1a;
+  border:1px solid #343c36;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4511,9 +4531,10 @@ ownGoalGroups.forEach(group => {
       }
     }
     const status = document.createElement("div");
-    status.style.cssText = "margin-top:8px;color:#aaa;font-size:12px";
-    status.textContent =
-      match.status === "completed" ? "Đã hoàn thành" : "Chưa hoàn thành";
+status.className = "match-history-status " +
+  (match.status === "completed" ? "is-completed" : "is-pending");
+status.textContent =
+  match.status === "completed" ? "Đã hoàn thành" : "Chưa hoàn thành";
 
        const editButton = document.createElement("button");
     editButton.type = "button";
