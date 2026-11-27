@@ -2228,7 +2228,7 @@ async function openPlayerDetail(p){
 
   const details=document.createElement("div");
   details.style.cssText="color:#b6e477;font-size:13px;font-weight:700;margin-bottom:7px";
-  details.textContent=(p.jersey_number!=null?"#"+p.jersey_number:"Chưa có số áo")+" · "+(p.position||"Chưa cập nhật vị trí").toUpperCase();
+  details.textContent=(p.jersey_number!=null?p.jersey_number:"Chưa có số áo")+" · "+(p.position||"Chưa cập nhật vị trí").toUpperCase();
 
   const status=document.createElement("div");
   status.style.cssText="color:#aab5ac;font-size:12px;font-weight:600";
