@@ -748,6 +748,56 @@ padding:8px 10px;
   color:#d58b82;
   border:1px solid #49302c;
 }
+ .match-timer-panel{
+  text-align:center;
+  padding:16px;
+  margin:14px 0;
+  background:#101812;
+  border:1px solid #293b2e;
+  border-radius:12px;
+}
+
+.match-timer-label{
+  font-size:11px;
+  color:#89948b;
+  letter-spacing:2px;
+  font-weight:600;
+}
+
+.match-timer-display{
+  font-size:48px;
+  font-weight:900;
+  letter-spacing:3px;
+  margin:9px 0 13px;
+  color:#f0f3ef;
+  font-variant-numeric:tabular-nums;
+}
+
+.match-timer-controls{
+  display:flex;
+  gap:7px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.match-timer-controls button{
+  min-height:34px;
+  padding:7px 12px;
+  font-size:11px;
+  border-radius:8px;
+}
+
+.match-timer-start{
+  background:#244b30;
+  color:#e5f5e8;
+  border:1px solid #3d7049;
+}
+
+.match-timer-secondary{
+  background:#1a211c;
+  color:#c2cbc4;
+  border:1px solid #354238;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4809,7 +4859,7 @@ title.className = "match-detail-title";
  board.append(boxA,boxB);
  content.appendChild(board);
   const timerPanel = document.createElement("div");
-  timerPanel.style.cssText = "text-align:center;padding:18px;margin:16px 0;background:#17231b;border:1px solid #344638;border-radius:14px";
+  timerPanel.className = "match-timer-panel";
   const fullscreenButton = document.createElement("button");
   fullscreenButton.type = "button";
   fullscreenButton.className = "secondary";
@@ -4825,28 +4875,29 @@ title.className = "match-detail-title";
   };
   const timerLabel = document.createElement("div");
   timerLabel.textContent = "THỜI GIAN THI ĐẤU";
-  timerLabel.style.cssText = "font-size:12px;color:#a4afa6;letter-spacing:2px";
+  timerLabel.className = "match-timer-label";
 
   const timerDisplay = document.createElement("div");
   timerDisplay.textContent = "00:00";
-  timerDisplay.style.cssText = "font-size:48px;font-weight:800;letter-spacing:3px;margin:8px 0;color:#fff";
+  timerDisplay.className = "match-timer-display";
 
   const timerControls = document.createElement("div");
-  timerControls.style.cssText = "display:flex;gap:8px;justify-content:center;flex-wrap:wrap";
+  timerControls.className = "match-timer-controls";
 
   const startTimer = document.createElement("button");
   startTimer.type = "button";
+ startTimer.className = "match-timer-start";
   startTimer.textContent = "BẮT ĐẦU";
 
   const pauseTimer = document.createElement("button");
   pauseTimer.type = "button";
-  pauseTimer.className = "secondary";
+  pauseTimer.className = "secondary match-timer-secondary";
   pauseTimer.textContent = "TẠM DỪNG";
   pauseTimer.disabled = true;
 
   const resetTimer = document.createElement("button");
   resetTimer.type = "button";
-  resetTimer.className = "secondary";
+  resetTimer.className = "secondary match-timer-secondary";
   resetTimer.textContent = "ĐẶT LẠI";
 
 let elapsedSeconds = hasSavedDraft
