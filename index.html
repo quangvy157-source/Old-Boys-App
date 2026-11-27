@@ -5963,9 +5963,17 @@ if (bottomNav) {
   bottomNav.querySelectorAll("button[data-target]").forEach(button => {
     button.addEventListener("click", () => {
       const targetId = button.dataset.target;
+      const target = document.getElementById(targetId);
 
       bottomNav.querySelectorAll("button").forEach(item => {
         item.classList.toggle("active", item === button);
+      });
+
+      // Đóng các mục điều hướng đang mở
+      document.querySelectorAll(
+        "#app > details.panel.accordion, #matchesPanel details"
+      ).forEach(detail => {
+        detail.open = false;
       });
 
       if (targetId === "app") {
@@ -5973,7 +5981,6 @@ if (bottomNav) {
         return;
       }
 
-      const target = document.getElementById(targetId);
       if (!target) return;
 
       if (target.tagName === "DETAILS") {
