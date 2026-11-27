@@ -269,6 +269,46 @@ button:disabled{opacity:.5}
   font-size:30px;
   color:#b7ff36
 }
+ .match-detail-title{
+  margin:0 0 6px;
+  font-size:20px;
+  font-weight:800;
+  color:#f0f3ef;
+}
+
+.match-detail-meta{
+  margin-bottom:14px;
+  color:#89948b;
+  font-size:12px;
+}
+
+.score-live{
+  gap:8px;
+  margin:14px 0;
+}
+
+.score-live>div{
+  padding:14px 8px;
+  background:#111914;
+  border:1px solid #29382d;
+  border-radius:12px;
+}
+
+.score-live>div span{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:#cbd5cd;
+  overflow-wrap:anywhere;
+  line-height:1.4;
+}
+
+.score-live strong{
+  margin-top:5px;
+  font-size:34px;
+  font-weight:900;
+  color:#b7ff36;
+}
 /* GIAO DIỆN THU GỌN */
 .accordion{
   padding:0;
@@ -4740,9 +4780,9 @@ const hasSavedDraft =
 
  const title=document.createElement("h2");
  title.textContent=match.title||"TRẬN ĐẤU OLD BOYS";
-
+title.className = "match-detail-title";
  const date=document.createElement("div");
- date.className="sub";
+ date.className = "match-detail-meta";
  date.textContent=(match.match_date||"")+" · "+(match.format||match.match_format||"");
 
  content.append(title,date);
