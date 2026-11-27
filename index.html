@@ -3237,7 +3237,7 @@ $("saveAttendance").onclick = async () => {
     }
 
     await loadSessions();
-
+    await loadAttendance();
     if (matchType === "internal") {
       message("attendanceMsg", "Đã lưu điểm danh! Hãy chia cầu thủ vào đội A và đội B bên dưới.");
     } else if (matchType === "external") {
