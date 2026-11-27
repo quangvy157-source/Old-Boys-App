@@ -1853,30 +1853,47 @@ header .sub{
   max-width:850px;
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:4px;
-  padding:9px 12px calc(9px + env(safe-area-inset-bottom));
-  background:rgba(11,16,13,.96);
-  border-top:1px solid #29382d;
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
+  gap:2px;
+  padding:6px 12px calc(6px + env(safe-area-inset-bottom));
+  background:rgba(9,13,10,.97);
+  border-top:1px solid rgba(183,255,54,.12);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
 }
 .bottom-nav button{
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:4px;
+  gap:3px;
   min-width:0;
-  padding:7px 3px;
+  padding:5px 3px;
   background:transparent;
-  color:#89948b;
+  color:#7f8a81;
   font-size:10px;
-  font-weight:700;
-  border-radius:9px;
+  font-weight:600;
+  border-radius:8px;
+  transition:color .2s ease,background .2s ease;
 }
 .bottom-nav button.active{
-  background:#1c291b;
+  background:rgba(183,255,54,.07);
   color:#b7ff36;
+}
+.bottom-nav button.active::before{
+  content:"";
+  position:absolute;
+  top:-6px;
+  left:50%;
+  transform:translateX(-50%);
+  width:20px;
+  height:2px;
+  border-radius:2px;
+  background:#b7ff36;
+}
+.bottom-nav button svg{
+  width:18px;
+  height:18px;
 }
 .bottom-nav button svg{
   width:19px;
