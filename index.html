@@ -2132,18 +2132,21 @@ async function openPlayerDetail(p){
   position.style.cssText="color:#aab5ac;font-size:13px";
   position.textContent=(p.position||"Chưa cập nhật vị trí")+" · "+(p.is_active?"Đang hoạt động":"Không hoạt động");
 
-  identity.append(playerName,position);
+    identity.append(playerName,position);
+  identity.style.flex="1";
   profile.appendChild(identity);
-  content.appendChild(profile);
+
   if(isAdmin()){
     const adminActions=document.createElement("div");
-    adminActions.style.cssText="display:flex;gap:10px;margin:12px 0";
+    adminActions.style.cssText="display:flex;flex-direction:column;gap:8px;flex-shrink:0";
 
     const editButton=document.createElement("button");
     editButton.type="button";
     editButton.className="secondary";
-    editButton.textContent="SỬA THÔNG TIN";
-    editButton.style.flex="1";
+    editButton.textContent="✎";
+    editButton.title="Sửa thông tin";
+    editButton.setAttribute("aria-label","Sửa thông tin");
+    editButton.style.cssText="width:42px;height:42px;padding:0;font-size:22px;border-radius:10px";
     editButton.onclick=()=>{
       modal.classList.add("hidden");
       editPlayer(p);
@@ -2152,13 +2155,17 @@ async function openPlayerDetail(p){
     const deleteButton=document.createElement("button");
     deleteButton.type="button";
     deleteButton.className="danger";
-    deleteButton.textContent="XÓA CẦU THỦ";
-    deleteButton.style.flex="1";
+    deleteButton.textContent="×";
+    deleteButton.title="Xóa cầu thủ";
+    deleteButton.setAttribute("aria-label","Xóa cầu thủ");
+    deleteButton.style.cssText="width:42px;height:42px;padding:0;font-size:25px;border-radius:10px";
     deleteButton.onclick=()=>deletePlayer(p);
 
     adminActions.append(editButton,deleteButton);
-    content.appendChild(adminActions);
+    profile.appendChild(adminActions);
   }
+
+  content.appendChild(profile);
   const stats=document.createElement("div");
   stats.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0";
 
