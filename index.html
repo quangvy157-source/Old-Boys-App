@@ -2868,11 +2868,11 @@ function renderAttendance(){
       group.appendChild(btn);
     });
 
-       if (p.photo_url) {
-  row.append(photo, name, number, group);
-} else {
-  row.append(name, number, group);
-}
+           if (p.photo_url) {
+      row.append(photo, name, group);
+    } else {
+      row.append(name, group);
+    }
     $("attendanceList").append(row);
   });
 
