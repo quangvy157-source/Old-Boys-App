@@ -685,6 +685,29 @@ input,select{
   background:#191d1a;
   border:1px solid #343c36;
 }
+ .match-history-edit,
+.match-history-delete{
+  width:100%;
+  min-height:34px;
+  padding:7px 10px;
+  margin-top:8px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+
+.match-history-edit{
+  background:#193322;
+  color:#d9f2df;
+  border:1px solid #31583c;
+}
+
+.match-history-delete{
+  background:#171312;
+  color:#d58b82;
+  border:1px solid #49302c;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4539,7 +4562,7 @@ status.textContent =
        const editButton = document.createElement("button");
     editButton.type = "button";
     editButton.textContent = "MỞ BẢNG TRẬN ĐẤU";
-    editButton.style.cssText = "width:100%;margin-top:12px";
+    editButton.className = "match-history-edit";
     editButton.addEventListener("click", () => {
       openMatchEditor(match, card);
     });
@@ -4547,9 +4570,7 @@ status.textContent =
 const deleteButton = document.createElement("button");
 deleteButton.type = "button";
 deleteButton.textContent = "XÓA TRẬN";
-deleteButton.className = "secondary";
-deleteButton.style.cssText =
-  "width:100%;margin-top:8px;background:#542323;color:#fff";
+deleteButton.className = "secondary match-history-delete";
 
 if (!isAdmin()) deleteButton.classList.add("hidden");
 
