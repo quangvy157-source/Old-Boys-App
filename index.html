@@ -1346,13 +1346,9 @@ header .sub{
 }
 
 .att-player-number{
-  color:#b6e477;
-  background:rgba(163,214,92,.12);
-  border:1px solid rgba(163,214,92,.25);
-  border-radius:5px;
-  padding:3px 6px;
-  font-size:10px;
-  font-weight:800;
+  color:#edf2eb;
+  font-size:15px;
+  font-weight:750;
   white-space:nowrap;
 }
 .att-status-group{
@@ -2828,7 +2824,7 @@ function renderAttendance(){
 const number = document.createElement("span");
 number.className = "att-player-number";
 number.textContent = p.jersey_number != null
-  ? "#" + p.jersey_number
+  ? "- " + p.jersey_number
   : "";
     const photo = document.createElement("img");
     photo.className = "att-player-photo";
