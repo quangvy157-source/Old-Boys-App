@@ -1196,41 +1196,51 @@ header .sub{
   background:#202b23;
 }
 
+
 #players .player-info{
   display:flex;
   flex-direction:column;
-  align-items:center;
+  align-items:flex-start;
   min-width:0;
   width:100%;
-  padding:9px 3px 4px;
-  text-align:center;
+  padding:6px 3px 2px;
+  text-align:left;
+  gap:5px;
 }
 
 #players .player-number{
+  display:inline-flex;
+  align-items:center;
+  padding:3px 7px;
   color:#b6e477;
-  font-size:12px;
+  background:rgba(163,214,92,.12);
+  border:1px solid rgba(163,214,92,.25);
+  border-radius:5px;
+  font-size:10px;
   font-weight:800;
-  letter-spacing:1px;
+  letter-spacing:.5px;
 }
 
 #players .player-name{
   display:block;
   width:100%;
-  margin-top:4px;
+  margin:0;
   color:#f1f5ef;
-  font-size:13px;
-  font-weight:800;
-  line-height:1.35;
+  font-size:14px;
+  font-weight:850;
+  line-height:1.25;
   overflow-wrap:anywhere;
 }
 
 #players .player-position{
   display:block;
-  margin-top:4px;
+  margin:0;
   color:#aab6ac;
-  font-size:11px;
+  font-size:10px;
+  font-weight:600;
   line-height:1.3;
 }
+
 /* FIX PLAYER PHOTO FRAME */
 #players .player{
   height:100%;
@@ -2098,19 +2108,25 @@ function renderPlayers(){
     const info=document.createElement("div");
     info.className="player-info";
 
-    const number=document.createElement("span");
-    number.className="player-number";
-    number.textContent=p.jersey_number!=null?"#"+p.jersey_number:"#--";
-
+    
     const name=document.createElement("strong");
     name.className="player-name";
     name.textContent=p.full_name||"Chưa có tên";
 
+    const meta=document.createElement("div");
+    meta.style.cssText="display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%";
+
+    const number=document.createElement("span");
+    number.className="player-number";
+    number.textContent="SỐ ÁO · "+(p.jersey_number!=null?p.jersey_number:"--");
+
     const position=document.createElement("small");
     position.className="player-position";
-    position.textContent=p.position||"Chưa cập nhật vị trí";
+    position.textContent="VỊ TRÍ · "+(p.position||"Chưa cập nhật");
 
-    info.append(number,name,position);
+    meta.append(number,position);
+    info.append(name,meta);
+
     item.append(photoFrame,info);
     $("players").append(item);
   });
