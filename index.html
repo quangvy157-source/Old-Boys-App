@@ -613,6 +613,18 @@ input,select{
   color:#89948b;
   font-size:12px;
 }
+ .match-history-scorers{
+  margin:10px 0;
+  padding:10px 12px;
+  background:#0d1510;
+  border:1px solid #243329;
+  border-radius:10px;
+}
+.match-history-scorers > div{
+  font-size:12px !important;
+  padding:6px 0 !important;
+  line-height:1.5;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4339,8 +4351,7 @@ date.className = "match-history-meta";
 
     // DANH SÁCH CẦU THỦ GHI BÀN TRẬN NÀY
     const scorerBox = document.createElement("div");
-    scorerBox.style.cssText =
-      "margin:8px 0;padding:10px;background:#0c120e;border-radius:9px";
+scorerBox.className = "match-history-scorers";
 
     const matchScorers = scorers.filter(x =>
       x.match_id === match.id && Number(x.goals) > 0
