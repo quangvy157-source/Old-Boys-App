@@ -595,7 +595,18 @@ input,select{
   border-radius:12px;
   box-shadow:none;
 }
+.match-history-title{
+  display:block;
+  font-size:15px;
+  font-weight:700;
+  color:#f0f3ef;
+}
 
+.match-history-meta{
+  margin-top:6px;
+  color:#89948b;
+  font-size:12px;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4295,10 +4306,11 @@ clearButton.onclick = () => {
     card.className = "match-card match-history-card";
 
     const title = document.createElement("strong");
-    title.textContent = match.title || "Trận đấu OLD BOYS";
+title.className = "match-history-title";
+title.textContent = match.title || "Trận đấu OLD BOYS";
 
-    const date = document.createElement("div");
-    date.style.cssText = "margin-top:7px;color:#aaa;font-size:13px";
+const date = document.createElement("div");
+date.className = "match-history-meta";
     date.textContent =
       (match.match_date || "") +
       (match.start_time ? " · " + match.start_time.slice(0, 5) : "") +
