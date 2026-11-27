@@ -1317,7 +1317,7 @@ header .sub{
 .att-row{
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content:flex-start;
   gap:8px;
   padding:11px 10px;
   margin-bottom:8px;
@@ -1340,8 +1340,8 @@ header .sub{
   border-radius:50%;
   border:1px solid #52634e;
 }
- .att-player-name{
-  flex:1;
+.att-player-name{
+  flex:0 1 auto;
   min-width:0;
 }
 
@@ -1353,6 +1353,8 @@ header .sub{
 }
 .att-status-group{
   gap:5px;
+  margin-left:auto;
+  flex-shrink:0;
 }
 
 .att-status-group button{
