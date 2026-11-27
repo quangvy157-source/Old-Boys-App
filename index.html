@@ -6015,6 +6015,32 @@ if (bottomNav) {
       });
     });
   });
+   const navButtons = [
+    ...bottomNav.querySelectorAll("button[data-target]")
+  ];
+
+  const syncActiveNav = () => {
+    const app = document.getElementById("app");
+    if (!app || app.classList.contains("hidden")) return;
+
+    let activeButton = navButtons[0];
+    const threshold = window.innerHeight * 0.35;
+
+    navButtons.slice(1).forEach(button => {
+      const section = document.getElementById(button.dataset.target);
+
+      if (section && section.getBoundingClientRect().top <= threshold) {
+        activeButton = button;
+      }
+    });
+
+    navButtons.forEach(button => {
+      button.classList.toggle("active", button === activeButton);
+    });
+  };
+
+  window.addEventListener("scroll", syncActiveNav, { passive: true });
+  window.addEventListener("resize", syncActiveNav);
 }
 
 start();
