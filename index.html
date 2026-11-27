@@ -625,6 +625,32 @@ input,select{
   padding:6px 0 !important;
   line-height:1.5;
 }
+ .match-scorer-line{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:5px 8px;
+}
+
+.match-scorer-team{
+  color:#89948b;
+  font-size:11px;
+}
+
+.match-scorer-name{
+  color:#e5ebe6;
+  font-weight:600;
+}
+
+.match-scorer-goals{
+  color:#b7ff36;
+  font-weight:800;
+}
+
+.match-scorer-minutes{
+  color:#89948b;
+  font-size:11px;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4367,27 +4393,43 @@ scorerBox.className = "match-history-scorers";
         if (!player) return;
 
         const line = document.createElement("div");
-        line.style.cssText =
-          "font-size:13px;padding:4px 0;color:#dce5dc";
+line.className = "match-scorer-line";
 
-                const minutes = goalEvents
-          .filter(event =>
-            event.match_id === match.id &&
-            event.player_id === item.player_id &&
-            event.team === item.team
-          )
-          .map(event => "(" + event.minute + "')")
-          .join(", ");
+const teamLabel = document.createElement("span");
+teamLabel.className = "match-scorer-team";
+teamLabel.textContent =
+  item.team === "A"
+    ? match.team_a_name || "ĐỘI 1"
+    : match.team_b_name || "ĐỘI 2";
 
-        line.textContent =
-          (item.team === "A"
-            ? (match.team_a_name || "ĐỘI 1") + " · "
-            : (match.team_b_name || "ĐỘI 2") + " · ") +
-          (player.jersey_number != null
-            ? "#" + player.jersey_number + " "
-            : "") +
-          player.full_name + "  × " + item.goals +
-          (minutes ? " · " + minutes : "");
+const name = document.createElement("span");
+name.className = "match-scorer-name";
+name.textContent =
+  (player.jersey_number != null
+    ? "#" + player.jersey_number + " "
+    : "") + player.full_name;
+
+const goals = document.createElement("span");
+goals.className = "match-scorer-goals";
+goals.textContent = "× " + item.goals;
+
+const minutes = goalEvents
+  .filter(event =>
+    event.match_id === match.id &&
+    event.player_id === item.player_id &&
+    event.team === item.team
+  )
+  .map(event => "(" + event.minute + "')")
+  .join(", ");
+
+line.append(teamLabel, name, goals);
+
+if (minutes) {
+  const minuteLabel = document.createElement("span");
+  minuteLabel.className = "match-scorer-minutes";
+  minuteLabel.textContent = minutes;
+  line.appendChild(minuteLabel);
+}
 
         line.style.cursor="pointer";
         line.title="Bấm để xem hồ sơ cầu thủ";
