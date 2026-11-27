@@ -2823,11 +2823,7 @@ function renderAttendance(){
     name.className = "att-player-name";
     name.textContent = p.full_name || "";
 
-const number = document.createElement("span");
-number.className = "att-player-number";
-number.textContent = p.jersey_number != null
-  ? "- " + p.jersey_number
-  : "";
+
     const photo = document.createElement("img");
     photo.className = "att-player-photo";
     photo.src = p.photo_url || "";
