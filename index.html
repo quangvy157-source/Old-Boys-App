@@ -727,6 +727,30 @@ input,select{
   border-radius:12px;
   box-shadow:none;
 }
+ .match-history-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.match-history-header-info{
+  flex:1;
+  min-width:0;
+}
+
+.match-history-header .match-history-title{
+  overflow-wrap:anywhere;
+}
+
+.match-history-header .match-history-status{
+  flex-shrink:0;
+  margin-top:0;
+  white-space:nowrap;
+  padding:5px 7px;
+  font-size:10px;
+}
 .match-history-title{
   display:block;
   font-size:15px;
@@ -4882,7 +4906,16 @@ deleteButton.addEventListener("click", async () => {
       exportMatchImage(match, matchScorers, goalEvents);
     });
 
-    card.append(title, date, score, scorerBox, status, editButton);
+    const matchHeader = document.createElement("div");
+matchHeader.className = "match-history-header";
+
+const matchHeaderInfo = document.createElement("div");
+matchHeaderInfo.className = "match-history-header-info";
+
+matchHeaderInfo.append(title, date);
+matchHeader.append(matchHeaderInfo, status);
+
+card.append(matchHeader, score, scorerBox, editButton);
 
     if (match.status === "completed") {
       card.appendChild(exportButton);
