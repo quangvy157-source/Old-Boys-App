@@ -1036,7 +1036,30 @@ margin:8px 0;
     padding:7px 5px;
     margin:5px 0;
   }
+  .goal-control-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 25px 19px 25px 30px 30px;
+    gap:3px;
+    align-items:center;
+  }
 
+  .goal-control-row .goal-name{
+    grid-column:1 / -1;
+    min-width:0;
+  }
+
+  .goal-control-row .goal-count{
+    min-width:0;
+    width:19px;
+  }
+
+  .goal-control-row .goal-btn{
+    width:100%;
+    min-width:0;
+    height:27px;
+    padding:0 2px;
+    font-size:10px;
+  }
     .goal-name{
     font-size:13px;
     font-weight:700;
@@ -5459,7 +5482,7 @@ if (!hasGoalsB) {
   if(!p)return;
 
   const row=document.createElement("div");
-  row.className="goal-row";
+  row.className="goal-row goal-control-row";
 
   const name=document.createElement("span");
   name.className="goal-name";
