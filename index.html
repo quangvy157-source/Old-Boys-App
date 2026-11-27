@@ -1158,86 +1158,78 @@ header .sub{
   text-align:center;
 }
 
-/* OLD BOYS - PREMIUM PLAYER LIST */
+/* OLD BOYS - PLAYER GRID */
+#players{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+
 #players .player{
   display:flex;
-  align-items:center;
-  gap:11px;
-  padding:11px;
-  margin:8px 0;
-  background:linear-gradient(
-    145deg,
-    #17221a,
-    #0c120e
-  );
+  flex-direction:column;
+  min-width:0;
+  overflow:hidden;
+  padding:8px;
+  margin:0;
+  background:linear-gradient(160deg,#19251c,#0c120e);
   border:1px solid #2d3c30;
-  border-radius:12px;
+  border-radius:13px;
+  cursor:pointer;
+  transition:transform .18s ease,border-color .18s ease;
+}
+
+#players .player:active{
+  transform:scale(.98);
+  border-color:#a3d65c;
 }
 
 #players .player img{
-  width:52px;
-  height:52px;
-  flex-shrink:0;
-  border-radius:10px;
-  border:1px solid #3b4c3d;
+  display:block;
+  width:100%;
+  aspect-ratio:1/1;
+  height:auto;
   object-fit:cover;
+  object-position:center;
+  border-radius:9px;
+  background:#202b23;
 }
 
 #players .player-info{
-  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
   min-width:0;
+  width:100%;
+  padding:9px 3px 4px;
+  text-align:center;
 }
 
-#players .player-info strong{
+#players .player-number{
+  color:#b6e477;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+#players .player-name{
   display:block;
+  width:100%;
+  margin-top:4px;
   color:#f1f5ef;
-  font-size:14px;
+  font-size:13px;
   font-weight:800;
   line-height:1.35;
   overflow-wrap:anywhere;
 }
 
-#players .player-info small{
+#players .player-position{
   display:block;
-  margin-top:5px;
+  margin-top:4px;
   color:#aab6ac;
   font-size:11px;
-  line-height:1.4;
-}
-
-#players .actions{
-  gap:5px;
-  flex-shrink:0;
-}
-
-#players .actions button{
-  padding:7px 9px;
-  min-width:0;
-  border-radius:7px;
-  font-size:11px;
-  font-weight:700;
-}
-
-@media(max-width:480px){
-  #players .player{
-    gap:9px;
-    padding:9px;
-  }
-
-  #players .player img{
-    width:46px;
-    height:46px;
-  }
-
-  #players .actions{
-    flex-direction:column;
-    gap:4px;
-  }
-
-  #players .actions button{
-    padding:6px 8px;
-    font-size:10px;
-  }
+  line-height:1.3;
 }
 
 </style>
