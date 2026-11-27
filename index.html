@@ -5020,6 +5020,7 @@ async function openMatchEditor(match, card) {
     return;
   }
  const modal=$("matchDetailModal"), content=$("matchDetailContent");
+ modal.querySelector(".sub").textContent="MATCH CENTER · OLD BOYS";
  content.innerHTML="<p>Đang tải thông tin trận đấu...</p>";
  modal.classList.remove("hidden");
 
