@@ -5144,20 +5144,27 @@ let timerInterval = null;
   };
 
   resetTimer.onclick = () => {
-       if (!isAdmin()) return;
-    clearInterval(timerInterval);
-    timerInterval = null;
-    elapsedSeconds = 0;
-    startedAt = null;
-    if (activeMatchSession) {
-      persistCurrentLiveMatchDraft(
-        match, elapsedSeconds, startedAt, goals, opponentGoals
-      );
-    }
-    updateTimer();
-    startTimer.disabled = false;
-    pauseTimer.disabled = true;
-  };
+  if (!isAdmin()) return;
+
+  clearInterval(timerInterval);
+  timerInterval = null;
+
+  elapsedSeconds = 0;
+  startedAt = null;
+
+  clearLiveMatchDraft();
+  activeMatchSession = null;
+
+  $("activeMatchBar").classList.add("hidden");
+  $("matchDetailModal").classList.add("hidden");
+
+  modal.querySelector(".modal-card").classList.remove("score-fullscreen");
+
+  updateTimer();
+
+  startTimer.disabled = false;
+  pauseTimer.disabled = true;
+};
   if (!isAdmin()) {
     startTimer.classList.add("hidden");
     pauseTimer.classList.add("hidden");
