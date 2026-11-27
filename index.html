@@ -3268,11 +3268,7 @@ $("saveTeamSplit").onclick = async () => {
     ...$("teamSplitList").querySelectorAll(".team-split-group[data-player-id]")
   ];
 
-  if (!groups.length) {
-    message("teamSplitMsg", "Chưa có cầu thủ để chia đội.");
-    return;
-  }
-
+  
   const unassigned = groups.filter(x => !x.dataset.team);
 
   if (unassigned.length) {
@@ -3285,6 +3281,30 @@ $("saveTeamSplit").onclick = async () => {
   message("teamSplitMsg", "Đang lưu đội hình...");
 
   try {
+       const {data: savedPlayers, error: savedError} = await db
+      .from("match_players")
+      .select("player_id")
+      .eq("match_id", attendanceMatchId);
+
+    if (savedError) throw savedError;
+
+    const currentPlayerIds = new Set(
+      groups.map(group => group.dataset.playerId)
+    );
+
+    const stalePlayers = (savedPlayers || []).filter(
+      player => !currentPlayerIds.has(player.player_id)
+    );
+
+    for (const player of stalePlayers) {
+      const {error} = await db
+        .from("match_players")
+        .delete()
+        .eq("match_id", attendanceMatchId)
+        .eq("player_id", player.player_id);
+
+      if (error) throw error;
+    }
     for (const group of groups) {
       const playerId = group.dataset.playerId;
       const team = group.dataset.team;
