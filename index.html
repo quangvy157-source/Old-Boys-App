@@ -798,6 +798,52 @@ padding:8px 10px;
   color:#c2cbc4;
   border:1px solid #354238;
 }
+ .match-detail-scorers{
+  padding:12px;
+  margin:12px 0;
+  background:#111914;
+  border:1px solid #29382d;
+  border-radius:12px;
+}
+
+.match-detail-scorers-title{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:1.5px;
+  color:#cbd5cd;
+  margin-bottom:12px;
+}
+
+.match-detail-scorer-columns{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;
+}
+
+.match-detail-scorer-team{
+  min-width:0;
+  padding:9px;
+  background:#0d1510;
+  border:1px solid #243329;
+  border-radius:9px;
+}
+
+.match-detail-scorer-team-title{
+  display:block;
+  font-size:11px;
+  color:#b7ff36;
+  margin-bottom:8px;
+  overflow-wrap:anywhere;
+}
+
+.match-detail-scorer-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
 @media(max-width:480px){
   body{
     padding:9px;
@@ -4990,29 +5036,25 @@ let timerInterval = null;
   timerPanel.append(timerLabel, timerDisplay, timerControls);
   content.appendChild(timerPanel);
    const scorerPanel = document.createElement("div");
-  scorerPanel.style.cssText = "padding:12px;margin:12px 0;background:#17231b;border:1px solid #344638;border-radius:14px";
+  scorerPanel.className = "match-detail-scorers";
 
   const scorerTitle = document.createElement("div");
   scorerTitle.textContent = "NGƯỜI GHI BÀN";
-  scorerTitle.style.cssText = "font-size:13px;font-weight:800;letter-spacing:2px;color:#a4afa6;margin-bottom:12px";
+  scorerTitle.className = "match-detail-scorers-title";
 
   const scorerColumns = document.createElement("div");
-scorerColumns.style.cssText =
-  "display:grid;grid-template-columns:1fr 1fr;gap:10px";
+scorerColumns.className = "match-detail-scorer-columns";
 
 const createScorerList = (teamName) => {
   const panel = document.createElement("div");
-  panel.style.cssText =
-    "min-width:0;padding:8px;background:#101713;border-radius:9px";
+  panel.className = "match-detail-scorer-team";
 
   const heading = document.createElement("strong");
   heading.textContent = teamName;
-  heading.style.cssText =
-    "display:block;font-size:11px;color:#b7ff36;margin-bottom:6px";
+  heading.className = "match-detail-scorer-team-title";
 
   const list = document.createElement("div");
-  list.style.cssText =
-    "display:flex;flex-direction:column;gap:6px;font-size:12px;line-height:1.4";
+  list.className = "match-detail-scorer-list";
 
   panel.append(heading, list);
   scorerColumns.appendChild(panel);
