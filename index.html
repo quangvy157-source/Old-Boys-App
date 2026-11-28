@@ -722,6 +722,79 @@ input,select{
   padding:0 14px 14px;
 }
 
+/* PLAYER PROFILE HERO */
+.player-profile-hero{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin:18px 0;
+  padding:16px;
+  background:linear-gradient(145deg,#19251c,#0c120e);
+  border:1px solid #3a4d3b;
+  border-radius:15px;
+  box-shadow:0 8px 24px rgba(0,0,0,.22);
+}
+
+.player-profile-photo{
+  width:116px;
+  height:142px;
+  flex-shrink:0;
+  object-fit:cover;
+  object-position:center;
+  border-radius:11px;
+  background:#202b22;
+  border:1px solid #53664a;
+}
+
+.player-profile-identity{
+  min-width:0;
+  flex:1;
+}
+
+.player-profile-name{
+  margin:0 0 10px;
+  font-size:25px;
+  line-height:1.12;
+  font-weight:900;
+  color:#f3f7f1;
+  overflow-wrap:anywhere;
+}
+
+.player-profile-details{
+  color:#b7ff36;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.6;
+  margin-bottom:9px;
+}
+
+.player-profile-status{
+  display:inline-block;
+  padding:5px 8px;
+  border-radius:6px;
+  background:#17271b;
+  border:1px solid #345039;
+  color:#a8e89b;
+  font-size:10px;
+  font-weight:700;
+}
+
+@media(max-width:480px){
+  .player-profile-hero{
+    gap:12px;
+    padding:12px;
+  }
+
+  .player-profile-photo{
+    width:108px;
+    height:132px;
+  }
+
+  .player-profile-name{
+    font-size:21px;
+  }
+}
+
 .match-history-card{
   padding:14px;
   margin:10px 0;
@@ -2833,30 +2906,30 @@ async function openPlayerDetail(p){
   content.innerHTML="";
 
   const profile=document.createElement("div");
-  profile.style.cssText="display:flex;align-items:center;gap:14px;margin:18px 0;padding:14px;background:#0c120e;border-radius:12px";
+  profile.className="player-profile-hero";
 
   if(p.photo_url){
     const photo=document.createElement("img");
     photo.src=p.photo_url;
     photo.alt="Ảnh "+p.full_name;
-    photo.style.cssText="width:82px;height:82px;object-fit:cover;border-radius:12px;background:#303a32";
+    photo.className="player-profile-photo";
     photo.onerror=()=>photo.style.display="none";
     profile.appendChild(photo);
   }
 
   const identity=document.createElement("div");
-  identity.style.cssText="min-width:0";
+  identity.className="player-profile-identity";
 
     const playerName=document.createElement("h2");
-  playerName.style.cssText="margin:0 0 8px;font-size:23px;font-weight:850;line-height:1.2";
+  playerName.className="player-profile-name";
   playerName.textContent=p.full_name||"Chưa có tên";
 
   const details=document.createElement("div");
-  details.style.cssText="color:#b6e477;font-size:13px;font-weight:700;margin-bottom:7px";
+  details.className="player-profile-details";
   details.textContent=(p.jersey_number!=null?p.jersey_number:"Chưa có số áo")+" · "+(p.position||"Chưa cập nhật vị trí").toUpperCase();
 
   const status=document.createElement("div");
-  status.style.cssText="color:#aab5ac;font-size:12px;font-weight:600";
+  status.className="player-profile-status";
   status.textContent=p.is_active?"Đang hoạt động":"Không hoạt động";
 
   identity.append(playerName,details,status);
