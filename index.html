@@ -725,6 +725,7 @@ input,select{
 /* PLAYER PROFILE HERO */
 .player-profile-hero{
   display:flex;
+ position:relative;
   align-items:center;
   gap:16px;
   margin:18px 0;
@@ -753,6 +754,7 @@ input,select{
 
 .player-profile-name{
   margin:0 0 10px;
+ padding-right:58px;
   font-size:25px;
   line-height:1.12;
   font-weight:900;
@@ -784,24 +786,31 @@ input,select{
   border-bottom:none;
 }
 
+
 .player-profile-label{
-  color:#aab5ac;
-  font-size:11px;
-  font-weight:500;
+  color:#b8c4b9;
+  font-size:12px;
+  font-weight:600;
   white-space:nowrap;
 }
 
 .player-profile-value{
   color:#f0f5ed;
-  font-size:12px;
+  font-size:14px;
   font-weight:800;
   text-align:right;
   overflow-wrap:anywhere;
 }
 
+.player-profile-value.player-profile-jersey{
+  color:#b7ff36;
+  font-size:16px;
+  font-weight:900;
+}
+
 .player-profile-status{
   color:#a8e89b;
-  font-size:11px;
+  font-size:12px;
   font-weight:800;
   text-align:right;
 }
@@ -3034,10 +3043,10 @@ async function openPlayerDetail(p){
   };
 
   addProfileRow(
-    "Số áo:",
-    p.jersey_number!=null?String(p.jersey_number):"Chưa cập nhật"
-  );
-
+  "Số áo:",
+  p.jersey_number!=null?String(p.jersey_number):"Chưa cập nhật",
+  "player-profile-jersey"
+);
   addProfileRow(
     "Vị trí:",
     p.position||"Chưa cập nhật"
@@ -3059,7 +3068,7 @@ async function openPlayerDetail(p){
 
   if(isAdmin()){
     const adminActions=document.createElement("div");
-    adminActions.style.cssText="display:flex;flex-direction:column;gap:8px;flex-shrink:0";
+    adminActions.style.cssText="position:absolute;top:8px;right:8px;display:flex;flex-direction:row;gap:5px;z-index:2";
 
     const editButton=document.createElement("button");
     editButton.type="button";
@@ -3067,7 +3076,7 @@ async function openPlayerDetail(p){
     editButton.textContent="✎";
     editButton.title="Sửa thông tin";
     editButton.setAttribute("aria-label","Sửa thông tin");
-    editButton.style.cssText="width:42px;height:42px;padding:0;font-size:22px;border-radius:10px";
+    editButton.style.cssText="width:30px;height:30px;min-width:30px;padding:0;font-size:16px;border-radius:8px";
     editButton.onclick=()=>{
       modal.classList.add("hidden");
       editPlayer(p);
@@ -3079,7 +3088,7 @@ async function openPlayerDetail(p){
     deleteButton.textContent="×";
     deleteButton.title="Xóa cầu thủ";
     deleteButton.setAttribute("aria-label","Xóa cầu thủ");
-    deleteButton.style.cssText="width:42px;height:42px;padding:0;font-size:25px;border-radius:10px";
+    deleteButton.style.cssText="width:30px;height:30px;min-width:30px;padding:0;font-size:19px;border-radius:8px";
     deleteButton.onclick=()=>deletePlayer(p);
 
     adminActions.append(editButton,deleteButton);
