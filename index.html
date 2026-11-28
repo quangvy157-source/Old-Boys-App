@@ -760,24 +760,69 @@ input,select{
   overflow-wrap:anywhere;
 }
 
+
+.player-profile-name-label{
+  display:block;
+  margin-bottom:4px;
+  color:#91a18f;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:1.4px;
+}
+
 .player-profile-details{
-  color:#b7ff36;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:12px;
+}
+
+.player-profile-field{
+  min-width:0;
+  padding:8px 9px;
+  background:rgba(255,255,255,.035);
+  border:1px solid #344536;
+  border-radius:8px;
+}
+
+.player-profile-label{
+  display:block;
+  margin-bottom:4px;
+  color:#89998b;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.6px;
+}
+
+.player-profile-value{
+  display:block;
+  color:#f0f5ed;
   font-size:12px;
   font-weight:800;
-  line-height:1.6;
-  margin-bottom:9px;
+  line-height:1.3;
+  overflow-wrap:anywhere;
 }
 
 .player-profile-status{
   display:inline-block;
-  padding:5px 8px;
-  border-radius:6px;
-  background:#17271b;
-  border:1px solid #345039;
-  color:#a8e89b;
+  padding:4px 6px;
+  border-radius:5px;
   font-size:10px;
-  font-weight:700;
+  font-weight:800;
 }
+
+.player-profile-status.is-active{
+  background:#19351f;
+  border:1px solid #426d42;
+  color:#a8e89b;
+}
+
+.player-profile-status.is-inactive{
+  background:#292d2a;
+  border:1px solid #505650;
+  color:#c0c8c0;
+}
+
 
 @media(max-width:480px){
   .player-profile-hero{
@@ -2975,19 +3020,62 @@ async function openPlayerDetail(p){
   const identity=document.createElement("div");
   identity.className="player-profile-identity";
 
-    const playerName=document.createElement("h2");
+    
+  const nameLabel=document.createElement("span");
+  nameLabel.className="player-profile-name-label";
+  nameLabel.textContent="HỒ SƠ CẦU THỦ";
+
+  const playerName=document.createElement("h2");
   playerName.className="player-profile-name";
   playerName.textContent=p.full_name||"Chưa có tên";
 
   const details=document.createElement("div");
   details.className="player-profile-details";
-  details.textContent=(p.jersey_number!=null?p.jersey_number:"Chưa có số áo")+" · "+(p.position||"Chưa cập nhật vị trí").toUpperCase();
 
-  const status=document.createElement("div");
-  status.className="player-profile-status";
+  const addProfileField=(label,value)=>{
+    const field=document.createElement("div");
+    field.className="player-profile-field";
+
+    const labelEl=document.createElement("span");
+    labelEl.className="player-profile-label";
+    labelEl.textContent=label;
+
+    const valueEl=document.createElement("strong");
+    valueEl.className="player-profile-value";
+    valueEl.textContent=value;
+
+    field.append(labelEl,valueEl);
+    details.appendChild(field);
+  };
+
+  addProfileField(
+    "SỐ ÁO",
+    p.jersey_number!=null?"#"+p.jersey_number:"Chưa cập nhật"
+  );
+
+  addProfileField(
+    "VỊ TRÍ",
+    p.position||"Chưa cập nhật"
+  );
+
+  const statusField=document.createElement("div");
+  statusField.className="player-profile-field";
+
+  const statusLabel=document.createElement("span");
+  statusLabel.className="player-profile-label";
+  statusLabel.textContent="TÌNH TRẠNG";
+
+  const status=document.createElement("span");
+  status.className="player-profile-status "+(p.is_active?"is-active":"is-inactive");
   status.textContent=p.is_active?"Đang hoạt động":"Không hoạt động";
 
-  identity.append(playerName,details,status);
+  statusField.append(statusLabel,status);
+  details.appendChild(statusField);
+
+  identity.append(nameLabel,playerName,details);
+  identity.style.flex="1";
+  profile.appendChild(identity);
+
   identity.style.flex="1";
   profile.appendChild(identity);
 
