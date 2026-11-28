@@ -761,67 +761,55 @@ input,select{
 }
 
 
-.player-profile-name-label{
-  display:block;
-  margin-bottom:4px;
-  color:#91a18f;
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:1.4px;
-}
 
 .player-profile-details{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-evenly;
+  gap:0;
+  margin-top:5px;
+  min-height:88px;
 }
 
-.player-profile-field{
-  min-width:0;
-  padding:8px 9px;
-  background:rgba(255,255,255,.035);
-  border:1px solid #344536;
-  border-radius:8px;
+.player-profile-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  padding:5px 0;
+  border-bottom:1px solid #344536;
+}
+
+.player-profile-row:last-child{
+  border-bottom:none;
 }
 
 .player-profile-label{
-  display:block;
-  margin-bottom:4px;
-  color:#89998b;
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:.6px;
+  color:#aab5ac;
+  font-size:11px;
+  font-weight:500;
+  white-space:nowrap;
 }
 
 .player-profile-value{
-  display:block;
   color:#f0f5ed;
   font-size:12px;
   font-weight:800;
-  line-height:1.3;
+  text-align:right;
   overflow-wrap:anywhere;
 }
 
 .player-profile-status{
-  display:inline-block;
-  padding:4px 6px;
-  border-radius:5px;
-  font-size:10px;
-  font-weight:800;
-}
-
-.player-profile-status.is-active{
-  background:#19351f;
-  border:1px solid #426d42;
   color:#a8e89b;
+  font-size:11px;
+  font-weight:800;
+  text-align:right;
 }
 
 .player-profile-status.is-inactive{
-  background:#292d2a;
-  border:1px solid #505650;
   color:#c0c8c0;
 }
+
 
 
 @media(max-width:480px){
@@ -3021,10 +3009,7 @@ async function openPlayerDetail(p){
   identity.className="player-profile-identity";
 
     
-  const nameLabel=document.createElement("span");
-  nameLabel.className="player-profile-name-label";
-  nameLabel.textContent="HỒ SƠ CẦU THỦ";
-
+  
   const playerName=document.createElement("h2");
   playerName.className="player-profile-name";
   playerName.textContent=p.full_name||"Chưa có tên";
@@ -3032,49 +3017,42 @@ async function openPlayerDetail(p){
   const details=document.createElement("div");
   details.className="player-profile-details";
 
-  const addProfileField=(label,value)=>{
-    const field=document.createElement("div");
-    field.className="player-profile-field";
+  const addProfileRow=(label,value,extraClass="")=>{
+    const row=document.createElement("div");
+    row.className="player-profile-row";
 
     const labelEl=document.createElement("span");
     labelEl.className="player-profile-label";
     labelEl.textContent=label;
 
     const valueEl=document.createElement("strong");
-    valueEl.className="player-profile-value";
+    valueEl.className="player-profile-value "+extraClass;
     valueEl.textContent=value;
 
-    field.append(labelEl,valueEl);
-    details.appendChild(field);
+    row.append(labelEl,valueEl);
+    details.appendChild(row);
   };
 
-  addProfileField(
-    "SỐ ÁO",
-    p.jersey_number!=null?"#"+p.jersey_number:"Chưa cập nhật"
+  addProfileRow(
+    "Số áo:",
+    p.jersey_number!=null?String(p.jersey_number):"Chưa cập nhật"
   );
 
-  addProfileField(
-    "VỊ TRÍ",
+  addProfileRow(
+    "Vị trí:",
     p.position||"Chưa cập nhật"
   );
 
-  const statusField=document.createElement("div");
-  statusField.className="player-profile-field";
+  addProfileRow(
+    "Tình trạng:",
+    p.is_active?"Đang hoạt động":"Không hoạt động",
+    "player-profile-status "+(p.is_active?"is-active":"is-inactive")
+  );
 
-  const statusLabel=document.createElement("span");
-  statusLabel.className="player-profile-label";
-  statusLabel.textContent="TÌNH TRẠNG";
-
-  const status=document.createElement("span");
-  status.className="player-profile-status "+(p.is_active?"is-active":"is-inactive");
-  status.textContent=p.is_active?"Đang hoạt động":"Không hoạt động";
-
-  statusField.append(statusLabel,status);
-  details.appendChild(statusField);
-
-  identity.append(nameLabel,playerName,details);
+  identity.append(playerName,details);
   identity.style.flex="1";
   profile.appendChild(identity);
+
 
   identity.style.flex="1";
   profile.appendChild(identity);
